@@ -1,0 +1,27 @@
+#!/bin/sh
+# An example pre-commit hook for WordPress
+
+set -e
+
+# Make sure the readme.md never gets out of sync with the readme.txt
+generate_markdown_readme=$(find . -name generate-markdown-readme -print -quit)
+if [ -n "$generate_markdown_readme" ]; then
+	markdown_readme_path=$($generate_markdown_readme)
+	git add $markdown_readme_path
+fi
+
+if [ -e phpunit.xml.dist ]; then
+	# @todo Check to see if phpunit is even installed
+	# @todo Check if WP_TESTS_DIR is not set
+	phpunit
+fi
+
+if [ -e .jshintrc ]; then
+	# @todo Check to see if jshint is even installed
+	jshint
+fi
+
+# Run through PHP_CodeSniffer rules for WordPress Coding Standards <https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards>
+# @todo Check if phpcs is installed
+# @todo Check if WordPress standard sniffs are installed
+phpcs -p -s -v --standard=WordPress $(git status --porcelain | egrep '^[MARC]' | cut -c4- | egrep '.php$')
