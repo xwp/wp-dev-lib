@@ -2,13 +2,17 @@
 <?php
 /**
  * Look for WordPress readme in current directory or above and convert into markdown readme in same directory
- * @version 1.0
+ * @version 1.0.1
  * @author Weston Ruter <weston@x-team.com> (@westonruter)
  * @copyright Copyright (c) 2013, X-Team <http://x-team.com/wordpress/>
  * @license GPLv2+
  */
 
 try {
+	if ( php_sapi_name() !== 'cli' ) {
+		throw new Exception( 'Only allowed in CLI mode.' );
+	}
+
 	$readme_txt_path = null;
 	while ( true ) {
 		foreach ( array( 'readme.txt', 'README.txt' ) as $readme_filename ) {
