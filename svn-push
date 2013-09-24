@@ -71,7 +71,7 @@ if [ -n "$has_tag" ] && [ -z "$force" ]; then
 	exit 1
 fi
 
-if [ -n "$has_tag" ]; then
+if [ -z "$has_tag" ]; then
 	echo "Tagging plugin version $plugin_version"
 	git tag "$plugin_version" master
 	git push origin "$plugin_version"
