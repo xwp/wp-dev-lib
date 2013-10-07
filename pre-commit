@@ -23,11 +23,11 @@ if [ -e .jshintrc ]; then
 fi
 
 # PHP_CodeSniffer WordPress Coding Standards
-changed_php_files=$(git status --porcelain | egrep '^.[MARC]' | cut -c4- | egrep '.php$' | wc -l)
+changed_php_files=$(git status --porcelain | egrep '^ ?[MARC]' | cut -c4- | egrep '.php$' | wc -l)
 if [ $changed_php_files != 0 ]; then
 	if command -v jshint >/dev/null 2>&1; then
 		phpcs_standard=$(if [ -e ruleset.xml ]; then echo ruleset.xml; else echo WordPress; fi)
-		phpcs -p -s -v --standard=$phpcs_standard $(git status --porcelain | egrep '^.[MARC]' | cut -c4- | egrep '.php$')
+		phpcs -p -s -v --standard=$phpcs_standard $(git status --porcelain | egrep '^ ?[MARC]' | cut -c4- | egrep '.php$')
 	else
 		echo "Skipping phpcs since not installed"
 	fi
