@@ -25,6 +25,6 @@ before_script:
     - npm install -g jshint
 
 script:
-    - if [ -e phpunit.xml ]; then phpunit; fi
+    - if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit; fi
     - phpcs --standard=$(if [ -e ruleset.xml ]; then echo ruleset.xml; else echo WordPress; fi) $(find . -name '*.php')
     - jshint .
