@@ -38,7 +38,9 @@ class WordPress_Readme_Parser {
 		$readme_txt_rest = $matches[4];
 		$this->metadata = array_fill_keys( array( 'Contributors', 'Tags', 'Requires at least', 'Tested up to', 'Stable tag', 'License', 'License URI' ), null );
 		foreach ( explode( "\n", $matches[2] ) as $metadatum ) {
-			preg_match( '/^(.+?):\s+(.+)$/', $metadatum, $metadataum_matches ) || \WP_CLI::error( "Parse error in $metadatum" );
+			if ( ! preg_match( '/^(.+?):\s+(.+)$/', $metadatum, $metadataum_matches ) ) {
+				throw new \Exception( "Parse error in $metadatum" );
+			}
 			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
 			$this->metadata[$name] = $value;
 		}
@@ -92,7 +94,9 @@ class WordPress_Readme_Parser {
 			'Screenshots' => function ( $body ) {
 				$body = trim( $body );
 				$new_body = '';
-				preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) || \WP_CLI::error( 'Malformed screenshot section' );
+				if ( ! preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
+					throw new Exception( 'Malformed screenshot section' );
+				}
 				foreach ( $screenshot_matches as $i => $screenshot_match ) {
 					$img_extensions = array( 'jpg', 'gif', 'png' );
 					foreach ( $img_extensions as $ext ) {
