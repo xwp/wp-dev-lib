@@ -1,7 +1,37 @@
 #!/bin/sh
-# An example pre-commit hook for WordPress
+# WordPress Plugin pre-commit hook
 
 set -e
+
+# PHPUnit
+if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
+	# @todo Check if WP_TESTS_DIR is not set
+	if [ command -v phpunit >/dev/null 2>&1 ]; then
+		phpunit
+	else:
+		echo "Skipping phpunit since not installed"
+	fi
+fi
+
+# JSHint
+if [ -e .jshintrc ]; then
+	if command -v jshint >/dev/null 2>&1; then
+		jshint .
+	else
+		echo "Skipping jshint since not installed"
+	fi
+fi
+
+# PHP_CodeSniffer WordPress Coding Standards
+changed_php_files=$(git status --porcelain | egrep '^.[MARC]' | cut -c4- | egrep '.php$' | wc -l)
+if [ $changed_php_files != 0 ]; then
+	if command -v jshint >/dev/null 2>&1; then
+		phpcs_standard=$(if [ -e ruleset.xml ]; then echo ruleset.xml; else echo WordPress; fi)
+		phpcs -p -s -v --standard=$phpcs_standard $(git status --porcelain | egrep '^.[MARC]' | cut -c4- | egrep '.php$')
+	else
+		echo "Skipping phpcs since not installed"
+	fi
+fi
 
 # Make sure the readme.md never gets out of sync with the readme.txt
 generate_markdown_readme=$(find . -name generate-markdown-readme -print -quit)
@@ -9,19 +39,3 @@ if [ -n "$generate_markdown_readme" ]; then
 	markdown_readme_path=$($generate_markdown_readme)
 	git add $markdown_readme_path
 fi
-
-if [ -e phpunit.xml.dist ]; then
-	# @todo Check to see if phpunit is even installed
-	# @todo Check if WP_TESTS_DIR is not set
-	phpunit
-fi
-
-if [ -e .jshintrc ]; then
-	# @todo Check to see if jshint is even installed
-	jshint
-fi
-
-# Run through PHP_CodeSniffer rules for WordPress Coding Standards <https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards>
-# @todo Check if phpcs is installed
-# @todo Check if WordPress standard sniffs are installed
-phpcs -p -s -v --standard=WordPress $(git status --porcelain | egrep '^[MARC]' | cut -c4- | egrep '.php$')
