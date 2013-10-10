@@ -23,8 +23,7 @@ if [ -e .jshintrc ]; then
 fi
 
 # Check for staged PHP files
-IFS=$'\n' staged_php_files=( $(git status --porcelain | egrep '^[MARC]' | cut -c4- | egrep '.php$') )
-echo $staged_php_files
+IFS=$'\n' staged_php_files=( $(git status --porcelain | egrep '^[MARC].+\.php$' | cut -c4-) )
 if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHP Syntax Check
 	for php_file in "${staged_php_files[@]}"; do
