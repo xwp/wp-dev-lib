@@ -19,7 +19,7 @@ done
 echo $message
 
 # Check for staged JS files
-IFS=$'\n' staged_js_files=( $(git status --porcelain | egrep $git_status_egrep'\.js$' | cut -c4-) )
+IFS=$'\n' staged_js_files=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $git_status_egrep'\.js$' | cut -c4-) )
 if [ ${#staged_js_files[@]} != 0 ]; then
 	# JSHint
 	if [ -e .jshintrc ]; then
@@ -34,7 +34,7 @@ if [ ${#staged_js_files[@]} != 0 ]; then
 fi
 
 # Check for staged PHP files
-IFS=$'\n' staged_php_files=( $(git status --porcelain | egrep $git_status_egrep'\.php$' | cut -c4-) )
+IFS=$'\n' staged_php_files=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $git_status_egrep'\.php$' | cut -c4-) )
 if [ ${#staged_php_files[@]} != 0 ]; then
 	# PHP Syntax Check
 	for php_file in "${staged_php_files[@]}"; do
