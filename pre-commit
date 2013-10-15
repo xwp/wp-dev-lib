@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # WordPress Plugin pre-commit hook
 
 set -e
