@@ -44,7 +44,7 @@ fi
 git pull origin master
 git push origin master
 svn_url=$(cat svn-url)
-svn_repo_dir=$git_root/svn
+svn_repo_dir=/tmp/svn-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
 
 for php in *.php; do
 	if grep -q 'Plugin Name:' $php && grep -q 'Version:' $php; then
