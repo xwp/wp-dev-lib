@@ -14,9 +14,10 @@ if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 fi
 
 # JSHint
-if [ -e .jshintrc ]; then
+IFS=$'\n' staged_js_files=( $(git status --porcelain | egrep '^[MARC].+\.js$' | cut -c4-) )
+if [ -e .jshintrc ] && [ ${#staged_js_files[@]} != 0 ]; then
 	if command -v jshint >/dev/null 2>&1; then
-		jshint .
+		jshint "${staged_js_files[@]}"
 	else
 		echo "Skipping jshint since not installed"
 	fi
