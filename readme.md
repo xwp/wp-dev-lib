@@ -8,19 +8,22 @@ It is intended that this repo be included in plugin repo via git-subtree/submodu
 To **add** it to your repo, do:
 
 ```bash
-git subtree add --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master --squash
+git subtree add --prefix bin \
+  git@github.com:x-team/wp-plugin-dev-lib.git master --squash
 ```
 
-To update the library with the latest changes:
+To **update** the library with the latest changes:
 
 ```bash
-git subtree pull --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master --squash
+git subtree pull --prefix bin \
+  git@github.com:x-team/wp-plugin-dev-lib.git master --squash
 ```
 
-And if you have changes you want to upstream, do:
+And if you have changes you want to **upstream**, do:
 
 ```bash
-git subtree push --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master
+git subtree push --prefix bin \
+  git@github.com:x-team/wp-plugin-dev-lib.git master
 ```
 
 Symlink to the `.travis.yml` and `.jshintrc` inside of the `bin/` directory you added:
