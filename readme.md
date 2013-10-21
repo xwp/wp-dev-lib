@@ -5,7 +5,25 @@ wp-plugin-dev-lib
 
 It is intended that this repo be included in plugin repo via git-subtree/submodule in a `bin/` directory.
 
-Symlink to the `.travis.yml` and `.jshintrc` inside of the same directory:
+To **add** it to your repo, do:
+
+```bash
+git subtree add --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master --squash
+```
+
+To update the library with the latest changes:
+
+```bash
+git subtree pull --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master --squash
+```
+
+And if you have changes you want to upstream, do:
+
+```bash
+git subtree push --prefix bin git@github.com:x-team/wp-plugin-dev-lib.git master
+```
+
+Symlink to the `.travis.yml` and `.jshintrc` inside of the `bin/` directory you added:
 
 ```bash
 ln -s bin/.travis.yml . && git add .travis.yml
