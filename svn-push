@@ -44,7 +44,7 @@ fi
 git pull origin master
 git push origin master
 svn_url=$(cat svn-url)
-svn_repo_dir=$git_root/svn
+svn_repo_dir=/tmp/svn-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
 
 for php in *.php; do
 	if grep -q 'Plugin Name:' $php && grep -q 'Version:' $php; then
@@ -79,6 +79,9 @@ else
 	echo "Skipping plugin tag $plugin_version since already exists"
 fi
 
+if [ -e $svn_repo_dir ] && [ ! -e $svn_repo_dir/.svn ]; then
+	rm -rf $svn_repo_dir
+fi
 if [ ! -e $svn_repo_dir ]; then
 	svn checkout $svn_url $svn_repo_dir
 	cd $svn_repo_dir
@@ -87,15 +90,16 @@ else
 	svn up
 fi
 
-
-cd trunk
+cd $git_root
 
 # rsync all cached files and their directories
 cat <(
 	git ls-files --cached --full-name $git_root \
 	&
 	git ls-files --cached --full-name $git_root | xargs -I {} dirname {} | sort | uniq
-) | sort | rsync -avz --delete --delete-excluded --include-from=- --exclude='*' $git_root/ ./
+) | sort | rsync -avz --delete --delete-excluded --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
+
+cd $svn_repo_dir/trunk
 
 # move assets directory to proper location in SVN
 if [ -d assets ]; then
@@ -123,6 +127,9 @@ svn add --force trunk
 
 # Do SVN commit
 svn_commit_file=$svn_repo_dir/COMMIT_MSG
+last_pushed_commit=$(svn log -l 1 | grep -E -o '^commit ([0-9a-f]{5,})' | head -n 1 | cut -c8-)
+
+cd $git_root
 
 git log -1 --format="Update to commit %h from $(git config --get remote.origin.url)" > $svn_commit_file
 echo >> $svn_commit_file
@@ -131,7 +138,6 @@ echo >> $svn_commit_file
 
 echo -n 'Obtaining last commit pushed to SVN...'
 git_log_args='--pretty=short --name-status --color=never'
-last_pushed_commit=$(svn log -l 1 | grep -E -o '^commit ([0-9a-f]{5,})' | head -n 1 | cut -c8-)
 if [ -z "$last_pushed_commit" ]; then
 	echo "none; starting from beginning"
 	git log $git_log_args >> $svn_commit_file
@@ -140,6 +146,7 @@ else
 	git log $git_log_args $last_pushed_commit..HEAD >> $svn_commit_file
 fi
 
+cd $svn_repo_dir
 
 svn commit -F $svn_commit_file
 rm $svn_commit_file
