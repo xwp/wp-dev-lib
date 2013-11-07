@@ -20,7 +20,7 @@ mkdir -p $WP_CORE_DIR
 if [ $WP_VERSION == 'latest' ]; then
   ARCHIVE_URL='http://wordpress.org/latest.tar.gz'
 else
-  ARCHIVE_URL="https://github.com/WordPress/WordPress/tarball/wordpress-$WP_VERSION"
+  ARCHIVE_URL="https://github.com/WordPress/WordPress/tarball/$WP_VERSION"
 fi
 
 wget -nv -O /tmp/wordpress.tar.gz $ARCHIVE_URL
