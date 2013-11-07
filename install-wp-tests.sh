@@ -18,12 +18,12 @@ WP_CORE_DIR=/tmp/wordpress/
 mkdir -p $WP_CORE_DIR
 
 if [ $WP_VERSION == 'latest' ]; then
-	ARCHIVE_NAME='latest'
+  ARCHIVE_URL='http://wordpress.org/latest.tar.gz'
 else
-	ARCHIVE_NAME="wordpress-$WP_VERSION"
+  ARCHIVE_URL="https://github.com/WordPress/WordPress/tarball/wordpress-$WP_VERSION"
 fi
 
-wget -nv -O /tmp/wordpress.tar.gz http://wordpress.org/${ARCHIVE_NAME}.tar.gz
+wget -nv -O /tmp/wordpress.tar.gz $ARCHIVE_URL
 tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 
 # set up testing suite
