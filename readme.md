@@ -26,11 +26,12 @@ git subtree push --prefix bin \
   git@github.com:x-team/wp-plugin-dev-lib.git master
 ```
 
-Symlink to the `.travis.yml` and `.jshintrc` inside of the `bin/` directory you added:
+Symlink to the `.travis.yml`, `.jshintrc`, and `phpcs.ruleset.xml` inside of the `bin/` directory you added:
 
 ```bash
 ln -s bin/.travis.yml . && git add .travis.yml
 ln -s bin/.jshintrc . && git add .jshintrc
+ln -s bin/phpcs.ruleset.xml . && git add phpcs.ruleset.xml
 ```
 
 Symlink to `pre-commit` from your project's `.git/hooks/pre-commit`:

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Given a svn-url file one directory up, export the latest git commits to the specified SVN repo.
-# Create a git release tag from the verison specified in the plugin file.
+# Create a git release tag from the version specified in the plugin file.
 # Author: Weston Ruter (@westonruter)
 
 set -e
