@@ -7,7 +7,6 @@
 	"immed": true,
 	"noarg": true,
 	"quotmark": "single",
-	"smarttabs": true,
 	"trailing": true,
 	"undef": true,
 	"unused": true,
