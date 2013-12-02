@@ -17,6 +17,7 @@
 	<rule ref="Generic.PHP.LowerCaseConstant"/>
 	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
 	<rule ref="Generic.PHP.NoSilencedErrors" />
+	<rule ref="Generic.ControlStructures.InlineControlStructure" />
 	<rule ref="Generic.Files.LineEndings">
 		<properties>
 			<property name="eolChar" value="\n"/>
