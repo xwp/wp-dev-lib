@@ -99,15 +99,6 @@ class WordPress_Readme_Parser {
 
 		// Parse sections
 		$section_formatters = array(
-			'Description' => function ( $body ) use ( $params ) {
-				if ( isset( $params['travis_ci_url'] ) ) {
-					$body .= sprintf( "\n\n[![Build Status](%s.png?branch=master)](%s)", $params['travis_ci_url'], $params['travis_ci_url'] );
-				}
-				if ( isset( $params['coveralls_url'] ) ) {
-					$body .= sprintf( "\n\n[![Build Status](%s?branch=master)](%s)", $params['coveralls_badge_src'], $params['coveralls_url'] );
-				}
-				return $body;
-			},
 			'Screenshots' => function ( $body ) {
 				$body = trim( $body );
 				$new_body = '';
@@ -179,6 +170,17 @@ class WordPress_Readme_Parser {
 		$markdown .= "\n";
 		foreach ( $formatted_metadata as $name => $value ) {
 			$markdown .= sprintf( "**%s:** %s  \n", $name, $value );
+		}
+
+		if ( isset( $params['travis_ci_url'] ) || isset( $params['coveralls_url'] ) ) {
+			$markdown .= "\n";
+			if ( isset( $params['travis_ci_url'] ) ) {
+				$markdown .= sprintf( '[![Build Status](%s.png?branch=master)](%s) ', $params['travis_ci_url'], $params['travis_ci_url'] );
+			}
+			if ( isset( $params['coveralls_url'] ) ) {
+				$markdown .= sprintf( '[![Build Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $params['coveralls_url'] );
+			}
+			$markdown .= "\n";
 		}
 		$markdown .= "\n";
 
