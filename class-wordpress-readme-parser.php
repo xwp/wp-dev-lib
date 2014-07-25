@@ -58,11 +58,16 @@ class WordPress_Readme_Parser {
 			$body        = trim( array_shift( $section_match ) );
 			$subsections = array();
 
-			// @todo Parse out front matter /(.+?)(\n=\s+.+$)/s
+			if ( preg_match( '/^(\s*[^=].+)(?=\n=)(.+$)/s', $body, $matches ) ) {
+				$body = $matches[1];
+				$subsection_search_area = $matches[2];
+			} else {
+				$subsection_search_area = $body;
+				$body = null;
+			}
 
 			// Parse subsections
-			if ( preg_match_all( '/(?:^|\n)= (.+?) =\n(.+?)(?=\n= |$)/s', $body, $subsection_matches, PREG_SET_ORDER ) ) {
-				$body = null;
+			if ( preg_match_all( '/(?:^|\n)= (.+?) =\n(.+?)(?=\n= |$)/s', $subsection_search_area, $subsection_matches, PREG_SET_ORDER ) ) {
 				foreach ( $subsection_matches as $subsection_match ) {
 					array_shift( $subsection_match );
 					$subsections[] = array(
