@@ -15,6 +15,7 @@ upsearch () {
 
 WP_TESTS_DIR=/tmp/wordpress-tests/
 
+DISALLOW_EXECUTE_BIT=0
 PARENT_DIR_SLUG=$(basename $(dirname $(pwd)))
 SELF_DIR=$( pwd )
 PHPCS_DIR=/tmp/phpcs
@@ -108,6 +109,16 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 	else
 		echo "Skipping phpcs since not installed"
 	fi
+fi
+
+# Check for staged files with execute bit on
+if [ "$DISALLOW_EXECUTE_BIT" == 1 ]; then
+	for EXECUTABLE_FILE in $( find . -perm -g=x -type f ); do
+		if [ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]; then
+			echo "Error: Executable file being committed: $EXECUTABLE_FILE. Do chmod -x on this."
+			exit 1
+		fi
+	done
 fi
 
 # Make sure the readme.md never gets out of sync with the readme.txt
