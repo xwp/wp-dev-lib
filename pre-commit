@@ -15,6 +15,7 @@ upsearch () {
 
 WP_TESTS_DIR=/tmp/wordpress-tests/
 
+YUI_COMPRESSOR_CHECK=1
 DISALLOW_EXECUTE_BIT=0
 PARENT_DIR_SLUG=$(basename $(dirname $(pwd)))
 SELF_DIR=$( pwd )
@@ -50,6 +51,15 @@ echo "$MESSAGE"
 # Check for staged JS files
 IFS=$'\n' STAGED_JS_FILES=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.js$' | cut -c4-) )
 if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
+	# YUI Compressor
+	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
+		YUI_COMPRESSOR_PATH=/tmp/yuicompressor-2.4.8.jar
+		if [ ! -e "$YUI_COMPRESSOR_PATH" ]; then
+			wget -O "$YUI_COMPRESSOR_PATH" https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar
+		fi
+		java -jar "$YUI_COMPRESSOR_PATH" -o /dev/null "${STAGED_JS_FILES[@]}" 2>&1
+	fi
+
 	# JSHint
 	echo "## jslint"
 	if command -v jshint >/dev/null 2>&1; then
