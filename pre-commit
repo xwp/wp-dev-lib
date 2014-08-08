@@ -124,7 +124,7 @@ fi
 # Check for staged files with execute bit on
 if [ "$DISALLOW_EXECUTE_BIT" == 1 ]; then
 	for EXECUTABLE_FILE in $( find . -perm -g=x -type f ); do
-		if [ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]; then
+		if [[ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]]; then
 			echo "Error: Executable file being committed: $EXECUTABLE_FILE. Do chmod -x on this."
 			exit 1
 		fi
