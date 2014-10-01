@@ -97,7 +97,7 @@ cat <(
 	git ls-files --cached --full-name $git_root \
 	&
 	git ls-files --cached --full-name $git_root | xargs -I {} dirname {} | sort | uniq
-) | sort | rsync -avz --delete --delete-excluded --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
+) | sort | rsync -avz --delete --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
 
 cd $svn_repo_dir/trunk
 
