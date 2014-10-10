@@ -28,6 +28,7 @@ WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
 WPCS_GIT_TREE=master
 PHPCS_FILE=$( upsearch phpcs.ruleset.xml )
 WPCS_STANDARD=$(if [ ! -z "$PHPCS_FILE" ]; then echo "$PHPCS_FILE"; else echo WordPress-Core; fi)
+PATH_INCLUDES=./
 ENV_FILE=$( upsearch .ci-env.sh )
 if [ ! -z "$ENV_FILE" ]; then
 	source "$ENV_FILE"
@@ -49,7 +50,7 @@ done
 echo "$MESSAGE"
 
 # Check for staged JS files
-IFS=$'\n' STAGED_JS_FILES=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.js$' | cut -c4-) )
+STAGED_JS_FILES=( $(git status --porcelain -- $PATH_INCLUDES | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.js$' | cut -c4-) )
 if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 	# YUI Compressor
 	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
@@ -71,11 +72,11 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 fi
 
 # Check for staged PHP files
-IFS=$'\n' STAGED_PHP_FILES=( $(git status --porcelain | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.php$' | cut -c4-) )
+STAGED_PHP_FILES=( $(git status --porcelain -- $PATH_INCLUDES | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.php$' | cut -c4-) )
 if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 	# PHP Syntax Check
 	for PHP_FILE in "${STAGED_PHP_FILES[@]}"; do
-		php -lf $PHP_FILE
+		php -lf "$PHP_FILE"
 	done
 
 	# PHPUnit
@@ -123,8 +124,8 @@ fi
 
 # Check for staged files with execute bit on
 if [ "$DISALLOW_EXECUTE_BIT" == 1 ]; then
-	for EXECUTABLE_FILE in $( find . -perm -g=x -type f ); do
-		if [[ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]]; then
+	for EXECUTABLE_FILE in $( git status --porcelain -- $PATH_INCLUDES ); do
+		if [ -x "$EXECUTABLE_FILE" ] && [[ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]]; then
 			echo "Error: Executable file being committed: $EXECUTABLE_FILE. Do chmod -x on this."
 			exit 1
 		fi
