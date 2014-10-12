@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 export WP_TESTS_DIR=/tmp/wordpress-tests/
 export PLUGIN_DIR=$(pwd)
 export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
