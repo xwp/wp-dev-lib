@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -v
 
 find $PATH_INCLUDES -path ./bin -prune -o \( -name '*.php' \) -exec php -lf {} \;
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then phpunit $( if [ -e .coveralls.yml ]; then echo --coverage-clover build/logs/clover.xml; fi ); fi

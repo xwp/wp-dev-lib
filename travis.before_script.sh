@@ -23,3 +23,5 @@ mkdir -p $WPCS_DIR && curl -L https://github.com/$WPCS_GITHUB_SRC/archive/$WPCS_
 $PHPCS_DIR/scripts/phpcs --config-set installed_paths $WPCS_DIR
 npm install -g jshint
 if [ -e composer.json ]; then wget http://getcomposer.org/composer.phar && php composer.phar install --dev; fi
+
+set +e
