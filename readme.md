@@ -5,7 +5,7 @@ wp-dev-lib
 
 ## Installation
 
-It is intended that this repo be included in plugin repo via git-submodule in a `bin/` directory. (Previously it was recommended to be a git-subtree, but this has changed now that the `.travis.yml` is now lightweight enough to not require a symlink.)
+It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. (Previously it was recommended to be a git-subtree, but this has changed now that the `.travis.yml` is now lightweight enough to not require a symlink.)
 
 To **add** it to your repo, do:
 
@@ -73,7 +73,7 @@ Symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit
 
 ```bash
 cd .git/hooks
-ln -s ../../bin/pre-commit .
+ln -s ../../dev-lib/pre-commit .
 ```
 
 ## Environment Variables
