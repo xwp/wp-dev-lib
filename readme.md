@@ -1,7 +1,7 @@
-wp-plugin-dev-lib
-=================
+wp-dev-lib
+==========
 
-**Common code used during development of WordPress plugins**
+**Common tools to facilitate the development and testing of WordPress themes and plugins**
 
 ## Installation
 
