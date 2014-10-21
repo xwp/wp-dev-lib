@@ -10,7 +10,8 @@ It is intended that this repo be included in plugin repo via git-submodule in a 
 To **add** it to your repo, do:
 
 ```bash
-git submodule add --prefix dev-lib git@github.com:xwpco/wp-plugin-dev-lib.git vip-themes
+remote_branch=vip-themes # temporary
+git submodule add -b $remote_branch git@github.com:xwpco/wp-plugin-dev-lib.git dev-lib
 ```
 
 To **update** the library with the latest changes:
@@ -72,8 +73,7 @@ ln -s bin/phpcs.ruleset.xml . && git add phpcs.ruleset.xml # Note: Probably bett
 Symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit`:
 
 ```bash
-cd .git/hooks
-ln -s ../../dev-lib/pre-commit .
+cd .git/hooks && ln -s ../../dev-lib/pre-commit . && cd -
 ```
 
 ## Environment Variables
