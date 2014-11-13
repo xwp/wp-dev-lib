@@ -63,9 +63,9 @@ This will greatly speed up the time build time, giving you quicker feedback on y
 Next, after configuring your `.travis.yml`, symlink the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), and (especially optionally) [`phpcs.ruleset.xml`](phpcs.ruleset.xml):
 
 ```bash
-ln -s bin/.jshintrc . && git add .jshintrc
-ln -s bin/.jshintignore . && git add .jshintignore
-ln -s bin/phpcs.ruleset.xml . && git add phpcs.ruleset.xml # Note: Probably better to supply the WPCS_STANDARD env var per below
+ln -s dev-lib/.jshintrc . && git add .jshintrc
+ln -s dev-lib/.jshintignore . && git add .jshintignore
+ln -s dev-lib/phpcs.ruleset.xml . && git add phpcs.ruleset.xml # Note: Probably better to supply the WPCS_STANDARD env var per below
 ```
 
 ## Pre-commit Hook
