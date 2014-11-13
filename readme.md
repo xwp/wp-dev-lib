@@ -11,7 +11,7 @@ To **add** it to your repo, do:
 
 ```bash
 remote_branch=vip-themes # temporary
-git submodule add -b $remote_branch git@github.com:xwpco/wp-plugin-dev-lib.git dev-lib
+git submodule add -b $remote_branch git@github.com:xwp/wp-plugin-dev-lib.git dev-lib
 ```
 
 To **update** the library with the latest changes:
