@@ -9,7 +9,7 @@ upsearch () {
 	directory="./"
 	for (( n=${#slashes}; n>0; --n )); do
 		test -e "$directory/$1" && echo "$directory/$1" && return
-		if test -e '.git'; then
+		if [ "$2" != 'git_boundless' ] && test -e '.git'; then
 			return
 		fi
 		directory="$directory/.."
@@ -93,17 +93,22 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 		if [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in VVV
-			VAGRANTFILE=$( upsearch Vagrantfile )
-			if [ ! -z "$VAGRANTFILE" ] && grep -q vvv "$VAGRANTFILE"; then
+			VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
+			if [ ! -z "$VAGRANTFILE" ]; then
 				cd $( dirname "$VAGRANTFILE" )
-				VVV_ROOT=$(pwd)
-				ABSOLUTE_VVV_PATH=/srv${SELF_DIR:${#VVV_ROOT}}
+				VAGRANT_ROOT=$(pwd)
+
+				if [ -e www/wp-content/themes/vip/plugins/vip-init.php ]; then
+					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
+				elif grep -q vvv "$VAGRANTFILE"; then
+					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
+				fi
 				cd "$SELF_DIR"
 			fi
 
-			if [ ! -z "$ABSOLUTE_VVV_PATH" ]; then
-				echo "Running phpunit in VVV"
-				vagrant ssh -c "cd $ABSOLUTE_VVV_PATH && phpunit -c $PHPUNIT_XML_FILE"
+			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
+				echo "Running phpunit in Vagrant"
+				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit -c $PHPUNIT_XML_FILE"
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit -c "$PHPUNIT_XML_FILE"
