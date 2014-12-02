@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+shopt -s expand_aliases
 
 # TODO: These should not override any existing environment variables
 export WP_TESTS_DIR=/tmp/wordpress-tests/
@@ -30,6 +31,12 @@ if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 	cd /tmp/wordpress/wp-content/plugins
 	ln -s $PLUGIN_DIR $PLUGIN_SLUG
 	cd $PLUGIN_DIR
+
+	if ! command -v phpunit >/dev/null 2>&1; then
+		wget -O /tmp/phpunit.phar https://phar.phpunit.de/phpunit.phar
+		chmod +x /tmp/phpunit.phar
+		alias phpunit='/tmp/phpunit.phar'
+	fi
 fi
 
 # Install PHP_CodeSniffer and the WordPress Coding Standards
