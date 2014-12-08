@@ -10,7 +10,7 @@ It is intended that this repo be included in plugin repo via git-submodule in a 
 To **add** it to your repo, do:
 
 ```bash
-git submodule add https://github.com/xwp/wp-plugin-dev-lib.git dev-lib
+git submodule add https://github.com/xwp/wp-dev-lib.git dev-lib
 ```
 
 To **update** the library with the latest changes:
