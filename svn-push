@@ -117,7 +117,10 @@ done
 cd $svn_repo_dir
 
 # Delete any files from SVN that are no longer there
-svn status . | grep "^\!" | sed 's/^\! *//g' | xargs svn rm
+FILES_TO_DELETE=$(svn status . | grep "^\!" | sed 's/^\! *//g')
+if [ -n "$FILES_TO_DELETE" ]; then
+    xargs svn rm
+fi
 
 # Add everything left to commit
 if [ -d assets ]; then
