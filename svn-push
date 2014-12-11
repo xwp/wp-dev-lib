@@ -5,7 +5,9 @@
 
 set -e
 
-cd $(dirname $0)/..
+cd "$( dirname $0 )"
+dev_lib_dir=$(pwd)
+cd ..
 
 if [ ! -e svn-url ]; then
 	echo "Error: Missing svn-url file" >&2
@@ -21,6 +23,12 @@ while getopts 'f' option; do
 	esac
 done
 
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ $current_branch != 'master' ]; then
+	echo "Please checkout the master branch"
+	exit 1
+fi
+
 if [ -n "$(git status -s -uno)" ] && [ -z "$force" ]; then
 	git status
 	echo "Error: Git state has modified or staged files. Commit or reset, or supply -f" >&2
@@ -29,22 +37,22 @@ fi
 
 git_root=$(pwd)
 
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [ $current_branch != 'master' ]; then
-	git checkout master
+if [ -e readme.txt ]; then
+	$dev_lib_dir/generate-markdown-readme
+	git add readme.md
 fi
-
-bin/generate-markdown-readme
-git add readme.md
 if [ -n "$(git status --porcelain readme.md)" ]; then
 	echo "Please commit (--amend?) the updated readme.md"
 	exit 1
 fi
 
-git pull origin master
+git pull --ff-only origin master
 git push origin master
 svn_url=$(cat svn-url)
-svn_repo_dir=/tmp/svn-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
+svn_tmp_repo_dir=/tmp/svn-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
+git_tmp_repo_dir=/tmp/git-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
+echo "Temp SVN dir: $svn_tmp_repo_dir"
+echo "Temp Git dir: $git_tmp_repo_dir"
 
 for php in *.php; do
 	if grep -q 'Plugin Name:' $php && grep -q 'Version:' $php; then
@@ -71,58 +79,41 @@ if [ -n "$has_tag" ] && [ -z "$force" ]; then
 	exit 1
 fi
 
-if [ -z "$has_tag" ]; then
-	echo "Tagging plugin version $plugin_version"
-	git tag "$plugin_version" master
-	git push origin "$plugin_version"
-else
-	echo "Skipping plugin tag $plugin_version since already exists"
+# Clean up existing Git and SVN repos
+if [ -e $svn_tmp_repo_dir ] && [ ! -e $svn_tmp_repo_dir/.svn ]; then
+	rm -rf $svn_tmp_repo_dir
+fi
+if [ -e $git_tmp_repo_dir ] && [ ! -e $git_tmp_repo_dir/.git ]; then
+	rm -rf $git_tmp_repo_dir
 fi
 
-if [ -e $svn_repo_dir ] && [ ! -e $svn_repo_dir/.svn ]; then
-	rm -rf $svn_repo_dir
-fi
-if [ ! -e $svn_repo_dir ]; then
-	svn checkout $svn_url $svn_repo_dir
-	cd $svn_repo_dir
+# SVN: Checkout or update
+if [ ! -e $svn_tmp_repo_dir ]; then
+	svn checkout $svn_url $svn_tmp_repo_dir
+	cd $svn_tmp_repo_dir
 else
-	cd $svn_repo_dir
+	cd $svn_tmp_repo_dir
 	svn up
 fi
 
-cd $git_root
-
-# rsync all cached files and their directories
-cat <(
-	git ls-files --cached --full-name $git_root \
-	&
-	git ls-files --cached --full-name $git_root | xargs -I {} dirname {} | sort | uniq
-) | sort | rsync -avz --delete --include-from=- --exclude='*' ./ $svn_repo_dir/trunk/
-
-cd $svn_repo_dir/trunk
-
-# move assets directory to proper location in SVN
-if [ -d assets ]; then
-	rsync -avz --delete ./assets/ ../assets/
-	rm -r ./assets/
+# Git: Clone or pull
+if [ ! -e $git_tmp_repo_dir ]; then
+	git clone $git_root $git_tmp_repo_dir
+	cd $git_tmp_repo_dir
+else
+	cd $git_tmp_repo_dir
+	git pull
 fi
 
-# convert .gitignores to svn:ignore
-for gitignore in $(find . -name .gitignore); do
-	echo "Convert $gitignore to svn:global-ignores"
-	svn propset svn:global-ignores -F $gitignore $(dirname $gitignore)
-	svn rm --force $gitignore
-done
-
-cd $svn_repo_dir
-
-# Delete any files from SVN that are no longer there
-svn status . | grep "^\!" | sed 's/^\! *//g' | xargs svn rm
-
-# Add everything left to commit
-if [ -d assets ]; then
-	svn add --force assets
+# rsync all committed files from the Git repo to SVN
+rsync -avz --delete --delete-excluded --exclude 'assets' --exclude '.git*' --exclude 'dev-lib' --exclude '.jshint*' --exclude 'svn-url' --exclude '.travis.yml' $git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/
+if [ -e $git_tmp_repo_dir/assets/ ]; then
+	mkdir -p $svn_tmp_repo_dir/assets/
+	rsync -avz --delete $git_tmp_repo_dir/assets/ $svn_tmp_repo_dir/assets/
 fi
+cd $svn_tmp_repo_dir
+
+svn status | grep '^!' | awk '{print $2}' | xargs svn delete --force
 svn add --force trunk --auto-props --parents --depth infinity -q
 
 mkdir -p tags
@@ -132,33 +123,26 @@ fi
 cp -r trunk tags/$plugin_version
 svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
 
-# Do SVN commit
-svn_commit_file=$svn_repo_dir/COMMIT_MSG
-last_pushed_commit=$(svn log -l 1 | grep -E -o '^commit ([0-9a-f]{5,})' | head -n 1 | cut -c8-)
+svn_commit_file=/tmp/svn-commit-msg
+git --git-dir $git_root/.git log -1 --format="Update to commit %h from $(git --git-dir $git_root/.git config --get remote.origin.url)" > $svn_commit_file
 
-cd $git_root
+svn status
+echo
+echo "SVN Commit message:"
+cat $svn_commit_file
+echo
 
-git log -1 --format="Update to commit %h from $(git config --get remote.origin.url)" > $svn_commit_file
-echo >> $svn_commit_file
-echo 'Includes the following commit(s):' >> $svn_commit_file
-echo >> $svn_commit_file
+echo "Hit enter to proceed with SVN commit and Git tag"
+read OK
 
-echo -n 'Obtaining last commit pushed to SVN...'
-git_log_args='--pretty=short --name-status --color=never'
-if [ -z "$last_pushed_commit" ]; then
-	echo "none; starting from beginning"
-	git log $git_log_args >> $svn_commit_file
+if [ -z "$has_tag" ]; then
+	cd $git_tmp_repo_dir
+	echo "Tagging plugin version $plugin_version"
+	git tag "$plugin_version" master
+	git push origin "$plugin_version"
+	cd $svn_tmp_repo_dir
 else
-	echo "$last_pushed_commit"
-	git log $git_log_args $last_pushed_commit..HEAD >> $svn_commit_file
+	echo "Skipping plugin tag $plugin_version since already exists"
 fi
-
-cd $svn_repo_dir
 
 svn commit -F $svn_commit_file
-rm $svn_commit_file
-
-# Restore branch
-if [ $current_branch != 'master' ]; then
-	git checkout $current_branch
-fi
