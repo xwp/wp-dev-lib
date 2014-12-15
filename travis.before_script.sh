@@ -18,6 +18,7 @@ export YUI_COMPRESSOR_CHECK=1
 export DISALLOW_EXECUTE_BIT=0
 export PATH_INCLUDES=./
 export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress-Core; fi)
+export WPVIP=0
 
 # Load a .ci-env.sh to override the above environment variables
 if [ -e .ci-env.sh ]; then
@@ -36,6 +37,14 @@ if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 		wget -O /tmp/phpunit.phar https://phar.phpunit.de/phpunit.phar
 		chmod +x /tmp/phpunit.phar
 		alias phpunit='/tmp/phpunit.phar'
+	fi
+
+	if [ "$WPVIP" == '1' ]; then
+		wget -O /tmp/vip-quickstart.tar.gz https://github.com/Automattic/vip-quickstart/archive/master.tar.gz
+		tar -xvzf /tmp/vip-quickstart.tar.gz -C /tmp
+		mkdir -p /tmp/wordpress/wp-content/mu-plugins/
+		rsync -avz /tmp/vip-quickstart-master/www/wp-content/mu-plugins/ /tmp/wordpress/wp-content/mu-plugins/
+		cp /tmp/vip-quickstart-master/www/wp-content/*.* /tmp/wordpress/wp-content/
 	fi
 fi
 
