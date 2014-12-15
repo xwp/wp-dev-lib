@@ -11,11 +11,19 @@ if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
 require_once $_tests_dir . '/includes/functions.php';
 
 $_plugin_dir = dirname( __DIR__ );
-$_plugin_slug = basename( $_plugin_dir );
-$_plugin_file = sprintf( '%s/%s.php', $_plugin_dir, $_plugin_slug );
-if ( ! file_exists( $_plugin_file ) ) {
-	trigger_error( "Unable to locate plugin file at $_plugin_file", E_USER_ERROR );
+foreach ( glob( $_plugin_dir . '/*.php' ) as $_plugin_file_candidate ) {
+	// @codingStandardsIgnoreStart
+	$_plugin_file_src = file_get_contents( $_plugin_file_candidate );
+	// @codingStandardsIgnoreEnd
+	if ( preg_match( '/Plugin\s*Name\s*:/', $_plugin_file_src ) ) {
+		$_plugin_file = $_plugin_file_candidate;
+		break;
+	}
 }
+if ( ! isset( $_plugin_file ) ) {
+	trigger_error( 'Unable to locate a file containing a plugin metadata block.', E_USER_ERROR );
+}
+unset( $_plugin_dir, $_plugin_file_candidate, $_plugin_file_src );
 
 /**
  * Force plugins defined in a constant (supplied by phpunit.xml) to be active at runtime.
