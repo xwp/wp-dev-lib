@@ -29,8 +29,9 @@ if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 	wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/master/templates/install-wp-tests.sh
 	bash /tmp/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 	cd /tmp/wordpress/wp-content/plugins
-	ln -s $PLUGIN_DIR $PLUGIN_SLUG
-	cd $PLUGIN_DIR
+	mv $PLUGIN_DIR $PLUGIN_SLUG
+	cd $PLUGIN_SLUG
+	ln -s $(pwd) $PLUGIN_DIR
 
 	if ! command -v phpunit >/dev/null 2>&1; then
 		wget -O /tmp/phpunit.phar https://phar.phpunit.de/phpunit.phar
