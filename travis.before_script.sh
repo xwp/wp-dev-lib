@@ -32,6 +32,7 @@ if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 	mv $PLUGIN_DIR $PLUGIN_SLUG
 	cd $PLUGIN_SLUG
 	ln -s $(pwd) $PLUGIN_DIR
+	echo "Plugin location: $(pwd)"
 
 	if ! command -v phpunit >/dev/null 2>&1; then
 		wget -O /tmp/phpunit.phar https://phar.phpunit.de/phpunit.phar

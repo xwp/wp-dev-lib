@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -v
 
 # Run PHP syntax check
 find $PATH_INCLUDES -path ./bin -prune -o \( -name '*.php' \) -exec php -lf {} \;
