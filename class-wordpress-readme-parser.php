@@ -155,7 +155,7 @@ class WordPress_Readme_Parser {
 		);
 		$formatted_metadata['License'] = sprintf( '[%s](%s)', $formatted_metadata['License'], $formatted_metadata['License URI'] );
 		unset( $formatted_metadata['License URI'] );
-		if ( $this->metadata['Stable tag'] === 'trunk' ) {
+		if ( 'trunk' === $this->metadata['Stable tag'] ) {
 			$formatted_metadata['Stable tag'] .= ' (master)';
 		}
 
