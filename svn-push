@@ -120,7 +120,9 @@ if [ -e $git_tmp_repo_dir/assets/ ]; then
 fi
 cd $svn_tmp_repo_dir
 
-svn status | grep '^!' | awk '{print $2}' | xargs svn delete --force
+if svn status | grep -s '^!'; then
+	svn status | grep '^!' | awk '{print $2}' | xargs svn delete --force
+fi
 svn add --force trunk --auto-props --parents --depth infinity -q
 
 mkdir -p tags
