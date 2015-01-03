@@ -95,6 +95,12 @@ class WordPress_Readme_Parser {
 				'[![Play video on YouTube](http://i1.ytimg.com/vi/$1/hqdefault.jpg)](http://www.youtube.com/watch?v=$1)',
 				$body
 			);
+			// Convert <pre lang="php"> into GitHub-flavored ```php markdown blocks
+			$body = preg_replace(
+				'#\n?<pre lang="(\w+)">\n?(.+?)\n?</pre>\n?#s',
+				"\n" . '```$1' . "\n" . '$2' . "\n" . '```' . "\n",
+				$body
+			);
 			return $body;
 		};
 
@@ -200,8 +206,11 @@ class WordPress_Readme_Parser {
 				$markdown .= sprintf( "%s\n", $body );
 			}
 			foreach ( $section['subsections'] as $subsection ) {
+				$sub_body = $subsection['body'];
+				$sub_body = call_user_func( $general_section_formatter, $sub_body );
+
 				$markdown .= sprintf( "### %s ###\n", $subsection['heading'] );
-				$markdown .= sprintf( "%s\n", $subsection['body'] );
+				$markdown .= sprintf( "%s\n", $sub_body );
 				$markdown .= "\n";
 			}
 
