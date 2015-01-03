@@ -123,7 +123,10 @@ cd $svn_tmp_repo_dir
 if svn status | grep -s '^!'; then
 	svn status | grep '^!' | awk '{print $2}' | xargs svn delete --force
 fi
-svn add --force trunk --auto-props --parents --depth infinity -q
+svn add --force trunk/ --auto-props --parents --depth infinity -q
+if [ -e assets/ ]; then
+	svn add --force assets/ --auto-props --parents --depth infinity -q
+fi
 
 mkdir -p tags
 if [ -e tags/$plugin_version ]; then
