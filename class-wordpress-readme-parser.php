@@ -203,14 +203,14 @@ class WordPress_Readme_Parser {
 			}
 
 			if ( $body ) {
-				$markdown .= sprintf( "%s\n", $body );
+				$markdown .= sprintf( "%s\n", $this->chomp( $body ) );
 			}
 			foreach ( $section['subsections'] as $subsection ) {
 				$sub_body = $subsection['body'];
 				$sub_body = call_user_func( $general_section_formatter, $sub_body );
 
 				$markdown .= sprintf( "### %s ###\n", $subsection['heading'] );
-				$markdown .= sprintf( "%s\n", $sub_body );
+				$markdown .= sprintf( "%s\n", $this->chomp( $sub_body ) );
 				$markdown .= "\n";
 			}
 
@@ -218,6 +218,17 @@ class WordPress_Readme_Parser {
 		}
 
 		return $markdown;
+	}
+
+	/**
+	 * Remove last newline. Props Perl.
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	function chomp( $string ) {
+		return preg_replace( '/\n$/', '', $string );
 	}
 
 }
