@@ -135,6 +135,23 @@ fi
 cp -r trunk tags/$plugin_version
 svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
 
+# Add mime types
+while read extension mime_type; do
+	if [[ "$extension" = \#* ]] || [ -z "$extension" ] || [ -z "$mime_type" ]; then
+		continue
+	fi
+	echo "Set mime-type $mime_type on all $extension files..."
+
+	OLD_IFS="$IFS"
+	IFS=$'\n'
+	for file in $( find . -name "*.$extension" ); do
+		if svn info "$file" 1>/dev/null 2>&1; then
+			svn propset svn:mime-type "$mime_type" "$file"
+		fi
+	done
+	IFS="$OLD_IFS"
+done < "$dev_lib_dir/mime-types.csv"
+
 svn_commit_file=/tmp/svn-commit-msg
 git --git-dir $git_root/.git log -1 --format="Update to commit %h from $(git --git-dir $git_root/.git config --get remote.origin.url)" > $svn_commit_file
 
