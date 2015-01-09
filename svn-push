@@ -150,7 +150,7 @@ while read extension mime_type; do
 		fi
 	done
 	IFS="$OLD_IFS"
-done < "mime-types.csv"
+done < "$dev_lib_dir/mime-types.csv"
 
 svn_commit_file=/tmp/svn-commit-msg
 git --git-dir $git_root/.git log -1 --format="Update to commit %h from $(git --git-dir $git_root/.git config --get remote.origin.url)" > $svn_commit_file
