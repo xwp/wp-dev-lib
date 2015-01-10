@@ -91,8 +91,8 @@ class WordPress_Readme_Parser {
 
 		$general_section_formatter = function ( $body ) use ( $params ) {
 			$body = preg_replace(
-				'#\[youtube\s+(?:http://www\.youtube\.com/watch\?v=|http://youtu\.be/)(.+?)\]#',
-				'[![Play video on YouTube](http://i1.ytimg.com/vi/$1/hqdefault.jpg)](http://www.youtube.com/watch?v=$1)',
+				'#\[youtube\s+(?:https?://www\.youtube\.com/watch\?v=|https?://youtu\.be/)(.+?)\]#',
+				'[![Play video on YouTube](https://i1.ytimg.com/vi/$1/hqdefault.jpg)](https://www.youtube.com/watch?v=$1)',
 				$body
 			);
 			// Convert <pre lang="php"> into GitHub-flavored ```php markdown blocks
