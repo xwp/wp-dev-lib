@@ -91,8 +91,8 @@ class WordPress_Readme_Parser {
 
 		$general_section_formatter = function ( $body ) use ( $params ) {
 			$body = preg_replace(
-				'#\[youtube\s+(?:http://www\.youtube\.com/watch\?v=|http://youtu\.be/)(.+?)\]#',
-				'[![Play video on YouTube](http://i1.ytimg.com/vi/$1/hqdefault.jpg)](http://www.youtube.com/watch?v=$1)',
+				'#\[youtube\s+(?:https?://www\.youtube\.com/watch\?v=|https?://youtu\.be/)(.+?)\]#',
+				'[![Play video on YouTube](https://i1.ytimg.com/vi/$1/hqdefault.jpg)](https://www.youtube.com/watch?v=$1)',
 				$body
 			);
 			// Convert <pre lang="php"> into GitHub-flavored ```php markdown blocks
@@ -145,7 +145,7 @@ class WordPress_Readme_Parser {
 				function ( $contributor ) {
 					$contributor = strtolower( $contributor );
 					// @todo Map to GitHub account
-					return sprintf( '[%1$s](http://profiles.wordpress.org/%1$s)', $contributor );
+					return sprintf( '[%1$s](https://profiles.wordpress.org/%1$s)', $contributor );
 				},
 				$this->metadata['Contributors']
 			)
@@ -154,7 +154,7 @@ class WordPress_Readme_Parser {
 			', ',
 			array_map(
 				function ( $tag ) {
-					return sprintf( '[%1$s](http://wordpress.org/plugins/tags/%1$s)', $tag );
+					return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%1$s)', $tag );
 				},
 				$this->metadata['Tags']
 			)
