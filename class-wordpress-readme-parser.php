@@ -145,7 +145,7 @@ class WordPress_Readme_Parser {
 				function ( $contributor ) {
 					$contributor = strtolower( $contributor );
 					// @todo Map to GitHub account
-					return sprintf( '[%1$s](http://profiles.wordpress.org/%1$s)', $contributor );
+					return sprintf( '[%1$s](https://profiles.wordpress.org/%1$s)', $contributor );
 				},
 				$this->metadata['Contributors']
 			)
