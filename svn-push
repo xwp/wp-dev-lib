@@ -133,7 +133,8 @@ mkdir -p tags
 if [ -e tags/$plugin_version ]; then
 	svn rm --force tags/$plugin_version
 fi
-cp -r trunk tags/$plugin_version
+mkdir -p tags/$plugin_version
+rsync -avz trunk/ tags/$plugin_version/
 svn add --force tags/$plugin_version --auto-props --parents --depth infinity -q
 
 # Add mime types
