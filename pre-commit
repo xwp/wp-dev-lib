@@ -97,10 +97,9 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 			if [ ! -z "$VAGRANTFILE" ]; then
 				cd $( dirname "$VAGRANTFILE" )
 				VAGRANT_ROOT=$(pwd)
-
 				if [ -e www/wp-content/themes/vip/plugins/vip-init.php ]; then
 					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
-				elif grep -q vvv "$VAGRANTFILE"; then
+				elif grep -q vvv Vagrantfile; then
 					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
 				fi
 				cd "$SELF_DIR"
