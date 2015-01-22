@@ -39,8 +39,8 @@ try {
 	$readme = new WordPress_Readme_Parser( array( 'path' => $readme_txt_path ) );
 
 	$md_args = array();
-	$github_url = null;
-	$github_url_regex = '#.+github\.com[:/]([^/]+/[^/]+)\.git$#';
+	$github_account_repo = null;
+	$github_url_regex = '#.+github\.com[:/](?P<account_repo>[^/]+/[^/]+?)(?:\.git)?$#';
 	$remote_urls = array();
 	foreach ( explode( "\n", `git remote -v | grep fetch` ) as $remote_line ) {
 		$remote_line = trim( $remote_line );
@@ -49,23 +49,23 @@ try {
 			$remote_urls[ $name ] = $url;
 		}
 	}
-	if ( ! empty( $remote_urls['origin'] ) && preg_match( $github_url_regex, $remote_urls['origin'] ) ) {
-		$github_url = $remote_urls['origin'];
+	if ( ! empty( $remote_urls['origin'] ) && preg_match( $github_url_regex, $remote_urls['origin'], $matches ) ) {
+		$github_account_repo = $matches['account_repo'];
 	} else {
 		foreach ( $remote_urls as $remote_name => $remote_url ) {
-			if ( preg_match( $github_url_regex, $remote_url ) ) {
-				$github_url = $remote_url;
+			if ( preg_match( $github_url_regex, $remote_url, $matches ) ) {
+				$github_account_repo = $matches['account_repo'];
 				break;
 			}
 		}
 	}
-	if ( $github_url ) {
+	if ( $github_account_repo ) {
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-			$md_args['travis_ci_url'] = preg_replace( $github_url_regex, 'https://travis-ci.org/$1', $github_url );
+			$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
-			$md_args['coveralls_badge_src'] = preg_replace( $github_url_regex, 'https://coveralls.io/repos/$1/badge.png', $github_url );
-			$md_args['coveralls_url'] = preg_replace( $github_url_regex, 'https://coveralls.io/r/$1', $github_url );
+			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.png";
+			$md_args['coveralls_url'] = "https://coveralls.io/r/$github_account_repo";
 		}
 	}
 	$markdown = $readme->to_markdown( $md_args );
