@@ -49,8 +49,11 @@ fi
 git pull --ff-only origin master
 git push origin master
 svn_url=$(cat svn-url)
-svn_tmp_repo_dir=/tmp/svn-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
-git_tmp_repo_dir=/tmp/git-$(basename $git_root)-$(md5sum <<< $git_root | cut -c1-32)
+git_root_hash=$(md5sum <<< "$git_root" | cut -c1-32)
+plugin_uniq_slug="$(basename "$git_root")-$git_root_hash"
+lock_file="/tmp/$plugin_uniq_slug.lock"
+svn_tmp_repo_dir="/tmp/svn-$plugin_uniq_slug"
+git_tmp_repo_dir="/tmp/git-$plugin_uniq_slug"
 echo "Temp SVN dir: $svn_tmp_repo_dir"
 echo "Temp Git dir: $git_tmp_repo_dir"
 
@@ -80,12 +83,16 @@ if [ -n "$has_tag" ] && [ -z "$force" ]; then
 fi
 
 # Clean up existing Git and SVN repos
-if [ -e $svn_tmp_repo_dir ] && [ ! -e $svn_tmp_repo_dir/.svn ]; then
-	rm -rf $svn_tmp_repo_dir
+if [ -e "$lock_file" ] || ( [ -e "$svn_tmp_repo_dir" ] && [ ! -e "$svn_tmp_repo_dir/.svn" ] ); then
+	echo "Cleanup $svn_tmp_repo_dir"
+	rm -rf "$svn_tmp_repo_dir"
 fi
-if [ -e $git_tmp_repo_dir ] && [ ! -e $git_tmp_repo_dir/.git ]; then
-	rm -rf $git_tmp_repo_dir
+if [ -e "$lock_file" ] || ( [ -e "$git_tmp_repo_dir" ] && [ ! -e "$git_tmp_repo_dir/.git" ] ); then
+	echo "Cleanup $git_tmp_repo_dir"
+	rm -rf "$git_tmp_repo_dir"
 fi
+
+touch "$lock_file"
 
 # SVN: Checkout or update
 if [ ! -e $svn_tmp_repo_dir ]; then
@@ -177,3 +184,4 @@ else
 fi
 
 svn commit -F $svn_commit_file
+rm "$lock_file"
