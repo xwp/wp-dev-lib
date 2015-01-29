@@ -174,14 +174,14 @@ echo "Hit enter to proceed with SVN commit and Git tag"
 read OK
 
 if [ -z "$has_tag" ]; then
-	cd $git_tmp_repo_dir
+	cd "$git_root"
 	echo "Tagging plugin version $plugin_version"
 	git tag "$plugin_version" master
 	git push origin "$plugin_version"
-	cd $svn_tmp_repo_dir
 else
 	echo "Skipping plugin tag $plugin_version since already exists"
 fi
 
+cd $svn_tmp_repo_dir
 svn commit -F $svn_commit_file
 rm "$lock_file"
