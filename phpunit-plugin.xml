@@ -22,6 +22,7 @@
 			<exclude>
 				<directory suffix=".php">../dev-lib</directory>
 				<directory suffix=".php">../vendor</directory>
+				<directory suffix=".php">../tests</directory>
 			</exclude>
 		</whitelist>
 	</filter>
