@@ -62,9 +62,20 @@ This will greatly speed up the time build time, giving you quicker feedback on y
 Next, after configuring your `.travis.yml`, symlink the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), and (especially optionally) [`phpcs.ruleset.xml`](phpcs.ruleset.xml):
 
 ```bash
+ln -s dev-lib/phpunit-plugin.xml . && git add phpunit.xml.dist # (if working with a plugin)
 ln -s dev-lib/.jshintrc . && git add .jshintrc
 ln -s dev-lib/.jshintignore . && git add .jshintignore
 ```
+
+## PHPUnit Code Coverage
+
+The plugin-tailored [`phpunit.xml`](phpunit-plugin.xml) has `filter`s in place to restrict PHPUnit's code coverage reporting to only look at the plugin's own PHP code, omitting the PHP from WordPress Core and other places that shouldn't be included. To get the code coverage report written out to a `code-coverage-report` directory:
+
+```bash
+phpunit --coverage-html code-coverage-report/
+```
+
+Then you can open up the `index.html` in that directory to learn about your plugin's code coverage.
 
 ## Pre-commit Hook
 
