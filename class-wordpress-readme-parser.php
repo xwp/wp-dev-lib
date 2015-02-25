@@ -44,8 +44,8 @@ class WordPress_Readme_Parser {
 			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
 			$this->metadata[ $name ] = $value;
 		}
-		$this->metadata['Contributors'] = preg_split( '/\s*,\s*/', $this->metadata['Contributors'] );
-		$this->metadata['Tags'] = preg_split( '/\s*,\s*/', $this->metadata['Tags'] );
+		$this->metadata['Contributors'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Contributors'] ) );
+		$this->metadata['Tags'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Tags'] ) );
 
 		$syntax_ok = preg_match_all( '/(?:^|\n)== (.+?) ==\n(.+?)(?=\n== |$)/s', $readme_txt_rest, $section_matches, PREG_SET_ORDER );
 		if ( ! $syntax_ok ) {
@@ -138,7 +138,7 @@ class WordPress_Readme_Parser {
 		);
 
 		// Format metadata
-		$formatted_metadata = $this->metadata;
+		$formatted_metadata = array_filter( $this->metadata );
 		$formatted_metadata['Contributors'] = join(
 			', ',
 			array_map(
@@ -150,15 +150,17 @@ class WordPress_Readme_Parser {
 				$this->metadata['Contributors']
 			)
 		);
-		$formatted_metadata['Tags'] = join(
-			', ',
-			array_map(
-				function ( $tag ) {
-					return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%1$s)', $tag );
-				},
-				$this->metadata['Tags']
-			)
-		);
+		if ( ! empty( $this->metadata['Tags'] ) ) {
+			$formatted_metadata['Tags'] = join(
+				', ',
+				array_map(
+					function ( $tag ) {
+						return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%1$s)', $tag );
+					},
+					$this->metadata['Tags']
+				)
+			);
+		}
 		$formatted_metadata['License'] = sprintf( '[%s](%s)', $formatted_metadata['License'], $formatted_metadata['License URI'] );
 		unset( $formatted_metadata['License URI'] );
 		if ( 'trunk' === $this->metadata['Stable tag'] ) {
