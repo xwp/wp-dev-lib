@@ -77,6 +77,25 @@ phpunit --coverage-html code-coverage-report/
 
 Then you can open up the `index.html` in that directory to learn about your plugin's code coverage.
 
+## Codeception
+
+Bootstrap Codeception by:
+```bash
+wget http://codeception.com/codecept.phar dev-lib/
+php dev-lib/codecept.phar bootstrap
+```
+
+Then update Acceptance tests configuration to reflect your own environment settings:
+```bash
+vim tests/acceptance.suite.yml
+```
+
+You can generate your first test, saved to `tests/acceptance/WelcomeCept.php` by:
+```bash
+php dev-lib/codecept.phar generate:cept acceptance Welcome
+```
+
+
 ## Pre-commit Hook
 
 Symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit`:
