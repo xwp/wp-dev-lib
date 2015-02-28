@@ -135,7 +135,7 @@ fi
 if [ "$CODECEPTION_CHECK" == 1 ]; then
 	if [ -f "$SELF_DIR/codeception.yml" ]; then
 		# Download if it does not exist
-		if [ ! -f "$SELF_DIR/codeception.phar" ];  then
+		if [ ! -f "./dev-lib/codeception.phar" ];  then
 			wget -O "./dev-lib/codecept.phar" http://codeception.com/codecept.phar
 		fi
 		php dev-lib/codecept.phar run
