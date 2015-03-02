@@ -19,6 +19,7 @@ upsearch () {
 WP_TESTS_DIR=/tmp/wordpress-tests/
 
 YUI_COMPRESSOR_CHECK=1
+CODECEPTION_CHECK=1
 DISALLOW_EXECUTE_BIT=0
 PARENT_DIR_SLUG=$(basename $(dirname $(pwd)))
 SELF_DIR=$( pwd )
@@ -127,6 +128,19 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 		phpcs -p -s -v --standard="$WPCS_STANDARD" $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi) "${STAGED_PHP_FILES[@]}"
 	else
 		echo "Skipping phpcs since not installed"
+	fi
+fi
+
+# Run Codeception tests
+if [ "$CODECEPTION_CHECK" == 1 ]; then
+	if [ -f "$SELF_DIR/codeception.yml" ]; then
+		# Download if it does not exist
+		if [ ! -f "/tmp/codeception.phar" ];  then
+			wget -O "/tmp/codecept.phar" http://codeception.com/codecept.phar
+		fi
+		php /tmp/codecept.phar run
+	else
+		echo "Skipping codeception since not configured"
 	fi
 fi
 
