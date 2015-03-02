@@ -135,10 +135,10 @@ fi
 if [ "$CODECEPTION_CHECK" == 1 ]; then
 	if [ -f "$SELF_DIR/codeception.yml" ]; then
 		# Download if it does not exist
-		if [ ! -f "./dev-lib/codeception.phar" ];  then
-			wget -O "./dev-lib/codecept.phar" http://codeception.com/codecept.phar
+		if [ ! -f "/tmp/codeception.phar" ];  then
+			wget -O "/tmp/codecept.phar" http://codeception.com/codecept.phar
 		fi
-		php dev-lib/codecept.phar run
+		php /tmp/codecept.phar run
 	else
 		echo "Skipping codeception since not configured"
 	fi

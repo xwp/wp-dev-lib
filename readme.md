@@ -81,8 +81,8 @@ Then you can open up the `index.html` in that directory to learn about your plug
 
 Bootstrap Codeception by:
 ```bash
-wget http://codeception.com/codecept.phar dev-lib/
-php dev-lib/codecept.phar bootstrap
+wget -O /tmp/codecept.phar http://codeception.com/codecept.phar
+php /tmp/codecept.phar bootstrap
 ```
 
 Then update Acceptance tests configuration to reflect your own environment settings:
@@ -92,7 +92,7 @@ vim tests/acceptance.suite.yml
 
 You can generate your first test, saved to `tests/acceptance/WelcomeCept.php` by:
 ```bash
-php dev-lib/codecept.phar generate:cept acceptance Welcome
+php /tmp/codecept.phar generate:cept acceptance Welcome
 ```
 
 
