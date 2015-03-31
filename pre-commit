@@ -74,6 +74,15 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 		echo "Skipping jshint since not installed"
 	fi
 
+	# jscs
+	echo "## jslint"
+	if command -v jshint >/dev/null 2>&1; then
+		jshintignorepath=$( upsearch .jshintignore )
+		echo jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
+	else
+		echo "Skipping jshint since not installed"
+	fi
+
 fi
 
 # Check for staged PHP files
