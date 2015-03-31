@@ -82,7 +82,7 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 	if [ -n "$JSCS_CONFIG" ]; then
 		echo "## JSCS"
 		if command -v jscs >/dev/null 2>&1; then
-			jscs --config="$JSCS_CONFIG" "${STAGED_JS_FILES[@]}"
+			jscs --verbose --config="$JSCS_CONFIG" "${STAGED_JS_FILES[@]}"
 		else
 			echo "Skipping JSCS since not installed"
 		fi
