@@ -66,10 +66,10 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 	fi
 
 	# JSHint
-	echo "## jslint"
+	echo "## jshint"
 	if command -v jshint >/dev/null 2>&1; then
 		jshintignorepath=$( upsearch .jshintignore )
-		echo jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
+		jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
 	else
 		echo "Skipping jshint since not installed"
 	fi
