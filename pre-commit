@@ -32,6 +32,10 @@ WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
 WPCS_GIT_TREE=master
 PHPCS_FILE=$( upsearch phpcs.ruleset.xml )
 WPCS_STANDARD=$(if [ ! -z "$PHPCS_FILE" ]; then echo "$PHPCS_FILE"; else echo WordPress-Core; fi)
+JSCS_CONFIG="$( upsearch .jscsrc )"
+if [ -z "$JSCS_CONFIG" ]; then
+	JSCS_CONFIG="$( upsearch .jscs.json )"
+fi
 PATH_INCLUDES=./
 ENV_FILE=$( upsearch .ci-env.sh )
 if [ ! -z "$ENV_FILE" ]; then
@@ -66,7 +70,7 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 	fi
 
 	# JSHint
-	echo "## jshint"
+	echo "## JSHint"
 	if command -v jshint >/dev/null 2>&1; then
 		jshintignorepath=$( upsearch .jshintignore )
 		jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
@@ -74,13 +78,14 @@ if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
 		echo "Skipping jshint since not installed"
 	fi
 
-	# jscs
-	echo "## jslint"
-	if command -v jshint >/dev/null 2>&1; then
-		jshintignorepath=$( upsearch .jshintignore )
-		echo jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
-	else
-		echo "Skipping jshint since not installed"
+	# JSCS
+	if [ -n "$JSCS_CONFIG" ]; then
+		echo "## JSCS"
+		if command -v jscs >/dev/null 2>&1; then
+			jscs --config="$JSCS_CONFIG" "${STAGED_JS_FILES[@]}"
+		else
+			echo "Skipping JSCS since not installed"
+		fi
 	fi
 
 fi
