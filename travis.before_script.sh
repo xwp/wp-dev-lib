@@ -18,6 +18,10 @@ export YUI_COMPRESSOR_CHECK=1
 export DISALLOW_EXECUTE_BIT=0
 export PATH_INCLUDES=./
 export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress-Core; fi)
+export JSCS_CONFIG="$( upsearch .jscsrc )"
+if [ -z "$JSCS_CONFIG" ]; then
+	export JSCS_CONFIG="$( upsearch .jscs.json )"
+fi
 
 # Load a .ci-env.sh to override the above environment variables
 if [ -e .ci-env.sh ]; then
@@ -49,6 +53,11 @@ $PHPCS_DIR/scripts/phpcs --config-set installed_paths $WPCS_DIR
 # Install JSHint
 if ! command -v jshint >/dev/null 2>&1; then
 	npm install -g jshint
+fi
+
+# Install jscs
+if ! command -v jscs >/dev/null 2>&1; then
+	npm install -g jscs
 fi
 
 # Install Composer
