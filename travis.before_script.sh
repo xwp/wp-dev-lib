@@ -18,9 +18,10 @@ export YUI_COMPRESSOR_CHECK=1
 export DISALLOW_EXECUTE_BIT=0
 export PATH_INCLUDES=./
 export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress-Core; fi)
-export JSCS_CONFIG="$( upsearch .jscsrc )"
-if [ -z "$JSCS_CONFIG" ]; then
-	export JSCS_CONFIG="$( upsearch .jscs.json )"
+if [ -e .jscsrc ]; then
+	export JSCS_CONFIG=.jscsrc
+elif [ -e .jscs.json ]; then
+	export JSCS_CONFIG=.jscs.json
 fi
 
 # Load a .ci-env.sh to override the above environment variables
