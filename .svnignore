@@ -5,3 +5,10 @@ readme.md
 .gitmodules
 .travis.yml
 .git
+assets/*.ai
+assets/*.bmp
+assets/*.eps
+assets/*.gif
+assets/*.psd
+assets/*.tif
+assets/*.tiff
