@@ -4,4 +4,6 @@ readme.md
 .ci-env.sh
 .gitmodules
 .travis.yml
+.coveralls.yml
+.gitter
 .git

@@ -67,6 +67,9 @@ try {
 			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.png";
 			$md_args['coveralls_url'] = "https://coveralls.io/r/$github_account_repo";
 		}
+		if ( file_exists( $readme_root . '/.gitter' ) ) {
+			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
+		}
 	}
 	$markdown = $readme->to_markdown( $md_args );
 
