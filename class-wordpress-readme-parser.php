@@ -23,7 +23,9 @@ class WordPress_Readme_Parser {
 			$this->$key = $value;
 		}
 
+		// @codingStandardsIgnoreStart
 		$this->source = file_get_contents( $this->path );
+		// @codingStandardsIgnoreEnd
 		if ( ! $this->source ) {
 			throw new Exception( 'readme.txt was empty or unreadable' );
 		}
