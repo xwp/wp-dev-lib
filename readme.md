@@ -96,6 +96,11 @@ You can generate your first test, saved to `tests/acceptance/WelcomeCept.php` by
 php /tmp/codecept.phar generate:cept acceptance Welcome
 ```
 
+## Gitter
+
+Create an empty `.gitter` file in the root of your repo and a [Gitter](https://gitter.im) chat badge will be added to your project's README.
+
+[![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](#)
 
 ## Pre-commit Hook
 

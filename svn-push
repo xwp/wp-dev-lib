@@ -120,6 +120,8 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/.jshint*' \
 	--exclude '/svn-url' \
 	--exclude '/.travis.yml' \
+	--exclude '/.coveralls.yml' \
+	--exclude '/.gitter' \
 	--exclude 'phpunit.xml*' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/
 if [ -e $git_tmp_repo_dir/assets/ ]; then
