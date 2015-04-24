@@ -117,6 +117,8 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/assets' \
 	--exclude '/.git*' \
 	--exclude '/dev-lib' \
+	--exclude '/.ci-env.sh' \
+	--exclude '/.jscsrc' \
 	--exclude '/.jshint*' \
 	--exclude '/svn-url' \
 	--exclude '/.travis.yml' \
