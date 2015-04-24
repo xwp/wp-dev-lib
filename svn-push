@@ -114,14 +114,15 @@ fi
 
 # rsync all committed files from the Git repo to SVN
 rsync -avz --delete --delete-excluded \
-	--exclude '/assets' \
-	--exclude '/.git*' \
-	--exclude '/dev-lib' \
-	--exclude '/.jshint*' \
-	--exclude '/svn-url' \
-	--exclude '/.travis.yml' \
+	--exclude '/.ci-env.sh' \
 	--exclude '/.coveralls.yml' \
-	--exclude '/.gitter' \
+	--exclude '/.git*' \
+	--exclude '/.jscsrc' \
+	--exclude '/.jshint*' \
+	--exclude '/.travis.yml' \
+	--exclude '/assets' \
+	--exclude '/dev-lib' \
+	--exclude '/svn-url' \
 	--exclude 'phpunit.xml*' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/
 if [ -e $git_tmp_repo_dir/assets/ ]; then
