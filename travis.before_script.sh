@@ -31,7 +31,7 @@ fi
 
 # Install the WordPress Unit Tests
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
-	wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/master/templates/install-wp-tests.sh
+	wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/v0.18.0/templates/install-wp-tests.sh
 	bash /tmp/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 	cd /tmp/wordpress/wp-content/plugins
 	mv $PLUGIN_DIR $PLUGIN_SLUG
