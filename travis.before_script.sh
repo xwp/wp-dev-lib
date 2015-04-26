@@ -57,7 +57,7 @@ if ! command -v jshint >/dev/null 2>&1; then
 fi
 
 # Install jscs
-if ! command -v jscs >/dev/null 2>&1; then
+if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && ! command -v jscs >/dev/null 2>&1; then
 	npm install -g jscs
 fi
 
