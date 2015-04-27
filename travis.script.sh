@@ -9,7 +9,9 @@ find $PATH_INCLUDES -path ./bin -prune -o \( -name '*.php' \) -exec php -lf {} \
 jshint $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) $(find $PATH_INCLUDES -name '*.js')
 
 # Run JSCS
-jscs --verbose --config="$JSCS_CONFIG"  $(find $PATH_INCLUDES -name '*.js')
+if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
+	jscs --verbose --config="$JSCS_CONFIG"  $(find $PATH_INCLUDES -name '*.js')
+fi
 
 # Run PHP_CodeSniffer
 $PHPCS_DIR/scripts/phpcs --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi) $(find $PATH_INCLUDES -name '*.php')
