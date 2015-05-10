@@ -8,6 +8,7 @@
 	>
 	<php>
 		<const name="WP_TEST_VIP_QUICKSTART_ACTIVATED_PLUGINS" value="jetpack/jetpack.php,media-explorer/media-explorer.php,writing-helper/writing-helper.php,mrss/mrss.php,wordpress-importer/wordpress-importer.php,keyring/keyring.php,polldaddy/polldaddy.php" />
+		<const name="WPCOM_VIP_DISABLE_REMOTE_REQUEST_ERROR_REPORTING" value="1" />
 		<const name="WP_TEST_ACTIVATED_PLUGINS" value="" /> <!-- this list is used if not on VIP Quickstart -->
 	</php>
 	<testsuites>
