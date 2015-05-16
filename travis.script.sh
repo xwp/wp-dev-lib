@@ -40,7 +40,7 @@ if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
 fi
 
 # Run PHP_CodeSniffer
-cat /tmp/checked-php-files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi)
+cat /tmp/checked-php-files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi)
 
 # Run PHPUnit tests
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
