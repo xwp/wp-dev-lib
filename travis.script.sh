@@ -9,9 +9,6 @@ if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 
 	git diff --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.php$' | cat - | sort > /tmp/changed-php-files
 	git diff --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.js$' | cat - | sort > /tmp/changed-js-files
 
-	echo 'comm -12 /tmp/included-php-files /tmp/changed-php-files'
-	comm -12 /tmp/included-php-files /tmp/changed-php-files
-
 	comm -12 /tmp/included-php-files /tmp/changed-php-files > /tmp/checked-php-files
 	comm -12 /tmp/included-js-files /tmp/changed-js-files > /tmp/checked-js-files
 else
