@@ -5,9 +5,9 @@ set -e
 find $PATH_INCLUDES -name '*.js'  | sed 's:^\.//*::' | sort > /tmp/included-js-files
 find $PATH_INCLUDES -name '*.php' | sed 's:^\.//*::' | sort > /tmp/included-php-files
 
-if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == '1' ]; then
-	git diff --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.php$' | cat - | sort > /tmp/changed-php-files
-	git diff --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.js$' | cat - | sort > /tmp/changed-js-files
+if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" != '0' ]; then
+	git diff --diff-filter=AM --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.php$' | cat - | sort > /tmp/changed-php-files
+	git diff --diff-filter=AM --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | grep -E '\.js$' | cat - | sort > /tmp/changed-js-files
 
 	comm -12 /tmp/included-php-files /tmp/changed-php-files > /tmp/checked-php-files
 	comm -12 /tmp/included-js-files /tmp/changed-js-files > /tmp/checked-js-files
