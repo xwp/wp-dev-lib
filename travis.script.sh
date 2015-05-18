@@ -21,18 +21,23 @@ echo
 cat /tmp/checked-files | grep '.php' | xargs --no-run-if-empty php -lf
 
 # Run JSHint
-# TODO: Restrict to lines changed
-cat /tmp/checked-files | grep '.js' | xargs --no-run-if-empty jshint $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi )
+if ! cat /tmp/checked-files | grep '.js' xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
+	echo "Here are the problematic JSHINT files:"
+	cat /tmp/jshint-report
+fi
 
 # Run JSCS
 if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
-	# TODO: Restrict to lines changed
+	# TODO: Restrict to lines changed (need an emacs/unix reporter)
 	cat /tmp/checked-files | grep '.js' | xargs --no-run-if-empty jscs --verbose --config="$JSCS_CONFIG"
 fi
 
 # Run PHP_CodeSniffer
 # TODO: Restrict to lines changed
-cat /tmp/checked-files | grep '.php' | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi)
+if ! cat /tmp/checked-files | grep '.php' | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --report-full --report-emacs=/tmp/phpcs-report --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi); then
+	echo "Here are the problematic PHPCS files:"
+	cat /tmp/phpcs-report
+fi
 
 # Run PHPUnit tests
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
