@@ -16,6 +16,7 @@ export WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
 export WPCS_GIT_TREE=master
 export YUI_COMPRESSOR_CHECK=1
 export DISALLOW_EXECUTE_BIT=0
+export LIMIT_TRAVIS_PR_CHECK_SCOPE=files # when set to 'patches', limits reports to only lines changed; TRAVIS_PULL_REQUEST must not be 'false'
 export PATH_INCLUDES=./
 export WPCS_STANDARD=$(if [ -e phpcs.ruleset.xml ]; then echo phpcs.ruleset.xml; else echo WordPress-Core; fi)
 if [ -e .jscsrc ]; then
