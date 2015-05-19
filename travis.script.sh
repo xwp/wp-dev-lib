@@ -21,7 +21,7 @@ echo
 cat /tmp/checked-files | grep '.php' | xargs --no-run-if-empty php -lf
 
 # Run JSHint
-if ! cat /tmp/checked-files | grep '.js' xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
+if ! cat /tmp/checked-files | grep '.js' | xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
 	echo "Here are the problematic JSHINT files:"
 	cat /tmp/jshint-report
 fi
