@@ -44,7 +44,7 @@ if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
 fi
 
 # Run PHP_CodeSniffer
-if ! cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --report-full --report-emacs=/tmp/phpcs-report --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi); then
+if ! cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --report-emacs=/tmp/phpcs-report --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi); then
 	echo "Here are the problematic PHPCS files:"
 	if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
 	# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
