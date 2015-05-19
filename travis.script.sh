@@ -2,7 +2,7 @@
 
 set -e
 
-if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" != '0' ]; then
+if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && ( [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'files' ] || [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ] ); then
 	git diff --diff-filter=AM --no-prefix --unified=0 $TRAVIS_BRANCH...$TRAVIS_COMMIT -- $PATH_INCLUDES | php $DEV_LIB_PATH/parse-diff-ranges.php  > /tmp/checked-files
 else
 	find $PATH_INCLUDES -type f | sed 's:^\.//*::' > /tmp/checked-files
@@ -29,9 +29,10 @@ cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-i
 
 # Run JSHint
 if ! cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
+	echo "## JSHint"
 	if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
 		# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
-		echo "(Issues from patch subsets)"
+		echo "Filtering issues to patch subsets..."
 		cat /tmp/jshint-report | php $DEV_LIB_PATH/filter-report-for-patch-ranges.php /tmp/checked-files
 	else
 		cat /tmp/jshint-report
@@ -41,15 +42,17 @@ fi
 
 # Run JSCS
 if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
+	echo "## JSCS"
 	# TODO: Restrict to lines changed (need an emacs/unix reporter)
 	cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jscs --verbose --config="$JSCS_CONFIG"
 fi
 
 # Run PHP_CodeSniffer
+echo "## PHP_CodeSniffer"
 if ! cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --report-emacs=/tmp/phpcs-report --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi); then
 	if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
 		# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
-		echo "(Issues from patch subsets)"
+		echo "Filtering issues to patch subsets..."
 		cat /tmp/phpcs-report | php $DEV_LIB_PATH/filter-report-for-patch-ranges.php /tmp/checked-files
 	else
 		cat /tmp/phpcs-report
