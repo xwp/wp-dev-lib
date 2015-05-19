@@ -28,8 +28,13 @@ cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-i
 
 # Run JSHint
 if ! cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
-	echo "Here are the problematic JSHINT files:"
-	cat /tmp/jshint-report
+	if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
+		# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
+		cat /tmp/jshint-report | php $DEV_LIB_PATH/filter-report-for-patch-ranges.php /tmp/checked-files
+	else
+		cat /tmp/jshint-report
+		exit 1
+	fi
 fi
 
 # Run JSCS
@@ -39,10 +44,15 @@ if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
 fi
 
 # Run PHP_CodeSniffer
-# TODO: Restrict to lines changed
 if ! cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-if-empty $PHPCS_DIR/scripts/phpcs -s --report-full --report-emacs=/tmp/phpcs-report --standard=$WPCS_STANDARD $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore=$PHPCS_IGNORE; fi); then
 	echo "Here are the problematic PHPCS files:"
-	cat /tmp/phpcs-report
+	if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
+	# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
+		cat /tmp/phpcs-report | php $DEV_LIB_PATH/filter-report-for-patch-ranges.php /tmp/checked-files
+	else
+		cat /tmp/phpcs-report
+		exit 1
+	fi
 fi
 
 # Run PHPUnit tests
