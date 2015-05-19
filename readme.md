@@ -57,6 +57,16 @@ env:
 
 This will greatly speed up the time build time, giving you quicker feedback on your Pull Request status, and prevent your Travis build queue from getting too backlogged.
 
+### Limiting scope of Travis CI checks
+
+A barrier of entry for adding Travis CI to an existing project is that may complaing—a lot—about issues in your codebase. To get passing builds you then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
+
+To get around this the barrier of entry for Travis CI, there is now an environment variable defined in [`travis.before_script.sh`](travis.before_script.sh): `LIMIT_TRAVIS_PR_CHECK_SCOPE`. By default its value is `files` which means that when a pull request is opened and Travis runs its checks on the PR, it will limit the checks only to the files that have been touched in the pull request. Additionally, you can override this in the `.ci-env.sh` to be `LIMIT_TRAVIS_PR_CHECK_SCOPE=patches` so that Travis will restrict its scope even more and _only fail a build if any issues are reported on the changed lines (patches) in a PR_ (only PHP_CodeSniffer and JSHint currently are supported for this).
+
+With `LIMIT_TRAVIS_PR_CHECK_SCOPE=files` and `LIMIT_TRAVIS_PR_CHECK_SCOPE=patches` available, it is much easier to integrate Travis CI checks on existing projects that may have a lot of unconforming legacy code. You can fix up a codebase incrementally file-by-file or line-by-line in the normal course of fixing bugs and adding new features.
+
+If you want to disable Travis from limiting its scope, you can just add `LIMIT_TRAVIS_PR_CHECK_SCOPE=off`.
+
 ## Symlinks
 
 Next, after configuring your `.travis.yml`, symlink the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), and (especially optionally) [`phpcs.ruleset.xml`](phpcs.ruleset.xml):
@@ -124,6 +134,7 @@ export WPCS_STANDARD=WordPress-Extra
 export DISALLOW_EXECUTE_BIT=1
 export YUI_COMPRESSOR_CHECK=1
 export PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-*"
+export LIMIT_TRAVIS_PR_CHECK_SCOPE=patches
 ```
 
 The last one here `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore`, though it would be better to have a `PATH_EXCLUDES` as well.
