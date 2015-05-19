@@ -2,14 +2,10 @@
 
 set -e
 
-find $PATH_INCLUDES -type f | sed 's:^\.//*::' | sort > /tmp/included-files
-
 if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" != '0' ]; then
-	git diff --diff-filter=AM --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT | cat - | sort > /tmp/changed-files
-
-	comm -12 /tmp/included-files /tmp/changed-files > /tmp/checked-files
+	git diff --diff-filter=AM --name-only $TRAVIS_BRANCH...$TRAVIS_COMMIT -- $PATH_INCLUDES | cat - | sort > /tmp/checked-files
 else
-	cp /tmp/included-files /tmp/checked-files
+	find $PATH_INCLUDES -type f | sed 's:^\.//*::' | sort > /tmp/checked-files
 fi
 
 echo "TRAVIS_BRANCH: $TRAVIS_BRANCH"
