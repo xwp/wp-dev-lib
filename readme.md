@@ -59,7 +59,7 @@ This will greatly speed up the time build time, giving you quicker feedback on y
 
 ### Limiting scope of Travis CI checks
 
-A barrier of entry for adding Travis CI to an existing project is that may complaing—a lot—about issues in your codebase. To get passing builds you then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
+A barrier of entry for adding Travis CI to an existing project is that may complaining—a lot—about issues in your codebase. To get passing builds you then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
 
 To get around this the barrier of entry for Travis CI, there is now an environment variable defined in [`travis.before_script.sh`](travis.before_script.sh): `LIMIT_TRAVIS_PR_CHECK_SCOPE`. By default its value is `files` which means that when a pull request is opened and Travis runs its checks on the PR, it will limit the checks only to the files that have been touched in the pull request. Additionally, you can override this in the `.ci-env.sh` to be `LIMIT_TRAVIS_PR_CHECK_SCOPE=patches` so that Travis will restrict its scope even more and _only fail a build if any issues are reported on the changed lines (patches) in a PR_ (only PHP_CodeSniffer and JSHint currently are supported for this).
 
