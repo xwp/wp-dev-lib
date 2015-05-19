@@ -33,7 +33,6 @@ foreach ( explode( "\n", trim( file_get_contents( $argv[1] ) ) ) as $line ) {
 		);
 	}
 }
-print_r( $parsed_diff_ranges );
 
 while ( $line = fgets( STDIN ) ) {
 	if ( ! preg_match( '#^(?P<file_path>.+):(?P<line_number>\d+):\d+:.+$$#', $line, $matches ) ) {
