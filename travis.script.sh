@@ -18,10 +18,10 @@ function remove_diff_range {
 	sed 's/:[0-9][0-9]*-[0-9][0-9]*$//' | sort | uniq
 }
 function filter_php_files {
-	 grep '.php'
+	 grep -E '\.php(:$)'
 }
 function filter_js_files {
-	grep '.js'
+	grep -E '\.js(:|$)'
 }
 
 # Run PHP syntax check
