@@ -5,7 +5,7 @@ set -e
 if [ "$TRAVIS_PULL_REQUEST" != 'false' ] && ( [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'files' ] || [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ] ); then
 	git diff --diff-filter=AM --no-prefix --unified=0 $TRAVIS_BRANCH...$TRAVIS_COMMIT -- $PATH_INCLUDES | php $DEV_LIB_PATH/parse-diff-ranges.php  > /tmp/checked-files
 else
-	find $PATH_INCLUDES -type f | sed 's:^\.//*::' > /tmp/checked-files
+	find $PATH_INCLUDES -type f | grep -v -E "^./(dev-lib|\.git)/" | sed 's:^\.//*::' > /tmp/checked-files
 fi
 
 echo "LIMIT_TRAVIS_PR_CHECK_SCOPE: $LIMIT_TRAVIS_PR_CHECK_SCOPE"
