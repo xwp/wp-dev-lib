@@ -4,7 +4,8 @@ set -e
 shopt -s expand_aliases
 
 # TODO: These should not override any existing environment variables
-export WP_TESTS_DIR=/tmp/wordpress-tests/
+export WP_CORE_DIR=/tmp/wordpress/
+export WP_TESTS_DIR=${WP_CORE_DIR}tests/phpunit/
 export PLUGIN_DIR=$(pwd)
 export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
 export PHPCS_DIR=/tmp/phpcs
