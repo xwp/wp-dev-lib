@@ -30,8 +30,6 @@ install_wp() {
 		return;
 	fi
 
-	mkdir -p $WP_CORE_DIR
-
 	if [ $WP_VERSION == 'latest' ]; then
 		local TAG=$( svn ls https://develop.svn.wordpress.org/tags | tail -n 1 | sed 's:/$::' )
 		local SVN_URL=https://develop.svn.wordpress.org/tags/$TAG/
