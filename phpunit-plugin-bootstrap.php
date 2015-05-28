@@ -2,7 +2,7 @@
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 if ( empty( $_tests_dir ) ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
+	$_tests_dir = '/tmp/wordpress-tests';
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
