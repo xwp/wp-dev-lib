@@ -5,8 +5,9 @@ shopt -s expand_aliases
 
 # TODO: These should not override any existing environment variables
 export WP_TESTS_DIR=/tmp/wordpress-tests/
-export PLUGIN_DIR=$(pwd)
-export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
+export BUILD_TYPE=plugins
+export BUILD_DIR=$(pwd)
+export BUILD_SLUG=$(basename $(pwd) | sed 's/^wp-//')
 export PHPCS_DIR=/tmp/phpcs
 export PHPCS_GITHUB_SRC=squizlabs/PHP_CodeSniffer
 export PHPCS_GIT_TREE=master
@@ -34,11 +35,11 @@ fi
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
 	wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/v0.18.0/templates/install-wp-tests.sh
 	bash /tmp/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-	cd /tmp/wordpress/wp-content/plugins
-	mv $PLUGIN_DIR $PLUGIN_SLUG
-	cd $PLUGIN_SLUG
-	ln -s $(pwd) $PLUGIN_DIR
-	echo "Plugin location: $(pwd)"
+	cd /tmp/wordpress/wp-content/$BUILD_TYPE
+	mv $BUILD_DIR $BUILD_SLUG
+	cd $BUILD_SLUG
+	ln -s $(pwd) $BUILD_DIR
+	echo "Location: $(pwd)"
 
 	if ! command -v phpunit >/dev/null 2>&1; then
 		wget -O /tmp/phpunit.phar https://phar.phpunit.de/phpunit.phar
