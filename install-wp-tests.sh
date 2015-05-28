@@ -39,7 +39,7 @@ install_wp() {
 		local SVN_URL=https://develop.svn.wordpress.org/tags/$WP_VERSION/
 	fi
 
-	svn export $SVN_URL $WP_CORE_DIR
+	svn export -q $SVN_URL $WP_CORE_DIR
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/src/wp-content/db.php
 }
