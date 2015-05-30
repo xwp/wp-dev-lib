@@ -66,7 +66,7 @@ fi
 # Install Composer
 if [ -e composer.json ]; then
 	curl -s http://getcomposer.org/installer | php
-	php -d extension=phar.so composer.phar [install --dev --no-interaction]
+	php composer.phar install --dev --no-interaction
 fi
 
 set +e
