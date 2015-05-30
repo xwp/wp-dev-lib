@@ -65,8 +65,7 @@ fi
 
 # Install Composer
 if [ -e composer.json ]; then
-	curl -s http://getcomposer.org/installer | php
-	php composer.phar install --dev --no-interaction
+	curl -s http://getcomposer.org/installer | php && php composer.phar install --dev --no-interaction
 fi
 
 set +e
