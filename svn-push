@@ -121,7 +121,7 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/.jshint*' \
 	--exclude '/.travis.yml' \
 	--exclude '/assets' \
-	--exclude '/dev-lib' \
+	--exclude '/$dev_lib_dir' \
 	--exclude '/svn-url' \
 	--exclude 'phpunit.xml*' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/

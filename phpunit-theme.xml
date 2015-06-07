@@ -1,0 +1,28 @@
+<phpunit
+	bootstrap="phpunit-theme-bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<php>
+		<const name="WP_TEST_ACTIVATED_THEME" value="" /> <!-- this is the theme slug -->
+	</php>
+	<testsuites>
+		<testsuite>
+			<directory prefix="test-" suffix=".php">../tests/</directory>
+		</testsuite>
+	</testsuites>
+
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="false">
+			<directory suffix=".php">../</directory>
+			<exclude>
+				<directory suffix=".php">../dev-lib</directory>
+				<directory suffix=".php">../vendor</directory>
+				<directory suffix=".php">../tests</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+</phpunit>
