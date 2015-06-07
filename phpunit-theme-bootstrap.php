@@ -10,9 +10,11 @@ if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
 }
 require_once $_tests_dir . '/includes/functions.php';
 
-$GLOBALS['wp_tests_options'] = array(
-	'stylesheet' => 'yourthemeslug',
-	'template' => 'yourthemeslug'
-);
+if ( defined( 'WP_TEST_ACTIVATED_THEME' ) ) {
+	$GLOBALS['wp_tests_options'] = array(
+		'stylesheet' => WP_TEST_ACTIVATED_THEME,
+		'template' => WP_TEST_ACTIVATED_THEME
+	);
+}
 
 require $_tests_dir . '/includes/bootstrap.php';
