@@ -4,7 +4,8 @@ set -e
 shopt -s expand_aliases
 
 # TODO: These should not override any existing environment variables
-export WP_TESTS_DIR=/tmp/wordpress-tests/
+export WP_CORE_DIR=/tmp/wordpress
+export WP_TESTS_DIR=${WP_CORE_DIR}/tests/phpunit
 export PLUGIN_DIR=$(pwd)
 export PLUGIN_SLUG=$(basename $(pwd) | sed 's/^wp-//')
 export PHPCS_DIR=/tmp/phpcs
@@ -32,9 +33,8 @@ fi
 
 # Install the WordPress Unit Tests
 if [ -e phpunit.xml ] || [ -e phpunit.xml.dist ]; then
-	wget -O /tmp/install-wp-tests.sh https://raw.githubusercontent.com/wp-cli/wp-cli/v0.18.0/templates/install-wp-tests.sh
-	bash /tmp/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-	cd /tmp/wordpress/wp-content/plugins
+	bash $DEV_LIB_PATH/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+	cd ${WP_CORE_DIR}/src/wp-content/plugins
 	mv $PLUGIN_DIR $PLUGIN_SLUG
 	cd $PLUGIN_SLUG
 	ln -s $(pwd) $PLUGIN_DIR
