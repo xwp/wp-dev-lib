@@ -98,6 +98,14 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 		php -lf "$PHP_FILE"
 	done
 
+	# PHP_CodeSniffer WordPress Coding Standards
+	echo "## phpcs"
+	if command -v phpcs >/dev/null 2>&1; then
+		phpcs -p -s -v --standard="$WPCS_STANDARD" $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi) "${STAGED_PHP_FILES[@]}"
+	else
+		echo "Skipping phpcs since not installed"
+	fi
+
 	# PHPUnit
 	PHPUNIT_XML_FILE=$( upsearch phpunit.xml )
 	if [ -z "$PHPUNIT_XML_FILE" ]; then
@@ -134,14 +142,6 @@ if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
 		else
 			phpunit -c "$PHPUNIT_XML_FILE"
 		fi
-	fi
-
-	# PHP_CodeSniffer WordPress Coding Standards
-	echo "## phpcs"
-	if command -v phpcs >/dev/null 2>&1; then
-		phpcs -p -s -v --standard="$WPCS_STANDARD" $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi) "${STAGED_PHP_FILES[@]}"
-	else
-		echo "Skipping phpcs since not installed"
 	fi
 fi
 
