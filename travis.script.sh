@@ -43,8 +43,16 @@ fi
 # Run JSCS
 if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ]; then
 	echo "## JSCS"
-	# TODO: Restrict to lines changed (need an emacs/unix reporter)
-	cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jscs --verbose --config="$JSCS_CONFIG"
+	if ! cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jscs --reporter=inlinesingle --verbose --config="$JSCS_CONFIG" > /tmp/jscs-report; then
+		if [ "$LIMIT_TRAVIS_PR_CHECK_SCOPE" == 'patches' ]; then
+			# Note that filter-report-for-patch-ranges will exit 1 if any files and lines in the report match any files of /tmp/checked-files
+			echo "Filtering issues to patch subsets..."
+			cat /tmp/jscs-report | php $DEV_LIB_PATH/filter-report-for-patch-ranges.php /tmp/checked-files
+		else
+			cat /tmp/jscs-report
+			exit 1
+		fi
+	fi
 fi
 
 # Run PHP_CodeSniffer

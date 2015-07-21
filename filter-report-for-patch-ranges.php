@@ -35,7 +35,12 @@ foreach ( explode( "\n", trim( file_get_contents( $argv[1] ) ) ) as $line ) {
 }
 
 while ( $line = fgets( STDIN ) ) {
-	if ( ! preg_match( '#^(?P<file_path>.+):(?P<line_number>\d+):\d+:.+$$#', $line, $matches ) ) {
+	$matched = (
+		preg_match( '#^(?P<file_path>.+):(?P<line_number>\d+):\d+:.+$$#', $line, $matches )
+		||
+		preg_match( '/^(?P<file_path>.+): line (?P<line_number>\d+),/', $line, $matches )
+	);
+	if ( ! $matched ) {
 		continue;
 	}
 	$file_path = realpath( $matches['file_path'] );
