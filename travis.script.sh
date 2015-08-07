@@ -25,7 +25,9 @@ function filter_js_files {
 }
 
 # Run PHP syntax check
-cat /tmp/checked-files | remove_diff_range | filter_php_files | xargs --no-run-if-empty php -lf
+for php_file in $( cat /tmp/checked-files | remove_diff_range | filter_php_files ); do
+	php -lf "$php_file"
+done
 
 # Run JSHint
 if ! cat /tmp/checked-files | remove_diff_range | filter_js_files | xargs --no-run-if-empty jshint --reporter=unix $( if [ -e .jshintignore ]; then echo "--exclude-path .jshintignore"; fi ) > /tmp/jshint-report; then
