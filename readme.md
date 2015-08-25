@@ -35,14 +35,14 @@ Edit the `.travis.yml` to change the target PHP version(s) and WordPress version
 
 ```yml
 php:
-    - 5.4
+    - 5.3
     - 5.5
 
 env:
     - WP_VERSION=latest WP_MULTISITE=0
     - WP_VERSION=latest WP_MULTISITE=1
-    - WP_VERSION=4.0 WP_MULTISITE=0
-    - WP_VERSION=4.0 WP_MULTISITE=1
+    - WP_VERSION=trunk WP_MULTISITE=0
+    - WP_VERSION=trunk WP_MULTISITE=1
 ```
 
 Having more variations here is good for open source plugins, which are free for Travis. However, if you are using Travis CI with a private repo you probably want to limit the jobs necessary to complete a build. So if your production environment is running PHP 5.5, is on the latest stable version of WordPress, and is not multisite, then your `.travis.yml` could just be:
