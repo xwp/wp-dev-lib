@@ -124,6 +124,7 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/dev-lib' \
 	--exclude '/svn-url' \
 	--exclude 'phpunit.xml*' \
+	--exclude 'phpcs.ruleset.xml' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/
 if [ -e $git_tmp_repo_dir/assets/ ]; then
 	mkdir -p $svn_tmp_repo_dir/assets/
