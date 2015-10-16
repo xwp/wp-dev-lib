@@ -187,7 +187,7 @@ class WordPress_Readme_Parser {
 		if ( isset( $params['travis_ci_url'] ) || isset( $params['coveralls_url'] ) ) {
 			$markdown .= "\n";
 			if ( isset( $params['travis_ci_url'] ) ) {
-				$markdown .= sprintf( '[![Build Status](%1$s.png?branch=master)](%1$s) ', $params['travis_ci_url'] );
+				$markdown .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $params['travis_ci_url'] );
 			}
 			if ( isset( $params['coveralls_url'] ) ) {
 				$markdown .= sprintf( '[![Build Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $params['coveralls_url'] );
