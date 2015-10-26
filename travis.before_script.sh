@@ -64,7 +64,7 @@ fi
 
 # Install Composer
 if [ -e composer.json ]; then
-	wget http://getcomposer.org/composer.phar && php composer.phar install --dev
+	curl -s http://getcomposer.org/installer | php && php composer.phar install
 fi
 
 set +e
