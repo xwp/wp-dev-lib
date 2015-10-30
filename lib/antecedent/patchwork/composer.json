@@ -1,0 +1,17 @@
+{
+    "name": "antecedent/patchwork",
+    "description": "A pure PHP library that lets you redefine user-defined functions at runtime.",
+    "keywords": ["testing", "redefinition", "runkit", "monkeypatching", "interception", "aop", "aspect"],
+    "homepage": "http://antecedent.github.io/patchwork/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ignas Rudaitis",
+            "email": "ignas.rudaitis@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}

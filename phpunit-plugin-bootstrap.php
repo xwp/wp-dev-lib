@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/lib/antecedent/patchwork/Patchwork.php' );
+
 global $_plugin_file;
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
