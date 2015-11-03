@@ -1,7 +1,4 @@
 <?php
-if ( file_exists( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' ) ) {
-    require_once( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' );
-}
 
 global $_plugin_file;
 
