@@ -64,8 +64,8 @@ try {
 			$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
-			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.png";
-			$md_args['coveralls_url'] = "https://coveralls.io/r/$github_account_repo";
+			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg";
+			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
 		}
 		if ( file_exists( $readme_root . '/.gitter' ) ) {
 			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
