@@ -70,6 +70,12 @@ try {
 		if ( file_exists( $readme_root . '/.gitter' ) ) {
 			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
 		}
+		if ( file_exists( $readme_root . '/.david' ) ) {
+			$md_args['david_url'] = "https://david-dm.org/$github_account_repo";
+		}
+		if ( file_exists( $readme_root . '/.david-dev' ) ) {
+			$md_args['david_dev_url'] = "https://david-dm.org/$github_account_repo";
+		}
 	}
 	$markdown = $readme->to_markdown( $md_args );
 
