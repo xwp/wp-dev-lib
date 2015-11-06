@@ -195,6 +195,12 @@ class WordPress_Readme_Parser {
 			if ( isset( $params['gitter_url'] ) ) {
 				$markdown .= sprintf( '[![Join the chat at %1$s](https://badges.gitter.im/Join%20Chat.svg)](%1$s) ', $params['gitter_url'] );
 			}
+			if ( isset( $params['david_url'] ) ) {
+				$markdown .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $params['david_url'] );
+			}
+			if ( isset( $params['david_dev_url'] ) ) {
+				$markdown .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $params['david_dev_url'] );
+			}
 			$markdown .= "\n";
 		}
 		$markdown .= "\n";
