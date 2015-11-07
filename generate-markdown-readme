@@ -61,20 +61,46 @@ try {
 	}
 	if ( $github_account_repo ) {
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-			$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+			if ( file_exists( $readme_root . '/.travis-pro' ) ) {
+				$token = file_get_contents( $readme_root . '/.travis-pro' );
+				if ( false != $token ) { 
+					$md_args['travis_ci_pro_url'] = "https://magnum.travis-ci.com/$github_account_repo";
+					$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$token&branch=master";
+				}
+			}
+			if ( ! isset( $md_args['travis_ci_pro_url'] ) ) {
+				$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+			}
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
-			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg";
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
+			$md_args['coveralls_badge_src'] = $md_args['coveralls_url'] . "/badge.svg";
 		}
-		if ( file_exists( $readme_root . '/.gitter' ) ) {
-			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
+		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
+			$md_args['grunt_url'] = "gruntjs.com";
 		}
 		if ( file_exists( $readme_root . '/.david' ) ) {
 			$md_args['david_url'] = "https://david-dm.org/$github_account_repo";
 		}
 		if ( file_exists( $readme_root . '/.david-dev' ) ) {
 			$md_args['david_dev_url'] = "https://david-dm.org/$github_account_repo";
+		}
+		if ( file_exists( $readme_root . '/.gemnasium' ) ) {
+			$token = file_get_contents( $readme_root . '/.gemnasium' );
+			if ( false != $token ) { 
+				$md_args['gemnasium_url'] = "https://gemnasium.com/$github_account_repo";
+				$md_args['gemnasium_badge_src'] = "https://gemnasium.com/$token.svg";
+			}
+		}
+		if ( file_exists( $readme_root . '/.gemnasium-dev' ) ) {
+			$token = file_get_contents( $readme_root . '/.gemnasium-dev' );
+			if ( false != $token ) { 
+				$md_args['gemnasium_dev_url'] = "https://gemnasium.com/$github_account_repo";
+				$md_args['gemnasium_dev_badge_src'] = "https://gemnasium.com/$token.svg";
+			}
+		}
+		if ( file_exists( $readme_root . '/.gitter' ) ) {
+			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
 		}
 	}
 	$markdown = $readme->to_markdown( $md_args );
