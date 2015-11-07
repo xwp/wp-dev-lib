@@ -210,7 +210,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $url );
 				}
 				if ( 'coveralls_url' === $badge ) {
-					$badge_md .= sprintf( '[![Coverage Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $url );
+					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['coveralls_badge_src'], $url );
 				}
 				if ( 'grunt_url' === $badge ) {
 					$badge_md .= sprintf( '[![Built with Grunt](https://cdn.%1$s/builtwith.png)](http://%1$s) ', $url );
