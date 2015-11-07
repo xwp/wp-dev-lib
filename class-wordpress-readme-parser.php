@@ -190,7 +190,7 @@ class WordPress_Readme_Parser {
 				$markdown .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $params['travis_ci_url'] );
 			}
 			if ( isset( $params['coveralls_url'] ) ) {
-				$markdown .= sprintf( '[![Build Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $params['coveralls_url'] );
+				$markdown .= sprintf( '[![Coverage Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $params['coveralls_url'] );
 			}
 			if ( isset( $params['gitter_url'] ) ) {
 				$markdown .= sprintf( '[![Join the chat at %1$s](https://badges.gitter.im/Join%20Chat.svg)](%1$s) ', $params['gitter_url'] );
