@@ -74,7 +74,7 @@ try {
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
-			$md_args['coveralls_badge_src'] = $md_args['coveralls_url'] . "/badge.svg";
+			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg";
 		}
 		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
 			$md_args['grunt_url'] = "gruntjs.com";
