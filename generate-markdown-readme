@@ -60,13 +60,25 @@ try {
 		}
 	}
 	if ( $github_account_repo ) {
-		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-			if ( file_exists( $readme_root . '/.travis-pro' ) ) {
-				$token = file_get_contents( $readme_root . '/.travis-pro' );
-				if ( false != $token ) { 
-					$md_args['travis_ci_pro_url'] = "https://magnum.travis-ci.com/$github_account_repo";
-					$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$token&branch=master";
+		$env_file = $readme_root . '/.ci-env.sh';
+		if ( file_exists( $env_file ) ) {
+			$lines = file( $env_file, FILE_IGNORE_NEW_LINES );
+			foreach( $lines as $line ) {
+				if ( preg_match( '/^COVERALLS_BADGE\s*=\s*(.+?)$/', $line, $matches ) ) {
+					$coveralls = $matches[1];
+				} else if ( preg_match( '/^GEMNASIUM_BADGE\s*=\s*(.+?)$/', $line, $matches ) ) {
+					$gemnasium = $matches[1];
+				} else if ( preg_match( '/^GEMNASIUM_DEV_BADGE\s*=\s*(.+?)$/', $line, $matches ) ) {
+					$gemnasium_dev = $matches[1];
+				} else if ( preg_match( '/^TRAVIS_CI_PRO_BADGE\s*=\s*(.+?)$/', $line, $matches ) ) {
+					$travis = $matches[1];
 				}
+			}
+		}
+		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
+			if ( isset( $travis ) ) {
+				$md_args['travis_ci_pro_url'] = "https://magnum.travis-ci.com/$github_account_repo";
+				$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$travis&branch=master";
 			}
 			if ( ! isset( $md_args['travis_ci_pro_url'] ) ) {
 				$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
@@ -75,11 +87,8 @@ try {
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
 			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg?branch=master";
-			if ( file_exists( $readme_root . '/.coveralls-pro' ) ) {
-				$token = file_get_contents( $readme_root . '/.coveralls-pro' );
-				if ( false != $token ) {
-					$md_args['coveralls_badge_src'] .= "&service=github&t=$token";
-				}
+			if ( isset( $coveralls ) ) {
+				$md_args['coveralls_badge_src'] .= "&service=github&t=$coveralls";
 			}
 		}
 		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
@@ -91,19 +100,13 @@ try {
 		if ( file_exists( $readme_root . '/.david-dev' ) ) {
 			$md_args['david_dev_url'] = "https://david-dm.org/$github_account_repo";
 		}
-		if ( file_exists( $readme_root . '/.gemnasium' ) ) {
-			$token = file_get_contents( $readme_root . '/.gemnasium' );
-			if ( false != $token ) { 
-				$md_args['gemnasium_url'] = "https://gemnasium.com/$github_account_repo";
-				$md_args['gemnasium_badge_src'] = "https://gemnasium.com/$token.svg";
-			}
+		if ( isset( $gemnasium ) ) {
+			$md_args['gemnasium_url'] = "https://gemnasium.com/$github_account_repo";
+			$md_args['gemnasium_badge_src'] = "https://gemnasium.com/$gemnasium.svg";
 		}
-		if ( file_exists( $readme_root . '/.gemnasium-dev' ) ) {
-			$token = file_get_contents( $readme_root . '/.gemnasium-dev' );
-			if ( false != $token ) { 
-				$md_args['gemnasium_dev_url'] = "https://gemnasium.com/$github_account_repo";
-				$md_args['gemnasium_dev_badge_src'] = "https://gemnasium.com/$token.svg";
-			}
+		if ( isset( $gemnasium_dev ) ) {
+			$md_args['gemnasium_dev_url'] = "https://gemnasium.com/$github_account_repo";
+			$md_args['gemnasium_dev_badge_src'] = "https://gemnasium.com/$gemnasium_dev.svg";
 		}
 		if ( file_exists( $readme_root . '/.gitter' ) ) {
 			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
