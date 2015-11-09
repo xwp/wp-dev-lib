@@ -90,6 +90,7 @@ class WordPress_Readme_Parser {
 	 * @return string
 	 */
 	function to_markdown( $params = array() ) {
+		$that = $this;
 
 		$general_section_formatter = function ( $body ) use ( $params ) {
 			$body = preg_replace(
@@ -108,7 +109,7 @@ class WordPress_Readme_Parser {
 
 		// Parse sections
 		$section_formatters = array(
-			'Screenshots' => function ( $body ) {
+			'Screenshots' => function ( $body ) use ( $that ) {
 				$body = trim( $body );
 				$new_body = '';
 				if ( ! preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
@@ -118,7 +119,7 @@ class WordPress_Readme_Parser {
 					$img_extensions = array( 'jpg', 'gif', 'png' );
 					foreach ( $img_extensions as $ext ) {
 						$filepath = sprintf( 'assets/screenshot-%d.%s', $i + 1, $ext );
-						if ( file_exists( dirname( $this->path ) . DIRECTORY_SEPARATOR . $filepath ) ) {
+						if ( file_exists( dirname( $that->path ) . DIRECTORY_SEPARATOR . $filepath ) ) {
 							break;
 						} else {
 							$filepath = null;
