@@ -6,8 +6,15 @@ if ( file_exists( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' ) ) {
 global $_plugin_file;
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
+
+// Travis CI & Vagrant SSH tests directory.
 if ( empty( $_tests_dir ) ) {
 	$_tests_dir = '/tmp/wordpress-tests';
+}
+
+// Relative path to Core tests directory.
+if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
+	$_tests_dir = '../../../../tests/phpunit';
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
