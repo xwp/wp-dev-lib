@@ -16,7 +16,9 @@ upsearch () {
 	done
 }
 
-WP_TESTS_DIR=/tmp/wordpress-tests/
+if [ -z "$WP_TESTS_DIR" ]; then
+	WP_TESTS_DIR=/tmp/wordpress-tests/
+fi
 
 YUI_COMPRESSOR_CHECK=1
 CODECEPTION_CHECK=1
