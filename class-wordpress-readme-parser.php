@@ -185,25 +185,61 @@ class WordPress_Readme_Parser {
 			$markdown .= sprintf( "**%s:** %s  \n", $name, $value );
 		}
 
-		if ( isset( $params['travis_ci_url'] ) || isset( $params['coveralls_url'] ) ) {
+		// All of the supported badges.
+		$badges = array(
+			'travis_ci_pro_url',
+			'travis_ci_url',
+			'coveralls_url',
+			'grunt_url',
+			'david_url',
+			'david_dev_url',
+			'gemnasium_url',
+			'gemnasium_dev_url',
+			'gitter_url',
+		);
+
+		$badge_md = '';
+
+		for ( $i = 0; $i < count( $badges ); $i++ ) {
+			if ( isset( $params[ $badges[ $i ] ] ) ) {
+				$badge = $badges[ $i ];
+				$url = $params[ $badge ];
+				if ( 'travis_ci_pro_url' === $badge ) {
+					$badge_md .= sprintf( '[![Build Status](%1$s)](%2$s) ', $params['travis_ci_pro_badge_src'], $url );
+				}
+				if ( 'travis_ci_url' === $badge ) {
+					$badge_md .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $url );
+				}
+				if ( 'coveralls_url' === $badge ) {
+					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['coveralls_badge_src'], $url );
+				}
+				if ( 'grunt_url' === $badge ) {
+					$badge_md .= sprintf( '[![Built with Grunt](https://cdn.%1$s/builtwith.png)](http://%1$s) ', $url );
+				}
+				if ( 'david_url' === $badge ) {
+					$badge_md .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $url );
+				}
+				if ( 'david_dev_url' === $badge ) {
+					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $url );
+				}
+				if ( 'gemnasium_url' === $badge ) {
+					$badge_md .= sprintf( '[![Dependency Status](%1$s)](%2$s) ', $params['gemnasium_badge_src'], $url );
+				}
+				if ( 'gemnasium_dev_url' === $badge ) {
+					$badge_md .= sprintf( '[![devDependency Status](%1$s)](%2$s#development-dependencies) ', $params['gemnasium_dev_badge_src'], $url );
+				}
+				if ( 'gitter_url' === $badge ) {
+					$badge_md .= sprintf( '[![Join the chat at %1$s](https://badges.gitter.im/Join Chat.svg)](%1$s) ', $url );
+				}
+			}
+		}
+
+		if ( ! empty( $badge_md ) ) {
 			$markdown .= "\n";
-			if ( isset( $params['travis_ci_url'] ) ) {
-				$markdown .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $params['travis_ci_url'] );
-			}
-			if ( isset( $params['coveralls_url'] ) ) {
-				$markdown .= sprintf( '[![Build Status](%s?branch=master)](%s) ', $params['coveralls_badge_src'], $params['coveralls_url'] );
-			}
-			if ( isset( $params['gitter_url'] ) ) {
-				$markdown .= sprintf( '[![Join the chat at %1$s](https://badges.gitter.im/Join%20Chat.svg)](%1$s) ', $params['gitter_url'] );
-			}
-			if ( isset( $params['david_url'] ) ) {
-				$markdown .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $params['david_url'] );
-			}
-			if ( isset( $params['david_dev_url'] ) ) {
-				$markdown .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $params['david_dev_url'] );
-			}
+			$markdown .= $badge_md;
 			$markdown .= "\n";
 		}
+
 		$markdown .= "\n";
 
 		foreach ( $this->sections as $section ) {

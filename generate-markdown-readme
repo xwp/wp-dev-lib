@@ -60,21 +60,57 @@ try {
 		}
 	}
 	if ( $github_account_repo ) {
+		$env_ini = $readme_root . '/.ci-env.sh';
+		if ( file_exists( $env_ini ) ) {
+			$env_vars = parse_ini_file( $env_ini );
+			if ( isset( $env_vars['COVERALLS_BADGE'] ) ) {
+				$coveralls_badge = $env_vars['COVERALLS_BADGE'];
+			}
+			if ( isset( $env_vars['GEMNASIUM_BADGE'] ) ) {
+				$gemnasium_badge = $env_vars['GEMNASIUM_BADGE'];
+			}
+			if ( isset( $env_vars['GEMNASIUM_DEV_BADGE'] ) ) {
+				$gemnasium_dev_badge = $env_vars['GEMNASIUM_DEV_BADGE'];
+			}
+			if ( isset( $env_vars['TRAVIS_CI_PRO_BADGE'] ) ) {
+				$travis_ci_pro_badge = $env_vars['TRAVIS_CI_PRO_BADGE'];
+			}
+		}
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
-			$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+			if ( isset( $travis_ci_pro_badge ) ) {
+				$md_args['travis_ci_pro_url'] = "https://magnum.travis-ci.com/$github_account_repo";
+				$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$travis_ci_pro_badge&branch=master";
+			}
+			if ( ! isset( $md_args['travis_ci_pro_url'] ) ) {
+				$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+			}
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
-			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg";
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
+			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg?branch=master";
+			if ( isset( $coveralls_badge ) ) {
+				$md_args['coveralls_badge_src'] .= "&service=github&t=$coveralls_badge";
+			}
 		}
-		if ( file_exists( $readme_root . '/.gitter' ) ) {
-			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
+		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
+			$md_args['grunt_url'] = "gruntjs.com";
 		}
 		if ( file_exists( $readme_root . '/.david' ) ) {
 			$md_args['david_url'] = "https://david-dm.org/$github_account_repo";
 		}
 		if ( file_exists( $readme_root . '/.david-dev' ) ) {
 			$md_args['david_dev_url'] = "https://david-dm.org/$github_account_repo";
+		}
+		if ( isset( $gemnasium_badge ) ) {
+			$md_args['gemnasium_url'] = "https://gemnasium.com/$github_account_repo";
+			$md_args['gemnasium_badge_src'] = "https://gemnasium.com/$gemnasium_badge.svg";
+		}
+		if ( isset( $gemnasium_dev_badge ) ) {
+			$md_args['gemnasium_dev_url'] = "https://gemnasium.com/$github_account_repo";
+			$md_args['gemnasium_dev_badge_src'] = "https://gemnasium.com/$gemnasium_dev_badge.svg";
+		}
+		if ( file_exists( $readme_root . '/.gitter' ) ) {
+			$md_args['gitter_url'] = "https://gitter.im/$github_account_repo";
 		}
 	}
 	$markdown = $readme->to_markdown( $md_args );
