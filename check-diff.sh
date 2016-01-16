@@ -239,6 +239,11 @@ function set_environment_variables {
 		mkdir -p "$LINTING_DIRECTORY"
 
 		for path in $( cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range ); do
+			# Skip submodules
+			if [ -d "$path" ]; then
+				continue
+			fi
+
 			mkdir -p "$LINTING_DIRECTORY/$(dirname "$path")"
 			if [ "$DIFF_HEAD" == 'STAGE' ]; then
 				git show :"$path" > "$LINTING_DIRECTORY/$path"
@@ -618,7 +623,7 @@ function check_execute_bit {
 		return
 	fi
 	for FILE in $( cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range ); do
-		if [ -x "$PROJECT_DIR/$FILE" ]; then
+		if [ -x "$PROJECT_DIR/$FILE" ] && [ ! -d "$PROJECT_DIR/$FILE" ]; then
 			echo "Error: Executable file being committed: $FILE. Do chmod -x on this."
 			return 1
 		fi
