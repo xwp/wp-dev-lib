@@ -115,10 +115,6 @@ function set_environment_variables {
 	DB_NAME=${DB_NAME:-wordpress_test}
 	DB_USER=${DB_USER:-root}
 	DB_PASS=${DB_PASS:-root}
-	if [ "$TRAVIS" == true ]; then
-		DB_USER=root
-		DB_PASS=''
-	fi
 
 	if [ -z "$WP_INSTALL_TESTS" ]; then
 		if [ "$TRAVIS" == true ]; then
@@ -500,6 +496,10 @@ function run_phpunit_travisci {
 		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
 	fi
 
+	# Credentials on Travis
+	DB_USER=root
+	DB_PASS=''
+
 	# Install the WordPress Unit Tests
 	# Note: This is installed here instead of during the install phase because it is run last and can take longer
 	if [ "$WP_INSTALL_TESTS" == 'true' ]; then
@@ -532,7 +532,7 @@ function run_phpunit_travisci {
 	echo "Location: $INSTALL_PATH"
 
 	# Run the tests
-	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG"
+	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure
 	cd - > /dev/null
 }
 
