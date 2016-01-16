@@ -7,7 +7,7 @@ cat "$TEMP_DIRECTORY/paths-scope"
 echo
 
 check_execute_bit
-check_js_files
-check_php_files
+lint_js_files
+lint_php_files
 run_phpunit_travisci
 run_codeception
