@@ -47,7 +47,7 @@ function set_environment_variables {
 		echo "LIMIT_TRAVIS_PR_CHECK_SCOPE is obsolete; use CHECK_SCOPE env var instead" 1>&2
 		return 1
 	fi
-	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
+	CHECK_SCOPE=${CHECK_SCOPE:-changed-files} # 'all', 'changed-files', 'patches'
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
@@ -173,6 +173,10 @@ function set_environment_variables {
 	fi
 
 	CHECK_SCOPE=$( tr '[A-Z]' '[a-z]' <<< "$CHECK_SCOPE" )
+	if [ "$CHECK_SCOPE" == 'files' ]; then
+		CHECK_SCOPE='changed-files'
+	fi
+
 	if [ "$CHECK_SCOPE" != 'all' ] && [ "$CHECK_SCOPE" != 'changed-files' ] && [ "$CHECK_SCOPE" != 'patches' ]; then
 		echo "Error: CHECK_SCOPE must be 'all', 'changed-files', or 'patches'" 1>&2
 		return 1
