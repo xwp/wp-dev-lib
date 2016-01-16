@@ -577,7 +577,6 @@ function lint_php_files {
 
 	set -e
 
-
 	(
 		echo "## PHP syntax check"
 		cd "$LINTING_DIRECTORY"

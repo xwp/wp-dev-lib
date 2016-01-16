@@ -21,11 +21,11 @@ install_tools
 echo "## Checking files, scope $CHECK_SCOPE:"
 cat "$TEMP_DIRECTORY/paths-scope"
 
+check_execute_bit
 lint_js_files
 lint_php_files
 run_phpunit_local
 run_codeception
-check_execute_bit
 
 # Make sure the readme.md never gets out of sync with the readme.txt, if it is staged for commit.
 if [[ $SYNC_README_MD == 1 ]] && [ -e readme.txt ] && cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range | grep -sqE '^readme\.txt$'; then
