@@ -441,6 +441,8 @@ function run_phpunit_local {
 		return
 	fi
 
+	# TODO: This should eventually run unit tests only in the state of the DIFF_HEAD
+
 	(
 		echo "## phpunit"
 		if [ "$USER" != 'vagrant' ]; then
@@ -519,16 +521,6 @@ function run_phpunit_travisci {
 	rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
 	cd "$INSTALL_PATH"
 
-	# @todo Remove untracked files when not working with? In Travis this is not applicable.
-	# if [ "$DIFF_HEAD" != 'WORKING' ]; then
-	# 	git clean -d --force --quiet
-	# fi
-	# if [ "$DIFF_HEAD" == 'STAGE' ]; then
-	# 	git checkout .
-	# fi
-	# git status
-
-	# @todo Delete files that are not in Git?
 	echo "Location: $INSTALL_PATH"
 
 	# Run the tests
