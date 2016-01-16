@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-shopt -s expand_aliases
 
 function realpath {
 	php -r 'echo realpath( $argv[1] );' "$1"
@@ -89,7 +88,6 @@ function set_environment_variables {
 		shift # past argument or value
 	done
 
-	PHPCS_DIR=${PHPCS_DIR:-/tmp/phpcs}
 	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
 	PHPCS_RULESET_FILE=$( upsearch phpcs.ruleset.xml )
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
@@ -296,16 +294,32 @@ function download {
 }
 
 function install_tools {
+
+	TEMP_TOOL_PATH="/tmp/dev-lib-bin"
+	mkdir -p "$TEMP_TOOL_PATH"
+	PATH="$TEMP_TOOL_PATH:$PATH"
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		install_phpcs
+		if ! command -v phpunit >/dev/null 2>&1; then
+			echo "Downloading PHPUnit phar"
+			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
+			chmod +x "$TEMP_TOOL_PATH/phpunit"
+		fi
 
-		# Install the WordPress Unit Tests
-		if [ "$WP_INSTALL_TESTS" == 'true' ]; then
-			if install_wp && install_test_suite && install_db; then
-			    echo "WP and unit tests installed"
-			else
-				echo "Failed to install unit tests"
+		if [ -z "$WPCS_STANDARD" ]; then
+			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
+		else
+			if ! command -v phpcs >/dev/null 2>&1; then
+				echo "Downloading PHPCS phar"
+				download "$PHPCS_PHAR_URL" "$TEMP_TOOL_PATH/phpcs"
+				chmod +x "$TEMP_TOOL_PATH/phpcs"
+			fi
+
+			if ! phpcs -i | grep -q 'WordPress'; then
+				git clone -b "$WPCS_GIT_TREE" "https://github.com/$WPCS_GITHUB_SRC.git" $WPCS_DIR
+				# @todo Pull periodically
+				phpcs --config-set installed_paths $WPCS_DIR
 			fi
 		fi
 	fi
@@ -338,33 +352,6 @@ function install_tools {
 	# Install Composer
 	if [ -e composer.json ]; then
 		curl -s http://getcomposer.org/installer | php && php composer.phar install
-	fi
-}
-
-function install_phpcs {
-	if [ -z "$WPCS_STANDARD" ]; then
-		echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
-		return
-	fi
-
-	if ! command -v phpunit >/dev/null 2>&1; then
-		echo "Downloading PHPUnit phar"
-		download https://phar.phpunit.de/phpunit.phar /tmp/phpunit.phar
-		chmod +x /tmp/phpunit.phar
-		alias phpunit='/tmp/phpunit.phar'
-	fi
-
-	if ! command -v phpcs >/dev/null 2>&1; then
-		echo "Downloading PHPCS phar"
-		download "$PHPCS_PHAR_URL" /tmp/phpcs.phar
-		chmod +x /tmp/phpcs.phar
-		alias phpcs='/tmp/phpcs.phar'
-	fi
-
-	if ! phpcs -i | grep -q 'WordPress'; then
-		git clone -b "$WPCS_GIT_TREE" "https://github.com/$WPCS_GITHUB_SRC.git" $WPCS_DIR
-		# @todo Pull periodically
-		phpcs --config-set installed_paths $WPCS_DIR
 	fi
 }
 
@@ -522,13 +509,6 @@ function run_phpunit_travisci {
 
 	# @todo Delete files that are not in Git?
 	echo "Location: $INSTALL_PATH"
-
-	if ! command -v phpunit >/dev/null 2>&1; then
-		echo "Downloading PHPUnit phar"
-		download https://phar.phpunit.de/phpunit.phar /tmp/phpunit.phar
-		chmod +x /tmp/phpunit.phar
-		alias phpunit='/tmp/phpunit.phar'
-	fi
 
 	# Run the tests
 	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG"
