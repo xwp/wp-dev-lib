@@ -5,9 +5,7 @@ wp-dev-lib
 
 ## Installation
 
-It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. (Previously it was recommended to be a git-subtree, but this has changed now that the `.travis.yml` is now lightweight enough to not require a symlink.)
-
-To **add** it to your repo, do:
+It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. To **add** it to your repo, do:
 
 ```bash
 git submodule add https://github.com/xwp/wp-dev-lib.git dev-lib
@@ -21,7 +19,15 @@ git add dev-lib
 git commit -m "Update dev-lib"
 ```
 
-## Travis
+If Travis CI is not available (below) and you don't want to install the submodule, you can instead just clone the repo somewhere on your system and then just add the `pre-commit` hook (also below) to symlink to this location, for example:
+
+```bash
+git clone https://github.com/xwp/wp-dev-lib.git ~/shared/dev-lib
+cd my-plugin/.git/hooks
+ln -s ~/shared/dev-lib/pre-commit
+```
+
+## Travis CI
 
 Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
 
