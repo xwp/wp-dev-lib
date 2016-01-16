@@ -258,7 +258,7 @@ function set_environment_variables {
 	return 0
 }
 
-function dump_environment_vars {
+function dump_environment_variables {
 	echo 1>&2
 	echo "## CONFIG VARIABLES" 1>&2
 
