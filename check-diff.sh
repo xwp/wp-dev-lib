@@ -347,11 +347,18 @@ function install_phpcs {
 		return
 	fi
 
-	if ! command -v phpcs >/dev/null 2>&1; then
-		echo "Downloading PHPCS phar"
+	if ! command -v phpunit >/dev/null 2>&1; then
+		echo "Downloading PHPUnit phar"
 		download https://phar.phpunit.de/phpunit.phar /tmp/phpunit.phar
 		chmod +x /tmp/phpunit.phar
 		alias phpunit='/tmp/phpunit.phar'
+	fi
+
+	if ! command -v phpcs >/dev/null 2>&1; then
+		echo "Downloading PHPCS phar"
+		download "$PHPCS_PHAR_URL" /tmp/phpcs.phar
+		chmod +x /tmp/phpcs.phar
+		alias phpcs='/tmp/phpcs.phar'
 	fi
 
 	if ! phpcs -i | grep -q 'WordPress'; then
