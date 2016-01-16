@@ -297,7 +297,7 @@ function download {
 
 function install_tools {
 	# Install PHP tools.
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
+	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		install_phpcs
 
 		# Install the WordPress Unit Tests
@@ -311,7 +311,7 @@ function install_tools {
 	fi
 
 	# Install JS tools.
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install JSHint
 		if ! command -v jshint >/dev/null 2>&1; then
