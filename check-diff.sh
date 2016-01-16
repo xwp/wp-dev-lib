@@ -546,6 +546,15 @@ function lint_js_files {
 
 	set -e
 
+	# Run YUI Compressor.
+	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
+		(
+			echo "## YUI Compressor"
+			cd "$LINTING_DIRECTORY"
+			java -jar "$YUI_COMPRESSOR_PATH" -o /dev/null $(cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range) 2>&1
+		)
+	fi
+
 	# Run JSHint.
 	if [ -n "$JSHINT_CONFIG" ] && command -v jshint >/dev/null 2>&1; then
 		(
@@ -565,15 +574,6 @@ function lint_js_files {
 			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jscs --reporter=inlinesingle --verbose --config="$JSCS_CONFIG" > "$TEMP_DIRECTORY/jscs-report"; then
 				cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
 			fi
-		)
-	fi
-
-	# Run YUI Compressor.
-	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
-		(
-			echo "## YUI Compressor"
-			cd "$LINTING_DIRECTORY"
-			java -jar "$YUI_COMPRESSOR_PATH" -o /dev/null $(cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range) 2>&1
 		)
 	fi
 }
