@@ -115,6 +115,10 @@ function set_environment_variables {
 	DB_NAME=${DB_NAME:-wordpress_test}
 	DB_USER=${DB_USER:-root}
 	DB_PASS=${DB_PASS:-root}
+	if [ "$TRAVIS" == true ]; then
+		DB_USER=root
+		DB_PASS=''
+	fi
 
 	if [ -z "$WP_INSTALL_TESTS" ]; then
 		if [ "$TRAVIS" == true ]; then
@@ -270,7 +274,7 @@ function dump_environment_variables {
 	echo "## CONFIG VARIABLES" 1>&2
 
 	# List obtained via ack -o '[A-Z][A-Z0-9_]*(?==)' | tr '\n' ' '
-	for var in JSHINT_CONFIG LINTING_DIRECTORY TEMP_DIRECTORY DEV_LIB_PATH PROJECT_DIR PROJECT_SLUG PATH_INCLUDES PROJECT_TYPE CHECK_SCOPE DIFF_BASE DIFF_HEAD PHPCS_DIR PHPCS_GITHUB_SRC PHPCS_GIT_TREE PHPCS_RULESET_FILE PHPCS_IGNORE WPCS_DIR WPCS_GITHUB_SRC WPCS_GIT_TREE WPCS_STANDARD WP_CORE_DIR WP_TESTS_DIR YUI_COMPRESSOR_CHECK DISALLOW_EXECUTE_BIT CODECEPTION_CHECK JSCS_CONFIG JSCS_CONFIG ENV_FILE ENV_FILE DIFF_BASE DIFF_HEAD CHECK_SCOPE IGNORE_PATHS HELP VERBOSE DB_HOST DB_NAME DB_USER DB_PASS WP_INSTALL_TESTS; do
+	for var in JSHINT_CONFIG LINTING_DIRECTORY TEMP_DIRECTORY DEV_LIB_PATH PROJECT_DIR PROJECT_SLUG PATH_INCLUDES PROJECT_TYPE CHECK_SCOPE DIFF_BASE DIFF_HEAD PHPCS_GITHUB_SRC PHPCS_GIT_TREE PHPCS_RULESET_FILE PHPCS_IGNORE WPCS_DIR WPCS_GITHUB_SRC WPCS_GIT_TREE WPCS_STANDARD WP_CORE_DIR WP_TESTS_DIR YUI_COMPRESSOR_CHECK DISALLOW_EXECUTE_BIT CODECEPTION_CHECK JSCS_CONFIG JSCS_CONFIG ENV_FILE ENV_FILE DIFF_BASE DIFF_HEAD CHECK_SCOPE IGNORE_PATHS HELP VERBOSE DB_HOST DB_NAME DB_USER DB_PASS WP_INSTALL_TESTS; do
 		echo "$var=${!var}" 1>&2
 	done
 	echo 1>&2
@@ -429,7 +433,9 @@ function install_db {
 	mysqladmin drop -f "$DB_NAME" --silent --no-beep --user="$DB_USER" --password="$DB_PASS"$EXTRA || echo "$DB_NAME does not exist yet"
 
 	# create database
-	mysqladmin create "$DB_NAME" --user="$DB_USER" --password="$DB_PASS"$EXTRA
+	if ! mysqladmin create "$DB_NAME" --user="$DB_USER" --password="$DB_PASS"$EXTRA; then
+		return 1
+	fi
 
 	echo "DB $DB_NAME created"
 }
@@ -477,6 +483,11 @@ function run_phpunit_travisci {
 		return
 	fi
 
+	if ! command -v phpunit >/dev/null 2>&1; then
+		echo "Skipping PHPUnit because phpunit tool not installed"
+		return
+	fi
+
 	echo
 	echo "## PHPUnit tests"
 
@@ -487,6 +498,16 @@ function run_phpunit_travisci {
 
 	if [ "$PROJECT_TYPE" == plugin ]; then
 		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
+	fi
+
+	# Install the WordPress Unit Tests
+	# Note: This is installed here instead of during the install phase because it is run last and can take longer
+	if [ "$WP_INSTALL_TESTS" == 'true' ]; then
+		if install_wp && install_test_suite && install_db; then
+		    echo "WP and unit tests installed"
+		else
+			echo "Failed to install unit tests"
+		fi
 	fi
 
 	WP_TESTS_DIR=${WP_CORE_DIR}/tests/phpunit   # This is a bit of a misnomer: it is the *PHP* tests dir
