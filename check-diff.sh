@@ -356,7 +356,17 @@ function install_tools {
 
 	# Install Composer
 	if [ -e composer.json ] && [ -z "$SKIP_COMPOSER" ]; then
-		curl -s http://getcomposer.org/installer | php && php composer.phar install
+		if command -v composer >/dev/null 2>&1; then
+			(
+				cd "$TEMP_TOOL_PATH"
+				download "http://getcomposer.org/installer" composer-installer.php
+				php composer-installer.php
+				mv composer.phar composer
+				chmod +x composer
+			)
+		fi
+
+		composer install
 	fi
 }
 
