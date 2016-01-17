@@ -299,6 +299,10 @@ function install_tools {
 	mkdir -p "$TEMP_TOOL_PATH"
 	PATH="$TEMP_TOOL_PATH:$PATH"
 
+	if ! php -r "if ( version_compare( phpversion(), '5.3', '<' ) ) { exit( 1 ); }"; then
+		pecl install phar
+	fi
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if ! command -v phpunit >/dev/null 2>&1; then
