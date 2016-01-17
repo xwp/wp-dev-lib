@@ -301,6 +301,7 @@ function install_tools {
 
 	if ! php -r "if ( version_compare( phpversion(), '5.3', '<' ) ) { exit( 1 ); }"; then
 		pecl install phar
+		SKIP_COMPOSER=1
 	fi
 
 	# Install PHP tools.
@@ -354,7 +355,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ]; then
+	if [ -e composer.json ] && [ -z "$SKIP_COMPOSER" ]; then
 		curl -s http://getcomposer.org/installer | php && php composer.phar install
 	fi
 }
