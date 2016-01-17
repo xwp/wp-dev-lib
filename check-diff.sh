@@ -237,8 +237,8 @@ function set_environment_variables {
 		mkdir -p "$LINTING_DIRECTORY"
 
 		for path in $( cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range ); do
-			# Skip submodules
-			if [ -d "$path" ]; then
+			# Skip submodules or files are deleted
+			if [ -d "$path" ] ||  [ ! -e "$path" ]; then
 				continue
 			fi
 
