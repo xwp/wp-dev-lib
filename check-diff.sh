@@ -227,7 +227,7 @@ function set_environment_variables {
 	fi
 
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(js|json|jshintrc)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.js(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
@@ -543,7 +543,7 @@ function lint_js_files {
 		(
 			echo "## YUI Compressor"
 			cd "$LINTING_DIRECTORY"
-			java -jar "$YUI_COMPRESSOR_PATH" -o /dev/null $(cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range) 2>&1
+			cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs java -jar "$YUI_COMPRESSOR_PATH" --nomunge --disable-optimizations -o /dev/null 2>&1
 		)
 	fi
 
