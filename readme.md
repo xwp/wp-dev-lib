@@ -78,9 +78,9 @@ This will greatly speed up the time build time, giving you quicker feedback on y
 
 A barrier of entry for adding automated code quality checks to an existing project is that there may be _a lot_ of issues in your codebase that get reported initially. So to get passing builds you would then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
 
-To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `changed-files` which means that when a `pre-commit` runs or a pull request is opened, the checks will be limited only to the files that have been modified. What's more is that `CHECK_SCOPE=patches` can be added in the project config   so that the checks will be restricted in their scope even more to _only report on issues occuring in the changed lines (patches)_.
+To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `patches` which means that when a `pre-commit` runs or a pull request is opened, the checks will be restricted in their scope to _only report on issues occurring in the changed lines (patches)_. What's more is that `CHECK_SCOPE=changed-files` can be added in the project config so that the checks will be limited _only to the files that have been modified_.
 
-With `CHECK_SCOPE=changed-files` and `CHECK_SCOPE=patches` available, it is much easier to integrate automated checks on existing projects that may have a lot of unconforming legacy code. You can fix up a codebase incrementally file-by-file or line-by-line in the normal course of fixing bugs and adding new features.
+With `CHECK_SCOPE=patches` and `CHECK_SCOPE=changed-files` available, it is much easier to integrate automated checks on existing projects that may have a lot of nonconforming legacy code. You can fix up a codebase incrementally line-by-line or file-by-file in the normal course of fixing bugs and adding new features.
 
 If you want to disable the scope-limiting behavior, you can define `CHECK_SCOPE=all`.
 
