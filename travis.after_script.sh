@@ -3,4 +3,4 @@
 set -e
 set -v
 
-if [ -e .coveralls.yml ]; then php vendor/bin/coveralls; fi
+if [ -s "$TEMP_DIRECTORY/paths-scope-php" ] && [ -e .coveralls.yml ]; then php vendor/bin/coveralls; fi
