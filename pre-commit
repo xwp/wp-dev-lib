@@ -1,181 +1,37 @@
 #!/bin/bash
-# WordPress Plugin pre-commit hook
+# WordPress pre-commit hook
 
 set -e
+shopt -s expand_aliases
 
-# via http://unix.stackexchange.com/a/13474
-upsearch () {
-	slashes=${PWD//[^\/]/}
-	directory="./"
-	for (( n=${#slashes}; n>0; --n )); do
-		test -e "$directory/$1" && echo "$directory/$1" && return
-		if [ "$2" != 'git_boundless' ] && test -e '.git'; then
-			return
-		fi
-		directory="$directory/.."
-	done
-}
-
-if [ -z "$WP_TESTS_DIR" ]; then
-	WP_TESTS_DIR=/tmp/wordpress-tests/
+if [ -L "$0" ]; then
+	DEV_LIB_PATH=$( dirname "$0" )/$( dirname $( readlink "$0" ) )
+else
+	DEV_LIB_PATH=dev-lib
 fi
 
-YUI_COMPRESSOR_CHECK=1
-CODECEPTION_CHECK=1
-DISALLOW_EXECUTE_BIT=0
-PARENT_DIR_SLUG="$(basename "$(dirname "$(pwd)")")"
-SELF_DIR=$( pwd )
-PHPCS_DIR=/tmp/phpcs
-PHPCS_GITHUB_SRC=squizlabs/PHP_CodeSniffer
-PHPCS_GIT_TREE=master
-PHPCS_IGNORE='tests/*,vendor/*'
-WPCS_DIR=/tmp/wpcs
-WPCS_GITHUB_SRC=WordPress-Coding-Standards/WordPress-Coding-Standards
-WPCS_GIT_TREE=master
-PHPCS_FILE=$( upsearch phpcs.ruleset.xml )
-WPCS_STANDARD=$(if [ ! -z "$PHPCS_FILE" ]; then echo "$PHPCS_FILE"; else echo WordPress-Core; fi)
-JSCS_CONFIG="$( upsearch .jscsrc )"
-if [ -z "$JSCS_CONFIG" ]; then
-	JSCS_CONFIG="$( upsearch .jscs.json )"
-fi
-PATH_INCLUDES=./
-ENV_FILE=$( upsearch .ci-env.sh )
-if [ ! -z "$ENV_FILE" ]; then
-	source "$ENV_FILE"
+if [ ! -e "$DEV_LIB_PATH/check-diff.sh" ]; then
+	echo "Unable to determine DEV_LIB_PATH"
+	exit 1
 fi
 
-MESSAGE="Checking staged changes..."
-GIT_STATUS_EGREP='^[MARC].+'
+source "$DEV_LIB_PATH/check-diff.sh"
+set_environment_variables --diff-base HEAD --diff-head STAGE
+install_tools
 
-for i; do
-	case "$i"
-	in
-		-m)
-			MESSAGE="Checking any uncommitted changes..."
-			GIT_STATUS_EGREP='^.?[MARC].+'
-			shift;;
-	esac
-done
+echo "## Checking files, scope $CHECK_SCOPE:"
+cat "$TEMP_DIRECTORY/paths-scope"
 
-echo "$MESSAGE"
+check_execute_bit
+lint_js_files
+lint_php_files
+run_phpunit_local
+run_codeception
 
-# Check for staged JS files
-STAGED_JS_FILES=( $(git status --porcelain -- $PATH_INCLUDES | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.js$' | cut -c4-) )
-if [ ${#STAGED_JS_FILES[@]} != 0 ]; then
-	# YUI Compressor
-	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
-		YUI_COMPRESSOR_PATH=/tmp/yuicompressor-2.4.8.jar
-		if [ ! -e "$YUI_COMPRESSOR_PATH" ]; then
-			wget -O "$YUI_COMPRESSOR_PATH" https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar
-		fi
-		java -jar "$YUI_COMPRESSOR_PATH" -o /dev/null "${STAGED_JS_FILES[@]}" 2>&1
-	fi
-
-	# JSHint
-	echo "## JSHint"
-	if command -v jshint >/dev/null 2>&1; then
-		jshintignorepath=$( upsearch .jshintignore )
-		jshint $( if [ -n "$jshintignorepath" ]; then echo "--exclude-path $jshintignorepath"; fi ) "${STAGED_JS_FILES[@]}"
-	else
-		echo "Skipping jshint since not installed"
-	fi
-
-	# JSCS
-	if [ -n "$JSCS_CONFIG" ]; then
-		echo "## JSCS"
-		if command -v jscs >/dev/null 2>&1; then
-			jscs --verbose --config="$JSCS_CONFIG" "${STAGED_JS_FILES[@]}"
-		else
-			echo "Skipping JSCS since not installed"
-		fi
-	fi
-
-fi
-
-# Check for staged PHP files
-STAGED_PHP_FILES=( $(git status --porcelain -- $PATH_INCLUDES | sed 's/[^ ]* -> *//g' | egrep $GIT_STATUS_EGREP'\.php$' | cut -c4-) )
-if [ ${#STAGED_PHP_FILES[@]} != 0 ]; then
-	# PHP Syntax Check
-	for PHP_FILE in "${STAGED_PHP_FILES[@]}"; do
-		php -lf "$PHP_FILE"
-	done
-
-	# PHP_CodeSniffer WordPress Coding Standards
-	echo "## phpcs"
-	if command -v phpcs >/dev/null 2>&1; then
-		phpcs -p -s -v --standard="$WPCS_STANDARD" $(if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi) "${STAGED_PHP_FILES[@]}"
-	else
-		echo "Skipping phpcs since not installed"
-	fi
-
-	# PHPUnit
-	PHPUNIT_XML_FILE=$( upsearch phpunit.xml )
-	if [ -z "$PHPUNIT_XML_FILE" ]; then
-		PHPUNIT_XML_FILE=$( upsearch phpunit.xml.dist )
-	fi
-	if [ ! -z "$PHPUNIT_XML_FILE" ]; then
-		echo "## phpunit"
-		if [ "$USER" != 'vagrant' ]; then
-
-			# Check if we're in VVV
-			VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
-			if [ ! -z "$VAGRANTFILE" ]; then
-				cd $( dirname "$VAGRANTFILE" )
-				VAGRANT_ROOT=$(pwd)
-				if [ -e www/wp-content/themes/vip/plugins/vip-init.php ]; then
-					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
-				elif grep -q vvv Vagrantfile; then
-					ABSOLUTE_VAGRANT_PATH=/srv${SELF_DIR:${#VAGRANT_ROOT}}
-				fi
-				cd "$SELF_DIR"
-			fi
-
-			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
-				echo "Running phpunit in Vagrant"
-				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit -c $PHPUNIT_XML_FILE"
-			elif command -v vassh >/dev/null 2>&1; then
-				echo "Running phpunit in vagrant via vassh..."
-				vassh phpunit -c "$PHPUNIT_XML_FILE"
-			fi
-		elif ! command -v phpunit >/dev/null 2>&1;then
-			echo "Skipping phpunit since not installed"
-		elif [ -z "$WP_TESTS_DIR" ]; then
-			echo "Skipping phpunit since WP_TESTS_DIR env missing"
-		else
-			phpunit -c "$PHPUNIT_XML_FILE"
-		fi
-	fi
-fi
-
-# Run Codeception tests
-if [ "$CODECEPTION_CHECK" == 1 ]; then
-	if [ -f "$SELF_DIR/codeception.yml" ]; then
-		# Download if it does not exist
-		if [ ! -f "/tmp/codeception.phar" ];  then
-			wget -O "/tmp/codecept.phar" http://codeception.com/codecept.phar
-		fi
-		php /tmp/codecept.phar run
-	else
-		echo "Skipping codeception since not configured"
-	fi
-fi
-
-# Check for staged files with execute bit on
-if [ "$DISALLOW_EXECUTE_BIT" == 1 ]; then
-	for EXECUTABLE_FILE in $( git status --porcelain -- $PATH_INCLUDES ); do
-		if [ -x "$EXECUTABLE_FILE" ] && [[ "" != $( git status --porcelain "$EXECUTABLE_FILE" | sed 's/[^ ]* -> *//g' | egrep "$GIT_STATUS_EGREP" | cut -c4- ) ]]; then
-			echo "Error: Executable file being committed: $EXECUTABLE_FILE. Do chmod -x on this."
-			exit 1
-		fi
-	done
-fi
-
-# Make sure the readme.md never gets out of sync with the readme.txt
-if [ -e readme.txt ]; then
-	# TODO: This is not going to work if wp-plugin-dev-lib is outside of the repo
-	GENERATE_MARKDOWN_README=$(find . -name generate-markdown-readme -print -quit)
-	if [ -n "$GENERATE_MARKDOWN_README" ]; then
-		MARKDOWN_README_PATH=$($GENERATE_MARKDOWN_README)
+# Make sure the readme.md never gets out of sync with the readme.txt, if it is staged for commit.
+if [[ $SYNC_README_MD == 1 ]] && [ -e readme.txt ] && cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range | grep -sqE '^readme\.txt$'; then
+	MARKDOWN_README_PATH=$($DEV_LIB_PATH/generate-markdown-readme)
+	if [ -n "$MARKDOWN_README_PATH" ]; then
 		git add $MARKDOWN_README_PATH
 	fi
 fi

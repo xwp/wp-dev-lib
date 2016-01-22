@@ -5,9 +5,7 @@ wp-dev-lib
 
 ## Installation
 
-It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. (Previously it was recommended to be a git-subtree, but this has changed now that the `.travis.yml` is now lightweight enough to not require a symlink.)
-
-To **add** it to your repo, do:
+It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. To **add** it to your repo, do:
 
 ```bash
 git submodule add https://github.com/xwp/wp-dev-lib.git dev-lib
@@ -21,7 +19,26 @@ git add dev-lib
 git commit -m "Update dev-lib"
 ```
 
-## Travis
+If Travis CI is not available (below) and you don't want to install the submodule, you can instead just clone the repo somewhere on your system and then just add the `pre-commit` hook (also below) to symlink to this location, for example:
+
+```bash
+git clone https://github.com/xwp/wp-dev-lib.git ~/shared/dev-lib
+cd my-plugin/.git/hooks
+ln -s ~/shared/dev-lib/pre-commit
+```
+
+Or to install dev-lib for all plugins that don't already have a `pre-commit` hook installed via symlinks (and using symlinks here is important, so it can find the path to the dev-lib repo):
+
+```bash
+git clone https://github.com/xwp/wp-dev-lib.git ~/shared/dev-lib
+for plugin_git_dir in $( find . -type d -path '*/wp-content/plugins/*/.git' ); do
+    if [ ! -e "$plugin_git_dir/hooks/pre-commit" ]; then
+        ln -s ~/shared/dev-lib/pre-commit $plugin_git_dir/hooks/pre-commit
+    fi
+done
+```
+
+## Travis CI
 
 Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
 
@@ -29,14 +46,14 @@ Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
 cp dev-lib/.travis.yml .
 ```
 
-Note that the builk of the logic in this config file is now moved to [`travis.before_script.sh`](travis.before_script.sh), [`travis.script.sh`](travis.script.sh), and [`travis.after_script.sh`](travis.after_script.sh), so there is minimal chance for the `.travis.yml` to diverge from upstream.
+Note that the builk of the logic in this config file is located in [`travis.install.sh`](travis.install.sh), [`travis.script.sh`](travis.script.sh), and [`travis.after_script.sh`](travis.after_script.sh), so there is minimal chance for the `.travis.yml` to diverge from upstream. Additionally, since each project likely may need to have unique environment targets (such as which PHP versions, whether multisite is relevant, etc), it makes sense that `.travis.yml` gets forked.
 
 Edit the `.travis.yml` to change the target PHP version(s) and WordPress version(s) you need to test for and also whether you need to test on multisite or not:
 
 ```yml
 php:
     - 5.3
-    - 5.5
+    - 7.0
 
 env:
     - WP_VERSION=latest WP_MULTISITE=0
@@ -45,7 +62,7 @@ env:
     - WP_VERSION=trunk WP_MULTISITE=1
 ```
 
-Having more variations here is good for open source plugins, which are free for Travis. However, if you are using Travis CI with a private repo you probably want to limit the jobs necessary to complete a build. So if your production environment is running PHP 5.5, is on the latest stable version of WordPress, and is not multisite, then your `.travis.yml` could just be:
+Having more variations here is good for open source plugins, which are free for Travis CI. However, if you are using Travis CI with a private repo you probably want to limit the jobs necessary to complete a build. So if your production environment is running PHP 5.5, is on the latest stable version of WordPress, and is not multisite, then your `.travis.yml` could just be:
 
 ```yml
 php:
@@ -55,17 +72,17 @@ env:
     - WP_VERSION=4.0 WP_MULTISITE=0
 ```
 
-This will greatly speed up the time build time, giving you quicker feedback on your Pull Request status, and prevent your Travis build queue from getting too backlogged.
+This will greatly speed up the time build time, giving you quicker feedback on your pull request status, and prevent your Travis build queue from getting too backlogged.
 
-### Limiting scope of Travis CI checks
+### Limiting Scope of Checks
 
-A barrier of entry for adding Travis CI to an existing project is that may complaining—a lot—about issues in your codebase. To get passing builds you then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
+A barrier of entry for adding automated code quality checks to an existing project is that there may be _a lot_ of issues in your codebase that get reported initially. So to get passing builds you would then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
 
-To get around this the barrier of entry for Travis CI, there is now an environment variable defined in [`travis.before_script.sh`](travis.before_script.sh): `LIMIT_TRAVIS_PR_CHECK_SCOPE`. By default its value is `files` which means that when a pull request is opened and Travis runs its checks on the PR, it will limit the checks only to the files that have been touched in the pull request. Additionally, you can override this in the `.ci-env.sh` to be `LIMIT_TRAVIS_PR_CHECK_SCOPE=patches` so that Travis will restrict its scope even more and _only fail a build if any issues are reported on the changed lines (patches) in a PR_ (only PHP_CodeSniffer and JSHint currently are supported for this).
+To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `patches` which means that when a `pre-commit` runs or a pull request is opened, the checks will be restricted in their scope to _only report on issues occurring in the changed lines (patches)_. What's more is that `CHECK_SCOPE=changed-files` can be added in the project config so that the checks will be limited _only to the files that have been modified_.
 
-With `LIMIT_TRAVIS_PR_CHECK_SCOPE=files` and `LIMIT_TRAVIS_PR_CHECK_SCOPE=patches` available, it is much easier to integrate Travis CI checks on existing projects that may have a lot of unconforming legacy code. You can fix up a codebase incrementally file-by-file or line-by-line in the normal course of fixing bugs and adding new features.
+With `CHECK_SCOPE=patches` and `CHECK_SCOPE=changed-files` available, it is much easier to integrate automated checks on existing projects that may have a lot of nonconforming legacy code. You can fix up a codebase incrementally line-by-line or file-by-file in the normal course of fixing bugs and adding new features.
 
-If you want to disable Travis from limiting its scope, you can just add `LIMIT_TRAVIS_PR_CHECK_SCOPE=off`.
+If you want to disable the scope-limiting behavior, you can define `CHECK_SCOPE=all`.
 
 ## Symlinks
 
@@ -123,23 +140,21 @@ cd .git/hooks && ln -s ../../dev-lib/pre-commit . && cd -
 ## Environment Variables
 
 You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
-specifying a `.ci-env.sh` in the root of the repo, for example:
+specifying a `.dev-lib` (formerly `.ci-env.sh`) Bash script in the root of the repo, for example:
 
 ```bash
-export PHPCS_GITHUB_SRC=xwpco/PHP_CodeSniffer
-export PHPCS_GIT_TREE=phpcs-patch
-export PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
-export WPCS_GIT_TREE=develop
-export WPCS_STANDARD=WordPress-Extra
-export DISALLOW_EXECUTE_BIT=1
-export YUI_COMPRESSOR_CHECK=1
-export PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-*"
-export LIMIT_TRAVIS_PR_CHECK_SCOPE=patches
+PHPCS_GITHUB_SRC=xwp/PHP_CodeSniffer
+PHPCS_GIT_TREE=phpcs-patch
+PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
+WPCS_GIT_TREE=develop
+WPCS_STANDARD=WordPress-Extra
+DISALLOW_EXECUTE_BIT=1
+YUI_COMPRESSOR_CHECK=1
+PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-*"
+CHECK_SCOPE=patches
 ```
 
-The last one here `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore`, though it would be better to have a `PATH_EXCLUDES` as well.
-
-It is better to add these statements to this file instead of to the `before_script` section of your `.travis.yml` because the `.ci-env.sh` is also `source`ed by the `pre-commit` hook.
+The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
 
 ## Plugin Helpers
 
