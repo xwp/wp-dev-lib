@@ -493,6 +493,7 @@ function run_phpunit_local {
 
 function run_phpunit_travisci {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+		echo "Skipping PHPUnit since not configured"
 		return
 	fi
 
