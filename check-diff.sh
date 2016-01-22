@@ -295,7 +295,7 @@ function download {
 
 function coverage_clover {
 	if [ -e .coveralls.yml ]; then
-		echo '--coverage-clover build/logs/clover.xml'
+		echo --coverage-clover build/logs/clover.xml
 	fi
 }
 
@@ -458,7 +458,8 @@ function install_db {
 }
 
 function run_phpunit_local {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ -z "$PHPUNIT_CONFIG" ]; then
+		echo "Skipping PHPUnit since not configured"
 		return
 	fi
 
@@ -498,7 +499,8 @@ function run_phpunit_local {
 }
 
 function run_phpunit_travisci {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ -z "$PHPUNIT_CONFIG" ]; then
+		echo "Skipping PHPUnit since not configured"
 		return
 	fi
 
