@@ -356,7 +356,7 @@ function install_tools {
 
 	# Install Composer
 	if [ -e composer.json ] && [ -z "$SKIP_COMPOSER" ]; then
-		if command -v composer >/dev/null 2>&1; then
+		if ! command -v composer >/dev/null 2>&1; then
 			(
 				cd "$TEMP_TOOL_PATH"
 				download "http://getcomposer.org/installer" composer-installer.php
