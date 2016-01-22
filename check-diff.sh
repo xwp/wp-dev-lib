@@ -293,6 +293,12 @@ function download {
 	fi
 }
 
+function coverage_clover {
+	if [ -e .coveralls.yml ]; then
+		echo '--coverage-clover build/logs/clover.xml'
+	fi
+}
+
 function install_tools {
 
 	TEMP_TOOL_PATH="/tmp/dev-lib-bin"
@@ -539,7 +545,7 @@ function run_phpunit_travisci {
 	echo "Location: $INSTALL_PATH"
 
 	# Run the tests
-	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure
+	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure $(coverage_clover)
 	cd - > /dev/null
 }
 
