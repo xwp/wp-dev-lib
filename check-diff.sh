@@ -293,6 +293,12 @@ function download {
 	fi
 }
 
+function coverage_clover {
+	if [ -e .coveralls.yml ]; then
+		echo --coverage-clover build/logs/clover.xml
+	fi
+}
+
 function install_tools {
 
 	TEMP_TOOL_PATH="/tmp/dev-lib-bin"
@@ -452,7 +458,8 @@ function install_db {
 }
 
 function run_phpunit_local {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ -z "$PHPUNIT_CONFIG" ]; then
+		echo "Skipping PHPUnit since not configured"
 		return
 	fi
 
@@ -492,7 +499,7 @@ function run_phpunit_local {
 }
 
 function run_phpunit_travisci {
-	if [ ! -d "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ -z "$PHPUNIT_CONFIG" ]; then
 		echo "Skipping PHPUnit since not configured"
 		return
 	fi
@@ -540,7 +547,7 @@ function run_phpunit_travisci {
 	echo "Location: $INSTALL_PATH"
 
 	# Run the tests
-	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure $( if [ -e .coveralls.yml ]; then echo --coverage-clover build/logs/clover.xml; fi )
+	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure $(coverage_clover)
 	cd - > /dev/null
 }
 
