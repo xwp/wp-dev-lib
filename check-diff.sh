@@ -295,7 +295,7 @@ function download {
 
 function coverage_clover {
 	if [ -e .coveralls.yml ]; then
-		echo '--coverage-clover build/logs/clover.xml'
+		echo --coverage-clover build/logs/clover.xml
 	fi
 }
 
