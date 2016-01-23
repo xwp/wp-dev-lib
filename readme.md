@@ -78,9 +78,15 @@ This will greatly speed up the time build time, giving you quicker feedback on y
 
 A barrier of entry for adding automated code quality checks to an existing project is that there may be _a lot_ of issues in your codebase that get reported initially. So to get passing builds you would then have a major effort to clean up your codebase to make it conforming to PHP_CodeSniffer, JSHint, and other tools. This is not ideal and can be problematic in projects with a lot of activity since these changes will add lots of conflicts with others' pull requests.
 
-To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `patches` which means that when a `pre-commit` runs or a pull request is opened, the checks will be restricted in their scope to _only report on issues occurring in the changed lines (patches)_. What's more is that `CHECK_SCOPE=changed-files` can be added in the project config so that the checks will be limited _only to the files that have been modified_.
+To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `patches` which means that when a `pre-commit` runs or a pull request is opened, the checks will be restricted in their scope to _only report on issues occurring in the changed lines (patches)_. Checking patches is the most useful, but `CHECK_SCOPE=changed-files` can be added in the project config so that the checks will be limited to the entirety of any file that has been modified.
 
 With `CHECK_SCOPE=patches` and `CHECK_SCOPE=changed-files` available, it is much easier to integrate automated checks on existing projects that may have a lot of nonconforming legacy code. You can fix up a codebase incrementally line-by-line or file-by-file in the normal course of fixing bugs and adding new features.
+
+For these `CHECK_SCOPE` checks, note that the `pre-commit` hook normally looks at differences between the `HEAD` commit and the current staged files (these are the `DIFF_BASE` and `DIFF_HEAD` environment variables, respectively). You can manually override this to invoke the `pre-commit` hook to compare between another branch and the current branch in the same way that Travis CI runs checks on a pull request. For example, to run checks on the differences between `master` and the current feature branch, run:
+
+```bash
+DIFF_BASE=master DIFF_HEAD=HEAD ./dev-lib/pre-commit
+```
 
 If you want to disable the scope-limiting behavior, you can define `CHECK_SCOPE=all`.
 
