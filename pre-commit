@@ -5,7 +5,11 @@ set -e
 shopt -s expand_aliases
 
 if [ -L "$0" ]; then
-	DEV_LIB_PATH=$( dirname "$0" )/$( dirname $( readlink "$0" ) )
+	if readlink "$0" | grep -sqE '^\.\.*/'; then
+		DEV_LIB_PATH=$( dirname "$0" )/$( dirname $( readlink "$0" ) )
+	else
+		DEV_LIB_PATH=$( dirname $( readlink "$0" ) )
+	fi
 else
 	DEV_LIB_PATH=dev-lib
 fi
