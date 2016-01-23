@@ -60,7 +60,10 @@ try {
 		}
 	}
 	if ( $github_account_repo ) {
-		$env_ini = $readme_root . '/.ci-env.sh';
+		$env_ini = $readme_root . '/.dev-lib';
+		if ( ! file_exists( $env_ini ) ) {
+			$env_ini = $readme_root . '/.ci-env.sh';
+		}
 		if ( file_exists( $env_ini ) ) {
 			$env_vars = parse_ini_file( $env_ini );
 			if ( isset( $env_vars['COVERALLS_BADGE'] ) ) {
