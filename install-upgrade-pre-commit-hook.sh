@@ -1,18 +1,30 @@
 #!/bin/bash
 # Install pre-commit hook on all plugin and theme repos and upgrade wp-dev-lib submodules
-# for all subdirectories under the current working directory.
-# By default the shared wp-dev-lib repo gets cloned into ~/Projects/wp-dev-lib but
-# this can be overridden by supplying the path as the first argument.
-# Author: Weston Ruter, XWP
-# URL: https://github.com/xwp/wp-dev-lib
+# for all subdirectories under the current working directory, or for the directory supplied
+# as an argument.
+#
+# USAGES:
+# $ cd ~/root/project/dir ~/Shared/wp-dev-lib/install-upgrade-pre-commit-hook.sh
+# $ ./install-upgrade-pre-commit-hook.sh ~/root/project/dir
 
 set -e
 
+cd "$(dirname "$0")"
+dev_lib_dir="$(pwd)"
+cd - > /dev/null
+
+if [ ! -z "$1" ]; then
+	cd "$1"
+	working_directory="$(pwd)"
+	cd - > /dev/null
+else
+	working_directory="$(pwd)"
+fi
+
+echo "Root directory: $working_directory"
+
 repo_url=https://github.com/xwp/wp-dev-lib.git
 shared_dev_lib_dir="$HOME/Projects/wp-dev-lib"
-if [ ! -z "$1" ]; then
-	shared_dev_lib_dir="$1"
-fi
 mkdir -p "$shared_dev_lib_dir"
 
 if [ ! -e "$shared_dev_lib_dir/.git" ]; then
@@ -27,17 +39,22 @@ fi
 
 echo "Gathering list of plugins and themes under $PWD"
 echo
-for plugin_git_dir in $( find . -type d \( -path '*/wp-content/plugins/*/.git' -o -path '*/wp-content/themes/*/.git' \) ); do
-	if [ -d "$plugin_git_dir/hooks" ] && [ ! -e "$plugin_git_dir/hooks/pre-commit" ]; then
-		echo "## Installing pre-commit hook to $plugin_git_dir"
-		ln -sf "$shared_dev_lib_dir/pre-commit" "$plugin_git_dir/hooks/pre-commit"
+for repo_git_dir in $( find "$working_directory" -type d \( -path '*/wp-content/plugins/*/.git' -o -path '*/wp-content/themes/*/.git' \) ); do
+	if [ -d "$repo_git_dir/hooks" ] && [ ! -e "$repo_git_dir/hooks/pre-commit" ]; then
+		repo_dir="$(dirname "$repo_git_dir")"
+		echo "## Installing pre-commit hook to $repo_dir"
+		if [ -e "$repo_dir/dev-lib/pre-commit" ]; then
+			ln -sf "../../dev-lib/pre-commit" "$repo_git_dir/hooks/pre-commit"
+		else
+			ln -sf "$shared_dev_lib_dir/pre-commit" "$repo_git_dir/hooks/pre-commit"
+		fi
 		echo
 	fi
 done
 
 echo "Checking out latest version of dev-lib for all submodules"
 echo
-for dev_lib_dir in $( find . -name 'dev-lib' -type d \! -path '*/.git/*' ); do
+for dev_lib_dir in $( find "$working_directory" -name 'dev-lib' -type d \! -path '*/.git/*' ); do
 	echo "## Updating dev-lib in $dev_lib_dir"
 	cd "$dev_lib_dir";
 	git checkout master;

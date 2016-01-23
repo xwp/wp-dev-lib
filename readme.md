@@ -5,10 +5,12 @@ wp-dev-lib
 
 ## Installation
 
-It is intended that this repo be included in plugin repo via git-submodule in a `dev-lib/` directory. To **add** it to your repo, do:
+### Submodule
+
+To install as Git submodule (recommended):
 
 ```bash
-git submodule add https://github.com/xwp/wp-dev-lib.git dev-lib
+git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib
 ```
 
 To **update** the library with the latest changes:
@@ -19,24 +21,25 @@ git add dev-lib
 git commit -m "Update dev-lib"
 ```
 
-If Travis CI is not available (below) and you don't want to install the submodule, you can instead just clone the repo somewhere on your system and then just add the `pre-commit` hook (also below) to symlink to this location, for example:
+### Non-submodule
+
+If you don't want to install as a submodule, you can instead just clone the repo somewhere on your system and then just add the `pre-commit` hook (see below) to symlink to this location, for example:
 
 ```bash
-git clone https://github.com/xwp/wp-dev-lib.git ~/shared/dev-lib
+git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
 cd my-plugin/.git/hooks
-ln -s ~/shared/dev-lib/pre-commit
+ln -s ~/Projects/wp-dev-lib/pre-commit
 ```
 
-Or to install dev-lib for all plugins that don't already have a `pre-commit` hook installed via symlinks (and using symlinks here is important, so it can find the path to the dev-lib repo):
+Or to install dev-lib for all themes and plugins that don't already have a `pre-commit` hook installed, and to upgrade the dev-lib for any submodule installations, you can run the bundled script [`install-upgrade-pre-commit-hook.sh`](install-upgrade-pre-commit-hook.sh) which will look for any repos in the current directory tree and attempt to auto-install. For example:
 
 ```bash
-git clone https://github.com/xwp/wp-dev-lib.git ~/shared/dev-lib
-for plugin_git_dir in $( find . -type d -path '*/wp-content/plugins/*/.git' ); do
-    if [ ! -e "$plugin_git_dir/hooks/pre-commit" ]; then
-        ln -s ~/shared/dev-lib/pre-commit $plugin_git_dir/hooks/pre-commit
-    fi
-done
+git clone https://github.com/xwp/wp-dev-lib.git ~/Shared/dev-lib
+cd ~/Shared/dev-lib
+./install-upgrade-pre-commit-hook.sh ~/Projects/wordpress
 ```
+
+For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
 
 ## Travis CI
 
