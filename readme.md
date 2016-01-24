@@ -104,9 +104,30 @@ A barrier of entry for adding automated code quality checks to an existing proje
 
 To get around this issue, there is now an environment variable available for configuration: `CHECK_SCOPE`. By default its value is `patches` which means that when a `pre-commit` runs or Travis runs a build on a pull request or commit, the checks will be restricted in their scope to _only report on issues occurring in the changed lines (patches)_. Checking patches is the most useful, but `CHECK_SCOPE=changed-files` can be added in the project config so that the checks will be limited to the entirety of any file that has been modified.
 
+Also important to note that when the the `pre-commit` check runs, it will run the linters (PHPCS, JSHint, JSCS, etc) on the *staged changes*, not the files as they exist in the working tree. This means that you can use `git add -p` to interactively select changes to stage (which is a good general best practice in contrast to `git commit -a`), and *any code excluded from being staged will be ignored by the linter*. This is very helpful when you have some debug statements which you weren't intending to commit anyway (e.g. `print_r()` or `console.log()`).
+
 With `CHECK_SCOPE=patches` and `CHECK_SCOPE=changed-files` available, it is much easier to integrate automated checks on existing projects that may have a lot of nonconforming legacy code. You can fix up a codebase incrementally line-by-line or file-by-file in the normal course of fixing bugs and adding new features.
 
 If you want to disable the scope-limiting behavior, you can define `CHECK_SCOPE=all`.
+
+## Environment Variables
+
+You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
+specifying a `.dev-lib` (formerly `.ci-env.sh`) Bash script in the root of the repo, for example:
+
+```bash
+PHPCS_GITHUB_SRC=xwp/PHP_CodeSniffer
+PHPCS_GIT_TREE=phpcs-patch
+PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
+WPCS_GIT_TREE=develop
+WPCS_STANDARD=WordPress-Extra
+DISALLOW_EXECUTE_BIT=1
+YUI_COMPRESSOR_CHECK=1
+PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-*"
+CHECK_SCOPE=patches
+```
+
+The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
 
 ## PHPUnit Code Coverage
 
@@ -141,25 +162,6 @@ php /tmp/codecept.phar generate:cept acceptance Welcome
 Create an empty `.gitter` file in the root of your repo and a [Gitter](https://gitter.im) chat badge will be added to your project's README.
 
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](#)
-
-## Environment Variables
-
-You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
-specifying a `.dev-lib` (formerly `.ci-env.sh`) Bash script in the root of the repo, for example:
-
-```bash
-PHPCS_GITHUB_SRC=xwp/PHP_CodeSniffer
-PHPCS_GIT_TREE=phpcs-patch
-PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
-WPCS_GIT_TREE=develop
-WPCS_STANDARD=WordPress-Extra
-DISALLOW_EXECUTE_BIT=1
-YUI_COMPRESSOR_CHECK=1
-PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-*"
-CHECK_SCOPE=patches
-```
-
-The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
 
 ## Plugin Helpers
 
