@@ -210,7 +210,7 @@ function set_environment_variables {
 		if [ "$DIFF_BASE" == 'HEAD' ]; then
 			DIFF_ARGS="--staged"
 		else
-			DIFF_ARGS="--staged $DIFF_BASE"
+			DIFF_ARGS="$DIFF_BASE --staged"
 		fi
 	elif [ "$DIFF_HEAD" == 'WORKING' ]; then
 		DIFF_ARGS="$DIFF_BASE"
@@ -219,7 +219,7 @@ function set_environment_variables {
 	fi
 
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
-		git diff --diff-filter=AM --no-prefix --unified=0 "$DIFF_ARGS" -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
+		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
 		git diff "$DIFF_ARGS" --name-only $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	else
