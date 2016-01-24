@@ -584,7 +584,7 @@ function lint_js_files {
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jscs --reporter=inlinesingle --verbose --config="$JSCS_CONFIG" > "$TEMP_DIRECTORY/jscs-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jscs --max-errors -1 --reporter=inlinesingle --verbose --config="$JSCS_CONFIG" > "$TEMP_DIRECTORY/jscs-report"; then
 				cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
 			fi
 		)
