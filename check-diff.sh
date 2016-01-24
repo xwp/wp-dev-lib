@@ -210,7 +210,7 @@ function set_environment_variables {
 		if [ "$DIFF_BASE" == 'HEAD' ]; then
 			DIFF_ARGS="--staged"
 		else
-			DIFF_ARGS="--staged $DIFF_BASE"
+			DIFF_ARGS="$DIFF_BASE --staged"
 		fi
 	elif [ "$DIFF_HEAD" == 'WORKING' ]; then
 		DIFF_ARGS="$DIFF_BASE"
@@ -219,7 +219,7 @@ function set_environment_variables {
 	fi
 
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
-		git diff --diff-filter=AM --no-prefix --unified=0 "$DIFF_ARGS" -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
+		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
 		git diff "$DIFF_ARGS" --name-only $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	else
@@ -294,7 +294,7 @@ function download {
 }
 
 function coverage_clover {
-	if [ -e .coveralls.yml ]; then
+	if [ -e .coveralls.yml ] && ! grep -sqi 'coverage' <<< "$DEV_LIB_SKIP"; then
 		echo --coverage-clover build/logs/clover.xml
 	fi
 }
@@ -305,20 +305,22 @@ function install_tools {
 	mkdir -p "$TEMP_TOOL_PATH"
 	PATH="$TEMP_TOOL_PATH:$PATH"
 
-	if ! php -r "if ( version_compare( phpversion(), '5.3', '<' ) ) { exit( 1 ); }"; then
+	if ! php -r "if ( version_compare( phpversion(), '5.3', '<' ) ) { exit( 1 ); }" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
 		pecl install phar
-		SKIP_COMPOSER=1
+		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if ! command -v phpunit >/dev/null 2>&1; then
+		if ! command -v phpunit >/dev/null 2>&1 && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
 			echo "Downloading PHPUnit phar"
 			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
 		fi
 
-		if [ -z "$WPCS_STANDARD" ]; then
+		if grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
+			echo "Skipping PHPCS per DEV_LIB_SKIP"
+		elif [ -z "$WPCS_STANDARD" ]; then
 			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
 		else
 			if ! command -v phpcs >/dev/null 2>&1; then
@@ -339,13 +341,13 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install JSHint
-		if ! command -v jshint >/dev/null 2>&1; then
+		if ! command -v jshint >/dev/null 2>&1 && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing JSHint"
 			npm install -g jshint
 		fi
 
 		# Install jscs
-		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && ! command -v jscs >/dev/null 2>&1; then
+		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && ! command -v jscs >/dev/null 2>&1 && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
 			echo "JSCS"
 			npm install -g jscs
 		fi
@@ -353,7 +355,7 @@ function install_tools {
 		# @todo ESLint
 
 		# YUI Compressor
-		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
+		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
 			if [ ! -e "$YUI_COMPRESSOR_PATH" ]; then
 				download https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar "$YUI_COMPRESSOR_PATH"
 			fi
@@ -361,7 +363,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && [ -z "$SKIP_COMPOSER" ]; then
+	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
 		if ! command -v composer >/dev/null 2>&1; then
 			(
 				cd "$TEMP_TOOL_PATH"
@@ -462,6 +464,11 @@ function run_phpunit_local {
 		return
 	fi
 
+	if grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
+		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
+		return
+	fi
+
 	# TODO: This should eventually run unit tests only in the state of the DIFF_HEAD
 
 	(
@@ -504,6 +511,11 @@ function run_phpunit_travisci {
 
 	if ! command -v phpunit >/dev/null 2>&1; then
 		echo "Skipping PHPUnit because phpunit tool not installed"
+		return
+	fi
+
+	if grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
+		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
 		return
 	fi
 
@@ -560,7 +572,7 @@ function lint_js_files {
 	set -e
 
 	# Run YUI Compressor.
-	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1; then
+	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## YUI Compressor"
 			cd "$LINTING_DIRECTORY"
@@ -569,7 +581,7 @@ function lint_js_files {
 	fi
 
 	# Run JSHint.
-	if [ -n "$JSHINT_CONFIG" ] && command -v jshint >/dev/null 2>&1; then
+	if [ -n "$JSHINT_CONFIG" ] && command -v jshint >/dev/null 2>&1 && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
@@ -580,7 +592,7 @@ function lint_js_files {
 	fi
 
 	# Run JSCS.
-	if [ -n "$JSCS_CONFIG" ] && command -v jscs >/dev/null 2>&1; then
+	if [ -n "$JSCS_CONFIG" ] && command -v jscs >/dev/null 2>&1 && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
@@ -607,7 +619,7 @@ function lint_php_files {
 	)
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
-	if command -v phpcs >/dev/null 2>&1 && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ); then
+	if command -v phpcs >/dev/null 2>&1 && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && ! grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
@@ -623,7 +635,7 @@ function lint_php_files {
 }
 
 function run_codeception {
-	if [ "$CODECEPTION_CHECK" != 1 ]; then
+	if [ "$CODECEPTION_CHECK" != 1 ] || grep -sqi 'codeception' <<< "$DEV_LIB_SKIP"; then
 		return
 	fi
 	if [ -z "$CODECEPTION_CONFIG" ]; then
@@ -639,7 +651,7 @@ function run_codeception {
 }
 
 function check_execute_bit {
-	if [ "$DISALLOW_EXECUTE_BIT" != 1 ]; then
+	if [ "$DISALLOW_EXECUTE_BIT" != 1 ] || grep -sqi 'executebit' <<< "$DEV_LIB_SKIP"; then
 		return
 	fi
 	for FILE in $( cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range ); do
