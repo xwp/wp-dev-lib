@@ -129,6 +129,56 @@ CHECK_SCOPE=patches
 
 The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
 
+## Pre-commit tips
+
+As noted above in Limiting Scope of Checks, the default behavior for the linters is to only report errors on lines that lie within actual staged changes being committed. So remember to selectively stage the files (via `git add ...`) or better the patches (via `git add -p ...`).
+
+### Skipping Checks
+
+If you do need to disable the `pre-commit` hook for an extenuating circumstance (e.g. to commit a work in progress to share), you can use the `--no-verify` argument:
+
+```bash
+git commit --no-verify -m "WIP"
+```
+
+Alternatively, you can also selectively disable certain aspects of the `pre-commit` hook from being run via the `DEV_LIB_SKIP` environment variable. For example, when there is a change to a PHP file and there are PHPUnit tests included in a repo, but you've just changed a PHP comment or something that certainly won't cause tests to fail, you can make a commit and run all checks *except* for PHPUnit via:
+
+```bash
+DEV_LIB_SKIP=phpunit git commit
+```
+
+You can string along multiple checks to skip via commas:
+
+```bash
+DEV_LIB_SKIP=composer,phpunit,phpcs,yuicompressor,jscs,jshint,codeception,executebit git commit
+```
+
+Naturally you'd want to create a Git alias for whatever you use most often, for example:
+
+```bash
+git config --global alias.commit-without-phpunit '!DEV_LIB_SKIP=phpunit git commit'
+```
+
+Which would allow you to then do the following (with Bash [tab completion](https://git-scm.com/book/en/v1/Git-Basics-Tips-and-Tricks#Auto-Completion) even):
+
+```bash
+git commit-without-phpunit
+```
+
+### Manually invoking `pre-commit`
+
+Sometimes you may want to run the `pre-commit` checks manually to compare changes (`patches`) between branches much in the same way that Travis CI runs its checks. To compare the current staged changes against `master`, do:
+
+```bash
+DIFF_BASE=master .git/hooks/pre-commit
+```
+
+To compare the committed changes between `master` and the current branch:
+
+```bash
+DIFF_BASE=master DIFF_HEAD=HEAD .git/hooks/pre-commit
+```
+
 ## PHPUnit Code Coverage
 
 The plugin-tailored [`phpunit.xml`](phpunit-plugin.xml) has a `filter` in place to restrict PHPUnit's code coverage reporting to only look at the plugin's own PHP code, omitting the PHP from WordPress Core and other places that shouldn't be included. The `filter` greatly speeds up PHPUnit's execution. To get the code coverage report written out to a `code-coverage-report` directory:
