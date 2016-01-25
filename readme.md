@@ -165,6 +165,8 @@ Which would allow you to then do the following (with Bash [tab completion](https
 git commit-without-phpunit
 ```
 
+Aside, you can [skip Travis CI builds](https://docs.travis-ci.com/user/customizing-the-build/#Skipping-a-build) by including `[ci skip]` in the commit message.
+
 ### Manually invoking `pre-commit`
 
 Sometimes you may want to run the `pre-commit` checks manually to compare changes (`patches`) between branches much in the same way that Travis CI runs its checks. To compare the current staged changes against `master`, do:
