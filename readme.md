@@ -156,7 +156,7 @@ DEV_LIB_SKIP=composer,phpunit,phpcs,yuicompressor,jscs,jshint,codeception,execut
 Naturally you'd want to create a Git alias for whatever you use most often, for example:
 
 ```bash
-git config --global alias.commit-without-phpunit '!DEV_LIB_SKIP=phpunit git commit'
+git config --global alias.commit-without-phpunit '!DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit" git commit'
 ```
 
 Which would allow you to then do the following (with Bash [tab completion](https://git-scm.com/book/en/v1/Git-Basics-Tips-and-Tricks#Auto-Completion) even):
