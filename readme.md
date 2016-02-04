@@ -36,7 +36,7 @@ ln -s dev-lib/.jshintignore . && git add .jshintignore
 ln -s dev-lib/.jscsrc . && git add .jscsrc
 ```
 
-See below for how to configuring your `.travis.yml`.
+See below for how to configure your `.travis.yml`.
 
 ### Install via symlink (non-submodule)
 
