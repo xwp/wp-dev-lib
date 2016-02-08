@@ -586,7 +586,12 @@ function lint_js_files {
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
 			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jshint --reporter=unix --config="$JSHINT_CONFIG" $( if [ -n "$JSHINT_IGNORE" ]; then echo --exclude-path "$JSHINT_IGNORE"; fi ) > "$TEMP_DIRECTORY/jshint-report"; then
-				cat "$TEMP_DIRECTORY/jshint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/jshint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+				elif [ -s "$TEMP_DIRECTORY/jshint-report" ]; then
+					cat "$TEMP_DIRECTORY/jshint-report"
+					exit 1
+				fi
 			fi
 		)
 	fi
@@ -597,7 +602,12 @@ function lint_js_files {
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
 			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jscs --max-errors -1 --reporter=inlinesingle --verbose --config="$JSCS_CONFIG" > "$TEMP_DIRECTORY/jscs-report"; then
-				cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+				elif [ -s "$TEMP_DIRECTORY/jscs-report" ]; then
+					cat "$TEMP_DIRECTORY/jscs-report"
+					exit 1
+				fi
 			fi
 		)
 	fi
@@ -624,10 +634,15 @@ function lint_php_files {
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
 			if ! cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range | xargs phpcs -s --report-emacs="$TEMP_DIRECTORY/phpcs-report" --standard="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )"; then
-				cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
-				phpcs_status="${PIPESTATUS[1]}"
-				if [[ $phpcs_status != 0 ]]; then
-					return $phpcs_status
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					phpcs_status="${PIPESTATUS[1]}"
+					if [[ $phpcs_status != 0 ]]; then
+						return $phpcs_status
+					fi
+				elif [ -s "$TEMP_DIRECTORY/phpcs-report" ]; then
+					cat "$TEMP_DIRECTORY/phpcs-report" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					exit 1
 				fi
 			fi
 		)
