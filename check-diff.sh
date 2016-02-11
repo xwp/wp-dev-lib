@@ -330,8 +330,9 @@ function install_tools {
 			fi
 
 			if ! phpcs -i | grep -q 'WordPress'; then
-				git clone -b "$WPCS_GIT_TREE" "https://github.com/$WPCS_GITHUB_SRC.git" $WPCS_DIR
-				# @todo Pull periodically
+				if [ ! -e "$WPCS_DIR" ]; then
+					git clone -b "$WPCS_GIT_TREE" "https://github.com/$WPCS_GITHUB_SRC.git" $WPCS_DIR
+				fi
 				phpcs --config-set installed_paths $WPCS_DIR
 			fi
 		fi
