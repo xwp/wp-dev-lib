@@ -32,8 +32,8 @@ Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintigno
 ```bash
 ln -s dev-lib/phpunit-plugin.xml phpunit.xml.dist && git add phpunit.xml.dist # (if working with a plugin)
 ln -s dev-lib/.jshintrc . && git add .jshintrc
-ln -s dev-lib/.jshintignore . && git add .jshintignore
 ln -s dev-lib/.jscsrc . && git add .jscsrc
+cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 
 See below for how to configure your `.travis.yml`.

@@ -151,8 +151,6 @@ function set_environment_variables {
 
 	if [ -z "$JSHINT_IGNORE" ]; then
 		JSHINT_IGNORE="$( upsearch .jshintignore )"
-	else
-		JSHINT_IGNORE="$DEV_LIB_PATH/.jshintignore"
 	fi
 
 	# Load any environment variable overrides from config files
@@ -249,8 +247,16 @@ function set_environment_variables {
 				git show "$DIFF_HEAD":"$path" > "$LINTING_DIRECTORY/$path"
 			fi
 		done
+
+		if [ -e "$LINTING_DIRECTORY/.jshintignore" ]; then
+			JSHINT_IGNORE="$LINTING_DIRECTORY/.jshintignore"
+		fi
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
+	fi
+
+	if [ -l "$JSHINT_IGNORE" ]; then
+		echo "Warning: .jshintignore may not work as expected as symlink."
 	fi
 
 	if [ ! -z "$JSHINT_CONFIG" ]; then JSHINT_CONFIG=$(realpath "$JSHINT_CONFIG"); fi
@@ -586,7 +592,7 @@ function lint_js_files {
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jshint --reporter=unix --config="$JSHINT_CONFIG" $( if [ -n "$JSHINT_IGNORE" ]; then echo --exclude-path "$JSHINT_IGNORE"; fi ) > "$TEMP_DIRECTORY/jshint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs jshint --reporter=unix --config="$JSHINT_CONFIG" $( if [ -n "$JSHINT_IGNORE" ]; then echo --exclude-path="$JSHINT_IGNORE"; fi ) > "$TEMP_DIRECTORY/jshint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/jshint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
 				elif [ -s "$TEMP_DIRECTORY/jshint-report" ]; then
