@@ -255,7 +255,7 @@ function set_environment_variables {
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
 
-	if [ -l "$JSHINT_IGNORE" ]; then
+	if [ -L "$JSHINT_IGNORE" ]; then
 		echo "Warning: .jshintignore may not work as expected as symlink."
 	fi
 
