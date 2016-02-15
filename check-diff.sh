@@ -579,7 +579,8 @@ function lint_js_files {
 	set -e
 
 	# Run YUI Compressor.
-	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
+	cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | grep -v 'vendor/' > "$TEMP_DIRECTORY/paths-scope-js-yuicompressor"
+	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && [ ! -s "$TEMP_DIRECTORY/paths-scope-js-yuicompressor" ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## YUI Compressor"
 			cd "$LINTING_DIRECTORY"
