@@ -216,6 +216,7 @@ function set_environment_variables {
 		DIFF_ARGS="$DIFF_BASE...$DIFF_HEAD"
 	fi
 
+	set -x
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
 		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
