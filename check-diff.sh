@@ -94,12 +94,8 @@ function set_environment_variables {
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
 
-	if [ -z "$PHPUNIT_CONFIG" ]; then
-		if [ -e phpunit.xml ]; then
-			PHPUNIT_CONFIG=phpunit.xml
-		elif [ -e phpunit.xml.dist ]; then
-			PHPUNIT_CONFIG=phpunit.xml.dist
-		fi
+	if [ -z "$PHPUNIT_CONFIG" ] && [ ! -e phpunit.xml ] && [ ! -e phpunit.xml.dist ]; then
+		DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit"
 	fi
 
 	WPCS_DIR=${WPCS_DIR:-/tmp/wpcs}
@@ -467,7 +463,7 @@ function install_db {
 }
 
 function run_phpunit_local {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
 	fi
 
