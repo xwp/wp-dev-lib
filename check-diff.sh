@@ -94,10 +94,6 @@ function set_environment_variables {
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
 
-	if [ -z "$PHPUNIT_CONFIG" ] && [ ! -e phpunit.xml ] && [ ! -e phpunit.xml.dist ]; then
-		DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit"
-	fi
-
 	WPCS_DIR=${WPCS_DIR:-/tmp/wpcs}
 	WPCS_GITHUB_SRC=${WPCS_GITHUB_SRC:-WordPress-Coding-Standards/WordPress-Coding-Standards}
 	WPCS_GIT_TREE=${WPCS_GIT_TREE:-master}
@@ -481,7 +477,15 @@ function run_phpunit_local {
 	(
 		echo "## phpunit"
 		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
-			phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+			fi
+			for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+				(
+					cd "$nested_project"
+					phpunit
+				)
+			done
 		elif [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in Vagrant
@@ -564,7 +568,15 @@ function run_phpunit_travisci {
 	echo "Location: $INSTALL_PATH"
 
 	# Run the tests
-	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure $(coverage_clover)
+	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	fi
+	for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+		(
+			cd "$nested_project"
+			phpunit
+		)
+	done
 	cd - > /dev/null
 }
 
