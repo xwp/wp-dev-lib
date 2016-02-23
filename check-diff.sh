@@ -94,12 +94,8 @@ function set_environment_variables {
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
 
-	if [ -z "$PHPUNIT_CONFIG" ]; then
-		if [ -e phpunit.xml ]; then
-			PHPUNIT_CONFIG=phpunit.xml
-		elif [ -e phpunit.xml.dist ]; then
-			PHPUNIT_CONFIG=phpunit.xml.dist
-		fi
+	if [ -z "$PHPUNIT_CONFIG" ] && [ ! -e phpunit.xml ] && [ ! -e phpunit.xml.dist ]; then
+		DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit"
 	fi
 
 	WPCS_DIR=${WPCS_DIR:-/tmp/wpcs}
@@ -318,7 +314,7 @@ function install_tools {
 
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if ! command -v phpunit >/dev/null 2>&1 && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
+		if [ -z "$( type -t phpunit )" ] && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
 			echo "Downloading PHPUnit phar"
 			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
@@ -467,7 +463,7 @@ function install_db {
 }
 
 function run_phpunit_local {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
 	fi
 
@@ -480,7 +476,9 @@ function run_phpunit_local {
 
 	(
 		echo "## phpunit"
-		if [ "$USER" != 'vagrant' ]; then
+		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
+			phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+		elif [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in Vagrant
 			if [ ! -z "$VAGRANTFILE" ]; then
@@ -500,13 +498,11 @@ function run_phpunit_local {
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit -c "$PHPUNIT_CONFIG"
+			else
+				echo "Failed to run phpunit inside Vagrant"
 			fi
-		elif ! command -v phpunit >/dev/null 2>&1;then
-			echo "Skipping phpunit since not installed"
-		elif [ -z "$WP_TESTS_DIR" ]; then
-			echo "Skipping phpunit since WP_TESTS_DIR env missing"
 		else
-			phpunit -c "$PHPUNIT_CONFIG"
+			echo "Skipping phpunit since not installed or WP_TESTS_DIR env missing"
 		fi
 	)
 }
