@@ -531,18 +531,12 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
 		return
 	fi
-
-	echo
-	echo "## PHPUnit tests"
-
-	if [ "$PROJECT_TYPE" != plugin ]; then
-		echo "Skipping since currently only applies to plugins"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
+		echo "Skipping PHPUnit since only applicable to site or plugin project types"
 		return
 	fi
-
-	if [ "$PROJECT_TYPE" == plugin ]; then
-		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
-	fi
+	echo
+	echo "## PHPUnit tests"
 
 	# Credentials on Travis
 	DB_USER=root
@@ -562,21 +556,26 @@ function run_phpunit_travisci {
 	export WP_CORE_DIR
 	export WP_TESTS_DIR
 
-	# Rsync the files into the right location
-	mkdir -p "$INSTALL_PATH"
-	rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
-	cd "$INSTALL_PATH"
+	if [ "$PROJECT_TYPE" == plugin ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
 
-	echo "Location: $INSTALL_PATH"
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		echo "Location: $INSTALL_PATH"
+	fi
 
 	# Run the tests
 	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	fi
+
 	for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
 		(
 			cd "$nested_project"
-			phpunit
+			phpunit --stop-on-failure
 		)
 	done
 	cd - > /dev/null
