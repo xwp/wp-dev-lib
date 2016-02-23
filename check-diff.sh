@@ -565,6 +565,8 @@ function run_phpunit_travisci {
 		cd "$INSTALL_PATH"
 
 		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == site ]; then
+		cd $PROJECT_DIR
 	fi
 
 	# Run the tests
