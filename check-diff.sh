@@ -215,7 +215,7 @@ function set_environment_variables {
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
 		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
-		git diff "$DIFF_ARGS" --name-only -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
+		git diff --diff-filter=AM $DIFF_ARGS --name-only -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	else
 		git ls-files -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	fi
@@ -244,6 +244,10 @@ function set_environment_variables {
 			fi
 		done
 
+		# Make sure .jshintignore gets copied into linting directory if it is in the index since it can't be relative
+		if git ls-files .jshintignore --error-unmatch > /dev/null && [ ! -e "$LINTING_DIRECTORY/.jshintignore" ]; then
+			git show :".jshintignore" > "$LINTING_DIRECTORY/.jshintignore"
+		fi
 		if [ -e "$LINTING_DIRECTORY/.jshintignore" ]; then
 			JSHINT_IGNORE="$LINTING_DIRECTORY/.jshintignore"
 		fi
@@ -325,7 +329,7 @@ function install_tools {
 		elif [ -z "$WPCS_STANDARD" ]; then
 			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
 		else
-			if ! command -v phpcs >/dev/null 2>&1; then
+			if [ "$( type -t phpcs )" == '' ]; then
 				echo "Downloading PHPCS phar"
 				download "$PHPCS_PHAR_URL" "$TEMP_TOOL_PATH/phpcs"
 				chmod +x "$TEMP_TOOL_PATH/phpcs"
@@ -344,13 +348,13 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install JSHint
-		if ! command -v jshint >/dev/null 2>&1 && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
+		if [ "$( type -t jshint )" == '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing JSHint"
 			npm install -g jshint
 		fi
 
 		# Install jscs
-		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && ! command -v jscs >/dev/null 2>&1 && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
+		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
 			echo "JSCS"
 			npm install -g jscs
 		fi
@@ -367,7 +371,7 @@ function install_tools {
 
 	# Install Composer
 	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
-		if ! command -v composer >/dev/null 2>&1; then
+		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
 				download "http://getcomposer.org/installer" composer-installer.php
@@ -388,7 +392,7 @@ function install_wp {
 	if [ -d "$WP_CORE_DIR" ]; then
 		return 0
 	fi
-	if ! command -v svn >/dev/null 2>&1; then
+	if [ "$( type -t svn )" == '' ]; then
 		echo "install_wp failure: svn is not installed"
 		return 1
 	fi
@@ -430,7 +434,7 @@ function install_test_suite {
 }
 
 function install_db {
-	if ! command -v mysqladmin >/dev/null 2>&1; then
+	if [ "$( type -t mysqladmin )" == '' ]; then
 		echo "install_db failure: mysqladmin is not present"
 		return 1
 	fi
@@ -512,7 +516,7 @@ function run_phpunit_travisci {
 		return
 	fi
 
-	if ! command -v phpunit >/dev/null 2>&1; then
+	if [ "$( type -t phpunit )" == '' ]; then
 		echo "Skipping PHPUnit because phpunit tool not installed"
 		return
 	fi
@@ -585,7 +589,7 @@ function lint_js_files {
 	fi
 
 	# Run JSHint.
-	if [ -n "$JSHINT_CONFIG" ] && command -v jshint >/dev/null 2>&1 && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$JSHINT_CONFIG" ] && [ "$( type -t jshint )" != '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
@@ -601,7 +605,7 @@ function lint_js_files {
 	fi
 
 	# Run JSCS.
-	if [ -n "$JSCS_CONFIG" ] && command -v jscs >/dev/null 2>&1 && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$JSCS_CONFIG" ] && [ "$( type -t jscs )" != '' ] && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
@@ -633,11 +637,11 @@ function lint_php_files {
 	)
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
-	if command -v phpcs >/dev/null 2>&1 && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && ! grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
+	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && ! grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range | xargs phpcs -s --report-emacs="$TEMP_DIRECTORY/phpcs-report" --standard="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range | xargs phpcs -s --report-emacs="$TEMP_DIRECTORY/phpcs-report" --standard="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )" $( if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi ); then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
