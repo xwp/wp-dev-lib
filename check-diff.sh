@@ -244,6 +244,10 @@ function set_environment_variables {
 			fi
 		done
 
+		# Make sure .jshintignore gets copied into linting directory if it is in the index since it can't be relative
+		if git ls-files .jshintignore --error-unmatch > /dev/null && [ ! -e "$LINTING_DIRECTORY/.jshintignore" ]; then
+			git show :".jshintignore" > "$LINTING_DIRECTORY/.jshintignore"
+		fi
 		if [ -e "$LINTING_DIRECTORY/.jshintignore" ]; then
 			JSHINT_IGNORE="$LINTING_DIRECTORY/.jshintignore"
 		fi
