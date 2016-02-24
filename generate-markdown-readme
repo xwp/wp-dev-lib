@@ -38,7 +38,9 @@ try {
 
 	$readme = new WordPress_Readme_Parser( array( 'path' => $readme_txt_path ) );
 
-	$md_args = array();
+	$md_args = array(
+		'assets_dir' => 'assets',
+	);
 	$github_account_repo = null;
 	$github_url_regex = '#.+github\.com[:/](?P<account_repo>[^/]+/[^/]+?)(?:\.git)?$#';
 	$remote_urls = array();
@@ -77,6 +79,9 @@ try {
 			}
 			if ( isset( $env_vars['TRAVIS_CI_PRO_BADGE'] ) ) {
 				$travis_ci_pro_badge = $env_vars['TRAVIS_CI_PRO_BADGE'];
+			}
+			if ( isset( $env_vars['ASSETS_DIR'] ) ) {
+				$md_args['assets_dir'] = $env_vars['ASSETS_DIR'];
 			}
 		}
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
