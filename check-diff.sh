@@ -429,6 +429,7 @@ function install_test_suite {
 		sed $ioption "s|localhost|${DB_HOST}|" wp-tests-config.php
 	fi
 
+	cd - > /dev/null
 }
 
 function install_db {
@@ -566,7 +567,7 @@ function run_phpunit_travisci {
 
 		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
-		cd $PROJECT_DIR
+		cd "$PROJECT_DIR"
 	fi
 
 	# Run the tests
@@ -580,7 +581,7 @@ function run_phpunit_travisci {
 			phpunit --stop-on-failure
 		)
 	done
-	cd - > /dev/null
+	cd "$PROJECT_DIR"
 }
 
 
