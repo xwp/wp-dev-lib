@@ -6,6 +6,14 @@ function realpath {
 	php -r 'echo realpath( $argv[1] );' "$1"
 }
 
+function min_php_version () {
+	php -r 'exit( version_compare( PHP_VERSION, $argv[1], ">=" ) ? 0 : 1 );' "$1"
+}
+
+function composer_requires {
+	cat composer.json | grep -Ei '"php":\s">=(\d\.\d\.\d)"' | grep -oEi '[0-9\.]+'
+}
+
 function upsearch {
 	# via http://unix.stackexchange.com/a/13474
 	slashes=${PWD//[^\/]/}
@@ -373,7 +381,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
+	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && min_php_version $( composer_requires ); then
 		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
