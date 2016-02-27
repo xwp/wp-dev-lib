@@ -3,4 +3,9 @@
 set -e
 set -v
 
-if [ -s "$TEMP_DIRECTORY/paths-scope-php" ] && [ -e .coveralls.yml ]; then php vendor/bin/coveralls; fi
+function is_supported {
+	php -r 'exit( version_compare( PHP_VERSION, "5.6.0", ">=" ) ? 0 : 1 );'
+}
+if is_supported && [ -s "$TEMP_DIRECTORY/paths-scope-php" ] && [ -e .coveralls.yml ]; then
+	php vendor/bin/coveralls;
+fi
