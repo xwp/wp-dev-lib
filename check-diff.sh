@@ -7,11 +7,7 @@ function realpath {
 }
 
 function min_php_version () {
-	php -r 'exit( version_compare( PHP_VERSION, $argv[1], ">=" ) ? 0 : 1 );' "$1"
-}
-
-function composer_requires {
-	cat composer.json | grep -Ei '"php":\s">=(\d\.\d\.\d)"' | grep -oEi '[0-9\.]+'
+	php -r 'if ( version_compare( phpversion(), $argv[1], "<" ) ) { exit( 1 ); }' "$1"
 }
 
 function upsearch {
@@ -157,6 +153,13 @@ function set_environment_variables {
 		JSHINT_IGNORE="$( upsearch .jshintignore )"
 	fi
 
+	if [ -z "$COMPOSER_CONFIG" ]; then
+		COMPOSER_CONFIG="$( upsearch composer.json )"
+	fi
+	if [ -z "$COMPOSER_CONFIG" ]; then
+		COMPOSER_CONFIG="$DEV_LIB_PATH/composer.json"
+	fi
+
 	# Load any environment variable overrides from config files
 	ENV_FILE=$( upsearch .ci-env.sh )
 	if [ ! -z "$ENV_FILE" ]; then
@@ -270,6 +273,7 @@ function set_environment_variables {
 	if [ ! -z "$JSHINT_CONFIG" ]; then JSHINT_CONFIG=$(realpath "$JSHINT_CONFIG"); fi
 	if [ ! -z "$JSHINT_IGNORE" ]; then JSHINT_IGNORE=$(realpath "$JSHINT_IGNORE"); fi
 	if [ ! -z "$JSCS_CONFIG" ]; then JSCS_CONFIG=$(realpath "$JSCS_CONFIG"); fi
+	if [ ! -z "$COMPOSER_CONFIG" ]; then COMPOSER_CONFIG=$(realpath "$COMPOSER_CONFIG"); fi
 	if [ ! -z "$ENV_FILE" ]; then ENV_FILE=$(realpath "$ENV_FILE"); fi
 	if [ ! -z "$PHPCS_RULESET_FILE" ]; then PHPCS_RULESET_FILE=$(realpath "$PHPCS_RULESET_FILE"); fi
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
@@ -284,7 +288,7 @@ function dump_environment_variables {
 	echo "## CONFIG VARIABLES" 1>&2
 
 	# List obtained via ack -o '[A-Z][A-Z0-9_]*(?==)' | tr '\n' ' '
-	for var in JSHINT_CONFIG LINTING_DIRECTORY TEMP_DIRECTORY DEV_LIB_PATH PROJECT_DIR PROJECT_SLUG PATH_INCLUDES PROJECT_TYPE CHECK_SCOPE DIFF_BASE DIFF_HEAD PHPCS_GITHUB_SRC PHPCS_GIT_TREE PHPCS_RULESET_FILE PHPCS_IGNORE WPCS_DIR WPCS_GITHUB_SRC WPCS_GIT_TREE WPCS_STANDARD WP_CORE_DIR WP_TESTS_DIR YUI_COMPRESSOR_CHECK DISALLOW_EXECUTE_BIT CODECEPTION_CHECK JSCS_CONFIG JSCS_CONFIG ENV_FILE ENV_FILE DIFF_BASE DIFF_HEAD CHECK_SCOPE IGNORE_PATHS HELP VERBOSE DB_HOST DB_NAME DB_USER DB_PASS WP_INSTALL_TESTS; do
+	for var in JSHINT_CONFIG LINTING_DIRECTORY TEMP_DIRECTORY DEV_LIB_PATH PROJECT_DIR PROJECT_SLUG PATH_INCLUDES PROJECT_TYPE CHECK_SCOPE DIFF_BASE DIFF_HEAD PHPCS_GITHUB_SRC PHPCS_GIT_TREE PHPCS_RULESET_FILE PHPCS_IGNORE WPCS_DIR WPCS_GITHUB_SRC WPCS_GIT_TREE WPCS_STANDARD WP_CORE_DIR WP_TESTS_DIR YUI_COMPRESSOR_CHECK DISALLOW_EXECUTE_BIT CODECEPTION_CHECK COMPOSER_CONFIG JSCS_CONFIG JSCS_CONFIG ENV_FILE ENV_FILE DIFF_BASE DIFF_HEAD CHECK_SCOPE IGNORE_PATHS HELP VERBOSE DB_HOST DB_NAME DB_USER DB_PASS WP_INSTALL_TESTS; do
 		echo "$var=${!var}" 1>&2
 	done
 	echo 1>&2
@@ -319,8 +323,12 @@ function install_tools {
 	mkdir -p "$TEMP_TOOL_PATH"
 	PATH="$TEMP_TOOL_PATH:$PATH"
 
-	if ! php -r "if ( version_compare( phpversion(), '5.3', '<' ) ) { exit( 1 ); }" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
+	if ! min_php_version "5.3.0" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
 		pecl install phar
+		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
+	fi
+
+	if ! min_php_version "5.5.0" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && cat "$COMPOSER_CONFIG" | grep -qEi '"satooshi\/php-coveralls":\s"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
@@ -381,7 +389,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && min_php_version $( composer_requires ); then
+	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
 		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
