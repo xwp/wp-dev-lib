@@ -98,7 +98,13 @@ function set_environment_variables {
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
 
-	if [ -z "$PHPUNIT_CONFIG" ] && [ ! -e phpunit.xml ] && [ ! -e phpunit.xml.dist ]; then
+	if [ -z "$PHPUNIT_CONFIG" ]; then
+		PHPUNIT_CONFIG=$( upsearch phpunit.xml )
+	fi
+	if [ -z "$PHPUNIT_CONFIG" ]; then
+		PHPUNIT_CONFIG=$( upsearch phpunit.xml.dist )
+	fi
+	if [ -z "$PHPUNIT_CONFIG" ]; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit"
 	fi
 
