@@ -624,6 +624,20 @@ function lint_js_files {
 	fi
 }
 
+function lint_xml_files {
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ]; then
+		return
+	fi
+
+	set -e
+
+	echo "## XMLLINT"
+	cd "$LINTING_DIRECTORY"
+	if ! cat "$TEMP_DIRECTORY/paths-scope-xml" | remove_diff_range | xargs xmllint --noout; then
+		exit 1
+	fi
+}
+
 function lint_php_files {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
