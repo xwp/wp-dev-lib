@@ -633,11 +633,8 @@ function lint_xml_files {
 
 	echo "## XMLLINT"
 	cd "$LINTING_DIRECTORY"
-	if ! cat "$TEMP_DIRECTORY/paths-scope-xml" | remove_diff_range | xargs xmllint --noout 2> "$TEMP_DIRECTORY/xmllint-report"; then
-		if [ -s "$TEMP_DIRECTORY/xmllint-report" ]; then
-			cat "$TEMP_DIRECTORY/xmllint-report"
-			exit 1
-		fi
+	if ! cat "$TEMP_DIRECTORY/paths-scope-xml" | remove_diff_range | xargs xmllint --noout; then
+		exit 1
 	fi
 }
 
