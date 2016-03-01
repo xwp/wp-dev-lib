@@ -3,6 +3,6 @@
 set -e
 set -v
 
-if min_php_version "5.5.0" && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP" && [ -s "$TEMP_DIRECTORY/paths-scope-php" ] && [ -e .coveralls.yml ]; then
+if can_generate_coverage_clover && [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 	php vendor/bin/coveralls;
 fi

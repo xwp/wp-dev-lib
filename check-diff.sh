@@ -303,8 +303,22 @@ function download {
 	fi
 }
 
+function can_generate_coverage_clover {
+	if [ -e .coveralls.yml ] && [ -e composer.json ] && ! grep -sqi 'coverage' <<< "$DEV_LIB_SKIP"; then
+		if min_php_version "5.5.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
+			return 0
+		elif min_php_version "5.3.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"~1.0"'; then
+			return 0
+		else
+			return 1
+		fi
+	else
+		return 1
+	fi
+}
+
 function coverage_clover {
-	if [ -e .coveralls.yml ] && ! grep -sqi 'coverage' <<< "$DEV_LIB_SKIP"; then
+	if can_generate_coverage_clover; then
 		echo --coverage-clover build/logs/clover.xml
 	fi
 }
@@ -320,8 +334,8 @@ function install_tools {
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
-	# Skip Composer when PHP < 5.5 && Coveralls 2.0+ is active.
-	if [ -e composer.json ] && ! min_php_version "5.5.0" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
+	# Skip installing Composer when the PHP version does not meet the php-coveralls package requirements.
+	if ! min_php_version "5.5.0" && [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
