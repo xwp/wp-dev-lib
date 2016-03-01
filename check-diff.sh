@@ -37,6 +37,8 @@ function set_environment_variables {
 			PROJECT_TYPE=theme
 		elif grep -isqE "^[     ]*\*[     ]*Plugin Name[     ]*:" "$PROJECT_DIR"/*.php; then
 			PROJECT_TYPE=plugin
+		elif [ -e wp-config.php ] || [ -e */wp-config.php ]; then
+			PROJECT_TYPE=site
 		else
 			PROJECT_TYPE=unknown
 		fi
@@ -93,10 +95,6 @@ function set_environment_variables {
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
-
-	if [ -z "$PHPUNIT_CONFIG" ] && [ ! -e phpunit.xml ] && [ ! -e phpunit.xml.dist ]; then
-		DEV_LIB_SKIP="$DEV_LIB_SKIP,phpunit"
-	fi
 
 	WPCS_DIR=${WPCS_DIR:-/tmp/wpcs}
 	WPCS_GITHUB_SRC=${WPCS_GITHUB_SRC:-WordPress-Coding-Standards/WordPress-Coding-Standards}
@@ -434,6 +432,7 @@ function install_test_suite {
 		sed $ioption "s|localhost|${DB_HOST}|" wp-tests-config.php
 	fi
 
+	cd - > /dev/null
 }
 
 function install_db {
@@ -484,7 +483,15 @@ function run_phpunit_local {
 	(
 		echo "## phpunit"
 		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
-			phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+			fi
+			for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+				(
+					cd "$nested_project"
+					phpunit
+				)
+			done
 		elif [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in Vagrant
@@ -515,7 +522,7 @@ function run_phpunit_local {
 }
 
 function run_phpunit_travisci {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ] || [ -z "$PHPUNIT_CONFIG" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
 	fi
 
@@ -528,18 +535,12 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
 		return
 	fi
-
-	echo
-	echo "## PHPUnit tests"
-
-	if [ "$PROJECT_TYPE" != plugin ]; then
-		echo "Skipping since currently only applies to plugins"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
+		echo "Skipping PHPUnit since only applicable to site or plugin project types"
 		return
 	fi
-
-	if [ "$PROJECT_TYPE" == plugin ]; then
-		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
-	fi
+	echo
+	echo "## PHPUnit tests"
 
 	# Credentials on Travis
 	DB_USER=root
@@ -559,16 +560,31 @@ function run_phpunit_travisci {
 	export WP_CORE_DIR
 	export WP_TESTS_DIR
 
-	# Rsync the files into the right location
-	mkdir -p "$INSTALL_PATH"
-	rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
-	cd "$INSTALL_PATH"
+	if [ "$PROJECT_TYPE" == plugin ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
 
-	echo "Location: $INSTALL_PATH"
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == site ]; then
+		cd "$PROJECT_DIR"
+	fi
 
 	# Run the tests
-	phpunit $(verbose_arg) --configuration "$PHPUNIT_CONFIG" --stop-on-failure $(coverage_clover)
-	cd - > /dev/null
+	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	fi
+
+	for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+		(
+			cd "$nested_project"
+			phpunit --stop-on-failure
+		)
+	done
+	cd "$PROJECT_DIR"
 }
 
 

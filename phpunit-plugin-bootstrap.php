@@ -22,7 +22,7 @@ if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
 }
 require_once $_tests_dir . '/includes/functions.php';
 
-$_plugin_dir = dirname( __DIR__ );
+$_plugin_dir = getcwd();
 foreach ( glob( $_plugin_dir . '/*.php' ) as $_plugin_file_candidate ) {
 	// @codingStandardsIgnoreStart
 	$_plugin_file_src = file_get_contents( $_plugin_file_candidate );
