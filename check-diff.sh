@@ -601,7 +601,7 @@ function run_phpunit_travisci {
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	fi
 
-	for nested_project in $( find $PATH_INCLUDES ! -path . ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
 		(
 			cd "$nested_project"
 			phpunit --stop-on-failure
