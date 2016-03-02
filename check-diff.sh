@@ -307,12 +307,9 @@ function can_generate_coverage_clover {
 			return 0
 		elif min_php_version "5.3.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"~1.0"'; then
 			return 0
-		else
-			return 1
 		fi
-	else
-		return 1
 	fi
+	return 1
 }
 
 function coverage_clover {
@@ -598,12 +595,14 @@ function run_phpunit_travisci {
 
 	# Run the tests
 	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+		PHPUNIT_COVERAGE_DIR=$(pwd)
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	fi
 
-	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path */dev-lib/* -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
 		(
 			cd "$nested_project"
+			echo "Running PHPUnit in nested project: $nested_project"
 			phpunit --stop-on-failure
 		)
 	done
