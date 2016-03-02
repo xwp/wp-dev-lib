@@ -29,6 +29,7 @@ cat "$TEMP_DIRECTORY/paths-scope"
 check_execute_bit
 lint_js_files
 lint_php_files
+lint_xml_files
 run_phpunit_local
 run_codeception
 
