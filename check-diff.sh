@@ -531,10 +531,10 @@ function run_phpunit_local {
 
 			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
 				echo "Running phpunit in Vagrant"
-				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit -c $PHPUNIT_CONFIG"
+				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )"
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
-				vassh phpunit -c "$PHPUNIT_CONFIG"
+				vassh phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
 				echo "Failed to run phpunit inside Vagrant"
 			fi
