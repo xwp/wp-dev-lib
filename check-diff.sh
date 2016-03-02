@@ -307,17 +307,14 @@ function can_generate_coverage_clover {
 			return 0
 		elif min_php_version "5.3.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"~1.0"'; then
 			return 0
-		else
-			return 1
 		fi
-	else
-		return 1
 	fi
+	return 1
 }
 
 function coverage_clover {
 	if can_generate_coverage_clover; then
-		echo --coverage-clover build/logs/clover.xml
+		echo --coverage-clover "$TEMP_DIRECTORY/clover.xml"
 	fi
 }
 
