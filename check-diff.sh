@@ -398,11 +398,11 @@ function install_wp {
 		return 1
 	fi
 
-	if [ "$WP_VERSION" == 'latest' ]; then
+	if grep -isqE 'trunk|alpha|beta|rc' <<< "$WP_VERSION"; then
+		local SVN_URL=https://develop.svn.wordpress.org/trunk/
+	elif [ "$WP_VERSION" == 'latest' ]; then
 		local TAG=$( svn ls https://develop.svn.wordpress.org/tags | tail -n 1 | sed 's:/$::' )
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$TAG/"
-	elif [ "$WP_VERSION" == 'trunk' ]; then
-		local SVN_URL=https://develop.svn.wordpress.org/trunk/
 	else
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$WP_VERSION/"
 	fi
