@@ -314,7 +314,7 @@ function can_generate_coverage_clover {
 
 function coverage_clover {
 	if can_generate_coverage_clover; then
-		echo --coverage-clover "$TEMP_DIRECTORY/clover.xml"
+		echo --coverage-clover build/logs/clover.xml
 	fi
 }
 
