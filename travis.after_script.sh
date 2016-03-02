@@ -6,5 +6,6 @@ set -v
 if can_generate_coverage_clover && [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 	echo -n "Current directory: "
 	pwd
-	php vendor/bin/coveralls -vvv --coverage_clover "$TEMP_DIRECTORY/clover.xml" --json_path "$TEMP_DIRECTORY/coveralls-upload.json"
+	mkdir -p build/logs
+	php vendor/bin/coveralls -vvv
 fi
