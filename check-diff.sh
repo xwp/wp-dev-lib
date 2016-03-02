@@ -595,6 +595,7 @@ function run_phpunit_travisci {
 
 	# Run the tests
 	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+		PHPUNIT_COVERAGE_DIR=$(pwd)
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	fi
 
