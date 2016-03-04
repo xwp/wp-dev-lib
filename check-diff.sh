@@ -603,7 +603,7 @@ function run_phpunit_travisci {
 			for dep in "${dependencies[@]}"
 			do
 				filename=$(basename "$dep")
-				git clone "$dep $WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+				git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
 			done
 		fi
 
