@@ -597,6 +597,16 @@ function run_phpunit_travisci {
 		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
 		cd "$INSTALL_PATH"
 
+		# Clone the theme dependencies (i.e. plugins) into the plugins directory
+		if [ ! -z "$THEME_DEPS" ]; then
+			IFS=',' read -r -a dependencies <<< "$THEME_DEPS"
+			for dep in "${dependencies[@]}"
+			do
+				filename=$(basename "$dep")
+				git clone "$dep $WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+			done
+		fi
+
 		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
 		cd "$PROJECT_DIR"
