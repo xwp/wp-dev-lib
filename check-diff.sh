@@ -41,7 +41,7 @@ function set_environment_variables {
 			PROJECT_TYPE=theme
 		elif grep -isqE "^[     ]*\*[     ]*Plugin Name[     ]*:" "$PROJECT_DIR"/*.php; then
 			PROJECT_TYPE=plugin
-		elif [ -e wp-config.php ] || [ -e */wp-config.php ]; then
+		elif [ $( find . -maxdepth 2 -name wp-config.php | wc -l | sed 's/ //g' ) -gt 0 ]; then
 			PROJECT_TYPE=site
 		else
 			PROJECT_TYPE=unknown
