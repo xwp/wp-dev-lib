@@ -555,8 +555,8 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
 		return
 	fi
-	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
-		echo "Skipping PHPUnit since only applicable to site or plugin project types"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ] && [ "$PROJECT_TYPE" != theme ]; then
+		echo "Skipping PHPUnit since only applicable to site, theme or plugin project types"
 		return
 	fi
 	echo
@@ -582,6 +582,15 @@ function run_phpunit_travisci {
 
 	if [ "$PROJECT_TYPE" == plugin ]; then
 		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/plugins/$PROJECT_SLUG"
+
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == theme ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/themes/$PROJECT_SLUG"
 
 		# Rsync the files into the right location
 		mkdir -p "$INSTALL_PATH"
