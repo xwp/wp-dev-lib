@@ -139,6 +139,7 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/assets' \
 	--exclude '/dev-lib' \
 	--exclude '/svn-url' \
+	--exclude '/tests' \
 	--exclude 'phpunit.xml*' \
 	--exclude 'phpcs.ruleset.xml' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/
