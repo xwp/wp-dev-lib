@@ -58,7 +58,6 @@ fi
 
 git pull --ff-only origin master
 git push origin master
-SVN_URL=$(cat svn-url)
 git_root_hash=$(md5sum <<< "$git_root" | cut -c1-32)
 plugin_uniq_slug="$(basename "$git_root")-$git_root_hash"
 lock_file="/tmp/$plugin_uniq_slug.lock"
