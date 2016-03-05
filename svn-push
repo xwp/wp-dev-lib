@@ -123,6 +123,12 @@ fi
 
 # rsync all committed files from the Git repo to SVN
 rsync -avz --delete --delete-excluded \
+	--exclude '/.david-dev' \
+	--exclude '/package.json' \
+	--exclude '/contributing.md' \
+	--exclude '/composer.json' \
+	--exclude '/Gruntfile.js' \
+	--exclude '/readme.md' \
 	--exclude '/.ci-env.sh' \
 	--exclude '/.dev-lib' \
 	--exclude '/.coveralls.yml' \
