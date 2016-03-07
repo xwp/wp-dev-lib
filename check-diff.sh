@@ -239,10 +239,25 @@ function set_environment_variables {
 			fi
 
 			mkdir -p "$LINTING_DIRECTORY/$(dirname "$path")"
-			if [ "$DIFF_HEAD" == 'STAGE' ]; then
-				git show :"$path" > "$LINTING_DIRECTORY/$path"
+			if [ -L "$path" ]; then
+				symlink_path=$(readlink "$path")
+				mkdir -p "$LINTING_DIRECTORY/$(dirname "$symlink_path")"
+				if git ls-files --error-unmatch -- "$symlink_path" > /dev/null 2>&1; then
+					if [ "$DIFF_HEAD" == 'STAGE' ]; then
+						git show :"$symlink_path" > "$LINTING_DIRECTORY/$symlink_path"
+					else
+						git show "$DIFF_HEAD":"$symlink_path" > "$LINTING_DIRECTORY/$symlink_path"
+					fi
+				else
+					cp "$symlink_path" "$LINTING_DIRECTORY/$symlink_path"
+				fi
+				ln -s "$LINTING_DIRECTORY/$symlink_path" "$LINTING_DIRECTORY/$path"
 			else
-				git show "$DIFF_HEAD":"$path" > "$LINTING_DIRECTORY/$path"
+				if [ "$DIFF_HEAD" == 'STAGE' ]; then
+					git show :"$path" > "$LINTING_DIRECTORY/$path"
+				else
+					git show "$DIFF_HEAD":"$path" > "$LINTING_DIRECTORY/$path"
+				fi
 			fi
 		done
 
