@@ -688,6 +688,31 @@ function lint_js_files {
 	fi
 }
 
+function run_qunit {
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+		return
+	fi
+
+	for gruntfile in $( find $PATH_INCLUDES -name Gruntfile.js ); do
+		if ! grep -Eqs 'grunt\.loadNpmTasks.*grunt-contrib-qunit' "$gruntfile"; then
+			continue
+		fi
+
+		# @todo Skip if there the CHECK_SCOPE is limited, and the dirname($gruntfile) is not among paths-scope-js; make sure root works
+
+		cd "$( dirname "$gruntfile" )"
+
+		# Make sure Node packages are installed in this location.
+		if [ -e package.json ]; then
+			npm install
+		fi
+
+		grunt qunit
+
+		cd - /dev/null
+	done
+}
+
 function lint_xml_files {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ]; then
 		return
