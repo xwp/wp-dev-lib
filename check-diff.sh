@@ -389,7 +389,8 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ]; then
+		# TODO: For some reason `type -t grunt` is a disk 'file' on Travis CI.
+		if [ "$( type -t grunt )" == '' ] ||  [ "$( type -t grunt )" == 'file' ]; then
 			echo "Installing Grunt"
 			npm install -g grunt-cli
 		fi
