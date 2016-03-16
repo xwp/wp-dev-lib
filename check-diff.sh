@@ -349,6 +349,11 @@ function install_tools {
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
+	# Install Node packages.
+	if [ -e package.json ]; then
+		npm install
+	fi
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if [ -z "$( type -t phpunit )" ] && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
