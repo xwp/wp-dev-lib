@@ -388,6 +388,12 @@ function install_tools {
 	# Install JS tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
+		# Install Grunt
+		if [ "$( type -t grunt )" == '' ]; then
+			echo "Installing Grunt"
+			npm install -g grunt-cli
+		fi
+
 		# Install JSHint
 		if [ "$( type -t jshint )" == '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing JSHint"
