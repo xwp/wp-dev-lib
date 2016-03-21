@@ -585,7 +585,7 @@ function run_phpunit_travisci {
 	# Note: This is installed here instead of during the install phase because it is run last and can take longer
 	if [ "$WP_INSTALL_TESTS" == 'true' ]; then
 		if install_wp && install_test_suite && install_db; then
-		    echo "WP and unit tests installed"
+			echo "WP and unit tests installed"
 		else
 			echo "Failed to install unit tests"
 		fi
@@ -606,6 +606,10 @@ function run_phpunit_travisci {
 		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
 		cd "$PROJECT_DIR"
+	fi
+
+	if [ "$( type -t after_wp_install )" != '' ]; then
+		after_wp_install
 	fi
 
 	# Run the tests
