@@ -67,7 +67,14 @@ try {
 			$env_ini = $readme_root . '/.ci-env.sh';
 		}
 		if ( file_exists( $env_ini ) ) {
-			$env_vars = parse_ini_file( $env_ini );
+
+			$env_vars = array();
+			if ( preg_match_all( '/^\s*(?!#)(?P<name>.+)=([\'"]?)(?P<value>.+)\2/m', file_get_contents( $env_ini ), $matches, PREG_SET_ORDER ) ) {
+				foreach ( $matches as $match ) {
+					$env_vars[ $match['name'] ] = $match['value'];
+				}
+			}
+
 			if ( isset( $env_vars['COVERALLS_BADGE'] ) ) {
 				$coveralls_badge = $env_vars['COVERALLS_BADGE'];
 			}
