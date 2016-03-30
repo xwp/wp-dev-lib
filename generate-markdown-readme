@@ -62,14 +62,14 @@ try {
 		}
 	}
 	if ( $github_account_repo ) {
-		$env_ini = $readme_root . '/.dev-lib';
-		if ( ! file_exists( $env_ini ) ) {
-			$env_ini = $readme_root . '/.ci-env.sh';
+		$env_file = $readme_root . '/.dev-lib';
+		if ( ! file_exists( $env_file ) ) {
+			$env_file = $readme_root . '/.ci-env.sh';
 		}
-		if ( file_exists( $env_ini ) ) {
+		if ( file_exists( $env_file ) ) {
 
 			$env_vars = array();
-			if ( preg_match_all( '/^\s*(?!#)(?P<name>.+)=([\'"]?)(?P<value>.+)\2/m', file_get_contents( $env_ini ), $matches, PREG_SET_ORDER ) ) {
+			if ( preg_match_all( '/^\s*(?!#)(?P<name>.+)=([\'"]?)(?P<value>.+)\2/m', file_get_contents( $env_file ), $matches, PREG_SET_ORDER ) ) {
 				foreach ( $matches as $match ) {
 					$env_vars[ $match['name'] ] = $match['value'];
 				}
