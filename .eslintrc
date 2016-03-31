@@ -3,6 +3,12 @@
 		"browser": true,
 		"node": true
 	},
+	"globals": {
+		"_": false,
+		"Backbone": false,
+		"jQuery": false,
+		"wp": false
+	},
 	"rules": {
 		"accessor-pairs": [2],
 		"block-scoped-var": [2],

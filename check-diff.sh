@@ -146,9 +146,15 @@ function set_environment_variables {
 	if [ -z "$JSHINT_CONFIG" ]; then
 		JSHINT_CONFIG="$DEV_LIB_PATH/.jshintrc"
 	fi
-
 	if [ -z "$JSHINT_IGNORE" ]; then
 		JSHINT_IGNORE="$( upsearch .jshintignore )"
+	fi
+
+	if [ -z "$ESLINT_CONFIG" ]; then
+		ESLINT_CONFIG="$( upsearch .eslintrc )"
+	fi
+	if [ -z "$ESLINT_IGNORE" ]; then
+		ESLINT_IGNORE="$( upsearch .eslintignore )"
 	fi
 
 	# Load any environment variable overrides from config files
@@ -395,7 +401,11 @@ function install_tools {
 			npm install -g jscs
 		fi
 
-		# @todo ESLint
+		# Install ESLint
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+			echo "Installing ESLint"
+			npm install -g eslint
+		fi
 
 		# YUI Compressor
 		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
@@ -674,6 +684,22 @@ function lint_js_files {
 					cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
 				elif [ -s "$TEMP_DIRECTORY/jscs-report" ]; then
 					cat "$TEMP_DIRECTORY/jscs-report"
+					exit 1
+				fi
+			fi
+		)
+	fi
+
+	# Run ESLint.
+	if [ -n "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+		(
+			echo "## ESLint"
+			cd "$LINTING_DIRECTORY"
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+				elif [ -s "$TEMP_DIRECTORY/eslint-report" ]; then
+					cat "$TEMP_DIRECTORY/eslint-report"
 					exit 1
 				fi
 			fi
