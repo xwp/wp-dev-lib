@@ -139,7 +139,7 @@
 		"prefer-spread": [0],
 		"prefer-template": [0],
 		"quotes": [0],
-		"radix": [2, "as-needed"],
+		"radix": [2, "always"],
 		"require-yield": [0],
 		"sort-imports": [0],
 		"sort-vars": [0],
