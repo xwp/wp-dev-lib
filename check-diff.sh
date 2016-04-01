@@ -273,6 +273,10 @@ function set_environment_variables {
 				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
 			fi
 		done
+
+		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
+		mkdir -p $LINTING_DIRECTORY/dev-lib
+		rsync -avz --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
