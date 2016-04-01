@@ -80,7 +80,7 @@
 		"no-lone-blocks": [2],
 		"no-lonely-if": [2],
 		"no-loop-func": [2],
-		"no-magic-numbers": [2],
+		"no-magic-numbers": [2, { "ignoreArrayIndexes": true, "ignore": [ -1, 0 ] }],
 		"no-mixed-requires": [0],
 		"no-multi-str": [2],
 		"no-native-reassign": [2],
