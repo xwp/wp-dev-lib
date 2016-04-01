@@ -267,13 +267,12 @@ function set_environment_variables {
 			fi
 		done
 
-		# Make sure .jshintignore gets copied into linting directory if it is in the index since it can't be relative
-		if git ls-files .jshintignore --error-unmatch > /dev/null 2>&1 && [ ! -e "$LINTING_DIRECTORY/.jshintignore" ]; then
-			git show :".jshintignore" > "$LINTING_DIRECTORY/.jshintignore"
-		fi
-		if [ -e "$LINTING_DIRECTORY/.jshintignore" ]; then
-			JSHINT_IGNORE="$LINTING_DIRECTORY/.jshintignore"
-		fi
+		# Make sure linter configs get copied linting directory since upsearch is relative.
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml; do
+			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
+				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
+			fi
+		done
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
