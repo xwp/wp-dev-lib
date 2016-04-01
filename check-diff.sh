@@ -694,11 +694,15 @@ function lint_js_files {
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
-					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
+					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					phpcs_status="${PIPESTATUS[1]}"
+					if [[ $phpcs_status != 0 ]]; then
+						return $phpcs_status
+					fi
 				elif [ -s "$TEMP_DIRECTORY/eslint-report" ]; then
-					cat "$TEMP_DIRECTORY/eslint-report"
+					cat "$TEMP_DIRECTORY/eslint-report" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					exit 1
 				fi
 			fi
