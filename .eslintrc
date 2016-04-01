@@ -1,7 +1,6 @@
 {
 	"env": {
-		"browser": true,
-		"node": true
+		"browser": true
 	},
 	"globals": {
 		"_": false,
