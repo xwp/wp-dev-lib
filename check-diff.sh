@@ -694,7 +694,7 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
