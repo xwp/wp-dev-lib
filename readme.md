@@ -33,6 +33,8 @@ Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintigno
 ln -s dev-lib/phpunit-plugin.xml phpunit.xml.dist && git add phpunit.xml.dist # (if working with a plugin)
 ln -s dev-lib/.jshintrc . && git add .jshintrc
 ln -s dev-lib/.jscsrc . && git add .jscsrc
+ln -s dev-lib/.eslintrc . && git add .eslintrc
+ln -s dev-lib/.eslintignore . && git add .eslintignore
 cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 

@@ -146,9 +146,15 @@ function set_environment_variables {
 	if [ -z "$JSHINT_CONFIG" ]; then
 		JSHINT_CONFIG="$DEV_LIB_PATH/.jshintrc"
 	fi
-
 	if [ -z "$JSHINT_IGNORE" ]; then
 		JSHINT_IGNORE="$( upsearch .jshintignore )"
+	fi
+
+	if [ -z "$ESLINT_CONFIG" ]; then
+		ESLINT_CONFIG="$( upsearch .eslintrc )"
+	fi
+	if [ -z "$ESLINT_IGNORE" ]; then
+		ESLINT_IGNORE="$( upsearch .eslintignore )"
 	fi
 
 	# Load any environment variable overrides from config files
@@ -261,13 +267,16 @@ function set_environment_variables {
 			fi
 		done
 
-		# Make sure .jshintignore gets copied into linting directory if it is in the index since it can't be relative
-		if git ls-files .jshintignore --error-unmatch > /dev/null 2>&1 && [ ! -e "$LINTING_DIRECTORY/.jshintignore" ]; then
-			git show :".jshintignore" > "$LINTING_DIRECTORY/.jshintignore"
-		fi
-		if [ -e "$LINTING_DIRECTORY/.jshintignore" ]; then
-			JSHINT_IGNORE="$LINTING_DIRECTORY/.jshintignore"
-		fi
+		# Make sure linter configs get copied linting directory since upsearch is relative.
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml; do
+			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
+				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
+			fi
+		done
+
+		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
+		mkdir -p $LINTING_DIRECTORY/dev-lib
+		rsync -avzq --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
@@ -406,7 +415,14 @@ function install_tools {
 			npm install -g jscs
 		fi
 
-		# @todo ESLint
+		# Install ESLint
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+			echo "Installing ESLint"
+			if ! npm install -g eslint 2>/dev/null; then
+				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
+			fi
+		fi
 
 		# YUI Compressor
 		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
@@ -685,6 +701,26 @@ function lint_js_files {
 					cat "$TEMP_DIRECTORY/jscs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js"
 				elif [ -s "$TEMP_DIRECTORY/jscs-report" ]; then
 					cat "$TEMP_DIRECTORY/jscs-report"
+					exit 1
+				fi
+			fi
+		)
+	fi
+
+	# Run ESLint.
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+		(
+			echo "## ESLint"
+			cd "$LINTING_DIRECTORY"
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					phpcs_status="${PIPESTATUS[1]}"
+					if [[ $phpcs_status != 0 ]]; then
+						return $phpcs_status
+					fi
+				elif [ -s "$TEMP_DIRECTORY/eslint-report" ]; then
+					cat "$TEMP_DIRECTORY/eslint-report" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					exit 1
 				fi
 			fi
