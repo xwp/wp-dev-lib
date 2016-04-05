@@ -407,7 +407,7 @@ function install_tools {
 		# Install ESLint
 		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing ESLint"
-			if ! npm install -g eslint; then
+			if ! npm install -g eslint 2>/dev/null; then
 				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
 			fi
