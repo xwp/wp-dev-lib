@@ -349,6 +349,11 @@ function install_tools {
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
+	# Install Node packages.
+	if [ -e package.json ]; then
+		npm install
+	fi
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if [ -z "$( type -t phpunit )" ] && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
@@ -382,6 +387,12 @@ function install_tools {
 
 	# Install JS tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+
+		# Install Grunt
+		if [ "$( type -t grunt )" == '' ]; then
+			echo "Installing Grunt"
+			npm install -g grunt-cli
+		fi
 
 		# Install JSHint
 		if [ "$( type -t jshint )" == '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
@@ -679,6 +690,31 @@ function lint_js_files {
 			fi
 		)
 	fi
+}
+
+function run_qunit {
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+		return
+	fi
+
+	for gruntfile in $( find $PATH_INCLUDES -name Gruntfile.js ); do
+		if ! grep -Eqs 'grunt\.loadNpmTasks.*grunt-contrib-qunit' "$gruntfile"; then
+			continue
+		fi
+
+		# @todo Skip if there the CHECK_SCOPE is limited, and the dirname($gruntfile) is not among paths-scope-js; make sure root works
+
+		cd "$( dirname "$gruntfile" )"
+
+		# Make sure Node packages are installed in this location.
+		if [ -e package.json ]; then
+			npm install
+		fi
+
+		grunt qunit
+
+		cd - /dev/null
+	done
 }
 
 function lint_xml_files {
