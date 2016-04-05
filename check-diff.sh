@@ -407,7 +407,10 @@ function install_tools {
 		# Install ESLint
 		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing ESLint"
-			npm install -g eslint
+			if ! npm install -g eslint; then
+				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
+			fi
 		fi
 
 		# YUI Compressor
