@@ -568,9 +568,13 @@ function run_phpunit_local {
 				cd - > /dev/null
 			fi
 
-			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
+            if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
 				echo "Running phpunit in Vagrant"
-				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )"
+				if [ -n "$PHPUNIT_CONFIG" ]; then
+				    vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )"
+				else
+				    vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && find . -iname phpunit.xml.dist -execdir phpunit \;"
+				fi
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
