@@ -272,6 +272,9 @@ function set_environment_variables {
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
 			fi
+			if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
+				JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
+			fi
 		done
 
 		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
@@ -398,21 +401,30 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ]; then
+		if [ "$( type -t grunt )" == '' ] && ! grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing Grunt"
-			npm install -g grunt-cli
+			if ! npm install -g grunt-cli 2>/dev/null; then
+				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,grunt"
+			fi
 		fi
 
 		# Install JSHint
 		if [ "$( type -t jshint )" == '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing JSHint"
-			npm install -g jshint
+			if ! npm install -g jshint 2>/dev/null; then
+				echo "Failed to install jshint (try manually doing: sudo npm install -g jshint), so skipping jshint"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,jshint"
+			fi
 		fi
 
 		# Install jscs
 		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
 			echo "JSCS"
-			npm install -g jscs
+			if ! npm install -g jscs 2>/dev/null; then
+				echo "Failed to install jscs (try manually doing: sudo npm install -g jscs), so skipping jscs"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,jscs"
+			fi
 		fi
 
 		# Install ESLint
@@ -730,6 +742,9 @@ function lint_js_files {
 
 function run_qunit {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+		return
+	fi
+	if grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
 		return
 	fi
 
