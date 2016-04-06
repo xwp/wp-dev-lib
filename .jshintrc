@@ -14,6 +14,8 @@
 	"unused": true,
 
 	"browser": true,
+	"browserify": true,
+	"qunit": true,
 
 	"globals": {
 		"_": false,
