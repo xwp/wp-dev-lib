@@ -326,7 +326,7 @@ function download {
 }
 
 function can_generate_coverage_clover {
-	if [ -e .coveralls.yml ] && [ -e composer.json ] && ! grep -sqi 'coverage' <<< "$DEV_LIB_SKIP"; then
+	if [ -e .coveralls.yml ] && [ -e composer.json ] && check_should_execute 'coverage'; then
 		if min_php_version "5.5.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 			return 0
 		elif min_php_version "5.3.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"~1.0"'; then
@@ -343,18 +343,17 @@ function coverage_clover {
 }
 
 function install_tools {
-
 	TEMP_TOOL_PATH="/tmp/dev-lib-bin"
 	mkdir -p "$TEMP_TOOL_PATH"
 	PATH="$TEMP_TOOL_PATH:$PATH"
 
-	if ! min_php_version "5.3.0" && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
+	if ! min_php_version "5.3.0" && check_should_execute 'composer'; then
 		pecl install phar
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
 	# Skip installing Composer when the PHP version does not meet the php-coveralls package requirements.
-	if ! min_php_version "5.5.0" && [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
+	if ! min_php_version "5.5.0" && [ -e composer.json ] && check_should_execute 'composer' && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
@@ -365,14 +364,14 @@ function install_tools {
 
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if [ -z "$( type -t phpunit )" ] && ! grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
+		if [ -z "$( type -t phpunit )" ] && check_should_execute 'phpunit'; then
 			echo "Downloading PHPUnit phar"
 			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
 		fi
 
-		if grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
-			echo "Skipping PHPCS per DEV_LIB_SKIP"
+		if ! check_should_execute 'phpcs'; then
+			echo "Skipping PHPCS per DEV_LIB_SKIP / DEV_LIB_ONLY"
 		elif [ -z "$WPCS_STANDARD" ]; then
 			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
 		else
@@ -404,19 +403,19 @@ function install_tools {
 		fi
 
 		# Install JSHint
-		if [ "$( type -t jshint )" == '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
+		if [ "$( type -t jshint )" == '' ] && check_should_execute 'jshint'; then
 			echo "Installing JSHint"
 			npm install -g jshint
 		fi
 
 		# Install jscs
-		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
+		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && check_should_execute 'jscs'; then
 			echo "JSCS"
 			npm install -g jscs
 		fi
 
 		# Install ESLint
-		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && check_should_execute 'eslint'; then
 			echo "Installing ESLint"
 			if ! npm install -g eslint 2>/dev/null; then
 				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
@@ -425,7 +424,7 @@ function install_tools {
 		fi
 
 		# YUI Compressor
-		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
+		if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && command -v java >/dev/null 2>&1 && check_should_execute 'yuicompressor'; then
 			if [ ! -e "$YUI_COMPRESSOR_PATH" ]; then
 				download https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar "$YUI_COMPRESSOR_PATH"
 			fi
@@ -433,7 +432,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && ! grep -sqi 'composer' <<< "$DEV_LIB_SKIP"; then
+	if [ -e composer.json ] && check_should_execute 'composer'; then
 		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
@@ -535,8 +534,8 @@ function run_phpunit_local {
 		return
 	fi
 
-	if grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
-		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
+	if ! check_should_execute 'phpunit'; then
+		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP / DEV_LIB_ONLY"
 		return
 	fi
 
@@ -548,7 +547,7 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			fi
-			for nested_project in $( find $PATH_INCLUDES -name 'phpunit.xml*' -mindepth 2 ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+			for nested_project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
 				(
 					cd "$nested_project"
 					phpunit
@@ -570,11 +569,7 @@ function run_phpunit_local {
 
             if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
 				echo "Running phpunit in Vagrant"
-				if [ -n "$PHPUNIT_CONFIG" ]; then
-				    vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )"
-				else
-				    vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && find . -iname phpunit.xml.dist -execdir phpunit \;"
-				fi
+				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && .git/hooks/pre-commit"
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
@@ -597,8 +592,8 @@ function run_phpunit_travisci {
 		return
 	fi
 
-	if grep -sqi 'phpunit' <<< "$DEV_LIB_SKIP"; then
-		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP"
+	if ! check_should_execute 'phpunit'; then
+		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP / DEV_LIB_ONLY"
 		return
 	fi
 	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
@@ -671,7 +666,7 @@ function lint_js_files {
 
 	# Run YUI Compressor.
 	cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | grep -v 'vendor/' > "$TEMP_DIRECTORY/paths-scope-js-yuicompressor"
-	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && [ ! -s "$TEMP_DIRECTORY/paths-scope-js-yuicompressor" ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
+	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && [ ! -s "$TEMP_DIRECTORY/paths-scope-js-yuicompressor" ] && command -v java >/dev/null 2>&1 && check_should_execute 'yuicompressor'; then
 		(
 			echo "## YUI Compressor"
 			cd "$LINTING_DIRECTORY"
@@ -680,7 +675,7 @@ function lint_js_files {
 	fi
 
 	# Run JSHint.
-	if [ -n "$JSHINT_CONFIG" ] && [ "$( type -t jshint )" != '' ] && ! grep -sqi 'jshint' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$JSHINT_CONFIG" ] && [ "$( type -t jshint )" != '' ] && check_should_execute 'jshint'; then
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
@@ -696,7 +691,7 @@ function lint_js_files {
 	fi
 
 	# Run JSCS.
-	if [ -n "$JSCS_CONFIG" ] && [ "$( type -t jscs )" != '' ] && ! grep -sqi 'jscs' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$JSCS_CONFIG" ] && [ "$( type -t jscs )" != '' ] && check_should_execute 'jscs'; then
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
@@ -712,7 +707,7 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && check_should_execute 'eslint'; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
@@ -787,7 +782,7 @@ function lint_php_files {
 	)
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
-	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && ! grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
+	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
 		(
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
@@ -808,7 +803,7 @@ function lint_php_files {
 }
 
 function run_codeception {
-	if [ "$CODECEPTION_CHECK" != 1 ] || grep -sqi 'codeception' <<< "$DEV_LIB_SKIP"; then
+	if [ "$CODECEPTION_CHECK" != 1 ] || ! check_should_execute 'codeception'; then
 		return
 	fi
 	if [ -z "$CODECEPTION_CONFIG" ]; then
@@ -824,7 +819,7 @@ function run_codeception {
 }
 
 function check_execute_bit {
-	if [ "$DISALLOW_EXECUTE_BIT" != 1 ] || grep -sqi 'executebit' <<< "$DEV_LIB_SKIP"; then
+	if [ "$DISALLOW_EXECUTE_BIT" != 1 ] || ! check_should_execute 'executebit'; then
 		return
 	fi
 	for FILE in $( cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range ); do
@@ -833,4 +828,16 @@ function check_execute_bit {
 			return 1
 		fi
 	done
+}
+
+function check_should_execute {
+    if [ ! -z "$DEV_LIB_SKIP" ] && grep -sqi $1 <<< "$DEV_LIB_SKIP"; then
+        return 1
+    fi
+
+    if [ ! -z "$DEV_LIB_ONLY" ] && ! grep -sqi $1 <<< "$DEV_LIB_ONLY"; then
+        return 1
+    fi
+
+    return 0
 }
