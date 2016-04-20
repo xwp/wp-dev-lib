@@ -780,6 +780,7 @@ function lint_xml_files {
 		cd "$LINTING_DIRECTORY"
 		cat "$TEMP_DIRECTORY/paths-scope-xml" | remove_diff_range | xargs xmllint --noout
 	)
+	add_commit_message "Xmllint Check" "Passed"
 }
 
 function lint_php_files {
