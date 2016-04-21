@@ -547,7 +547,7 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			fi
-			for nested_project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+			for nested_project in $( find $PATH_INCLUDES -mindepth 2 -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
 				(
 					cd "$nested_project"
 					phpunit
