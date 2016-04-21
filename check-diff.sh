@@ -773,13 +773,15 @@ function lint_php_files {
 
 	set -e
 
-	(
-		echo "## PHP syntax check"
-		cd "$LINTING_DIRECTORY"
-		for php_file in $( cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range ); do
-			php -lf "$php_file"
-		done
-	)
+	if check_should_execute 'phpsyntax'; then
+		(
+			echo "## PHP syntax check"
+			cd "$LINTING_DIRECTORY"
+			for php_file in $( cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range ); do
+				php -lf "$php_file"
+			done
+		)
+	fi
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
 	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
