@@ -753,7 +753,7 @@ function run_qunit {
 }
 
 function lint_xml_files {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ] || ! check_should_execute 'xmllint'; then
 		return
 	fi
 
