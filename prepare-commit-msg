@@ -2,9 +2,19 @@
 # WordPress prepare-commit-msg hook
 
 DEV_LIB_COMMIT_MESSAGE_FILE=".dev-lib-commit-message.$PPID"
+COMMIT_EDITMSG=$1
+
+JIRA_TASK_REGEXP='.*([A-Z]{1,32}-[0-9]{1,32}).*'
+JIRA_BRANCH_REGEXP='([a-zA-Z]+-[0-9]{1,32})';
+if [[ ! $(cat "$COMMIT_EDITMSG") =~ $JIRA_TASK_REGEXP ]]; then
+	JIRA_TASK=$(git rev-parse --abbrev-ref HEAD | grep -oP "$JIRA_BRANCH_REGEXP")
+	if [ -n "$JIRA_TASK" ]; then
+		MESSAGE=`cat $COMMIT_EDITMSG`
+		echo "${JIRA_TASK^^}: $MESSAGE" > $COMMIT_EDITMSG
+	fi
+fi
 
 if [ -f "$DEV_LIB_COMMIT_MESSAGE_FILE" ]; then
-	COMMIT_EDITMSG=$1
 	cat "$DEV_LIB_COMMIT_MESSAGE_FILE" >> $COMMIT_EDITMSG
 	unlink "$DEV_LIB_COMMIT_MESSAGE_FILE"
 fi
