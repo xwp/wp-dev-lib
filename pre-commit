@@ -19,6 +19,14 @@ if [ ! -e "$DEV_LIB_PATH/check-diff.sh" ]; then
 	exit 1
 fi
 
+DEV_LIB_COMMIT_MESSAGE_FILE="/tmp/.dev-lib-commit-message.$PPID"
+DEV_LIB_COMMIT_MESSAGE=''
+function append_commit_message {
+	LABEL=$1
+	VALUE=$2
+	DEV_LIB_COMMIT_MESSAGE+="\n$LABEL: $VALUE"
+}
+
 source "$DEV_LIB_PATH/check-diff.sh"
 set_environment_variables --diff-base ${DIFF_BASE:-HEAD} --diff-head ${DIFF_HEAD:-STAGE}
 install_tools
@@ -41,3 +49,5 @@ if [[ $SYNC_README_MD == 1 ]] && [ -e readme.txt ] && cat "$TEMP_DIRECTORY/paths
 		git add $MARKDOWN_README_PATH
 	fi
 fi
+
+echo -e "$DEV_LIB_COMMIT_MESSAGE" > $DEV_LIB_COMMIT_MESSAGE_FILE
