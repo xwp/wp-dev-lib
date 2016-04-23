@@ -1,7 +1,6 @@
 #!/bin/bash
 # WordPress prepare-commit-msg hook
 
-DEV_LIB_COMMIT_MESSAGE_FILE="/tmp/.dev-lib-commit-message.$PPID"
 COMMIT_EDITMSG=$1
 
 JIRA_TASK_REGEXP='.*([A-Z]{1,32}-[0-9]{1,32}).*'
@@ -13,9 +12,3 @@ if [[ ! $(cat "$COMMIT_EDITMSG") =~ $JIRA_TASK_REGEXP ]]; then
 		echo "${JIRA_TASK^^}: $MESSAGE" > $COMMIT_EDITMSG
 	fi
 fi
-
-if [ -f "$DEV_LIB_COMMIT_MESSAGE_FILE" ]; then
-	cat "$DEV_LIB_COMMIT_MESSAGE_FILE" >> $COMMIT_EDITMSG
-	unlink "$DEV_LIB_COMMIT_MESSAGE_FILE"
-fi
-
