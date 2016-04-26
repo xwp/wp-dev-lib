@@ -593,6 +593,7 @@ function run_phpunit_local {
 			echo "Skipping phpunit since not installed or WP_TESTS_DIR env missing"
 		fi
 	)
+	append_commit_message "PHPUnit Tests" "Passed"
 }
 
 function run_phpunit_travisci {
@@ -801,7 +802,7 @@ function lint_php_files {
 			php -lf "$php_file"
 		done
 	)
-	append_commit_message "PHP $(php -v | grep -Eo 'PHP [0-9]+(\.[0-9]+)*') Syntax Check" "Passed"
+	append_commit_message "$(php -v | grep -Eo 'PHP [0-9]+(\.[0-9]+)*') Syntax Check" "Passed"
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
 	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && ! grep -sqi 'phpcs' <<< "$DEV_LIB_SKIP"; then
@@ -821,7 +822,13 @@ function lint_php_files {
 				fi
 			fi
 		)
-		append_commit_message "PHP_CodeSniffer Check" "Passed"
+		STANDARD="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )"
+		if [ -e "$STANDARD" ]; then
+			STANDARD_VERSION=$(echo 'cat //ruleset/rule/@ref' | xmllint --shell phpcs.ruleset.xml | awk -F'[="]' '!/>/{print $(NF-1)}')
+			append_commit_message "PHP_CodeSniffer $STANDARD_VERSION Check" "Passed"
+		else
+			append_commit_message "PHP_CodeSniffer $STANDARD Check" "Passed"
+		fi
 	fi
 }
 
