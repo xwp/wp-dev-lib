@@ -770,6 +770,8 @@ function run_qunit {
 		grunt qunit
 
 		cd - /dev/null
+
+		append_commit_message "QUnit Tests" "Passed"
 	done
 }
 
@@ -824,7 +826,7 @@ function lint_php_files {
 		)
 		STANDARD="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )"
 		if [ -e "$STANDARD" ]; then
-			STANDARD_VERSION=$(echo 'cat //ruleset/rule/@ref' | xmllint --shell phpcs.ruleset.xml | awk -F'[="]' '!/>/{print $(NF-1)}')
+			STANDARD_VERSION=$(basename $STANDARD)
 			append_commit_message "PHP_CodeSniffer $STANDARD_VERSION Check" "Passed"
 		else
 			append_commit_message "PHP_CodeSniffer $STANDARD Check" "Passed"
