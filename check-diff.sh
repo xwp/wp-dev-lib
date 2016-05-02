@@ -547,7 +547,7 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			fi
-			for nested_project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+			for nested_project in $( find $PATH_INCLUDES -mindepth 2 -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
 				(
 					cd "$nested_project"
 					phpunit
@@ -753,7 +753,7 @@ function run_qunit {
 }
 
 function lint_xml_files {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-xml" ] || ! check_should_execute 'xmllint'; then
 		return
 	fi
 
@@ -773,13 +773,15 @@ function lint_php_files {
 
 	set -e
 
-	(
-		echo "## PHP syntax check"
-		cd "$LINTING_DIRECTORY"
-		for php_file in $( cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range ); do
-			php -lf "$php_file"
-		done
-	)
+	if check_should_execute 'phpsyntax'; then
+		(
+			echo "## PHP syntax check"
+			cd "$LINTING_DIRECTORY"
+			for php_file in $( cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range ); do
+				php -lf "$php_file"
+			done
+		)
+	fi
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
 	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
