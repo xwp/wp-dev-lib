@@ -229,7 +229,7 @@ function set_environment_variables {
 	fi
 
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.js(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
