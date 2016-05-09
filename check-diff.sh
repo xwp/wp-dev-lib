@@ -370,7 +370,7 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ]; then
+	if [ -e package.json ] && [ ! -e node_modules ]; then
 		npm install
 	fi
 
@@ -766,7 +766,7 @@ function run_qunit {
 		cd "$( dirname "$gruntfile" )"
 
 		# Make sure Node packages are installed in this location.
-		if [ -e package.json ]; then
+		if [ -e package.json ] && [ ! -e node_modules ]; then
 			npm install
 		fi
 
