@@ -428,7 +428,7 @@ function install_tools {
 		fi
 
 		# Install ESLint
-		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ ! -e "$(npm bin)/eslint" ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing ESLint"
 			if ! npm install -g eslint 2>/dev/null; then
 				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
@@ -720,11 +720,11 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ -e "$(npm bin)/eslint" ] && ! grep -sqi 'eslint' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs "$(npm bin)/eslint" --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
