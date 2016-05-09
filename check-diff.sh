@@ -280,6 +280,14 @@ function set_environment_variables {
 		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
 		mkdir -p $LINTING_DIRECTORY/dev-lib
 		rsync -avzq --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
+
+		# Use node_modules from actual directory
+		if [ -e "$PROJECT_DIR/node_modules" ]; then
+			if [ -e "$LINTING_DIRECTORY/node_modules" ]; then
+				rm -r "$LINTING_DIRECTORY/node_modules"
+			fi
+			ln -s "$PROJECT_DIR/node_modules" "$LINTING_DIRECTORY/node_modules"
+		fi
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
