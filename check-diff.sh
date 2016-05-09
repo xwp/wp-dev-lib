@@ -728,7 +728,7 @@ function lint_js_files {
 }
 
 function run_qunit {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'qunit'; then
 		return
 	fi
 
