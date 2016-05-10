@@ -268,14 +268,14 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
 			fi
-			if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
-				JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
-			fi
 		done
+		if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
+			JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
+		fi
 
 		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
 		mkdir -p $LINTING_DIRECTORY/dev-lib
