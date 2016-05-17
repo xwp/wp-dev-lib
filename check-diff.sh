@@ -229,7 +229,7 @@ function set_environment_variables {
 	fi
 
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.js(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
@@ -268,15 +268,26 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
 			fi
 		done
+		if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
+			JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
+		fi
 
 		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
 		mkdir -p $LINTING_DIRECTORY/dev-lib
 		rsync -avzq --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
+
+		# Use node_modules from actual directory
+		if [ -e "$PROJECT_DIR/node_modules" ]; then
+			if [ -e "$LINTING_DIRECTORY/node_modules" ]; then
+				rm -r "$LINTING_DIRECTORY/node_modules"
+			fi
+			ln -s "$PROJECT_DIR/node_modules" "$LINTING_DIRECTORY/node_modules"
+		fi
 	else
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
@@ -358,7 +369,7 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ]; then
+	if [ -e package.json ] && [ ! -e node_modules ]; then
 		npm install
 	fi
 
@@ -397,25 +408,34 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ]; then
+		if [ "$( type -t grunt )" == '' ] && ! grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
 			echo "Installing Grunt"
-			npm install -g grunt-cli
+			if ! npm install -g grunt-cli 2>/dev/null; then
+				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,grunt"
+			fi
 		fi
 
 		# Install JSHint
 		if [ "$( type -t jshint )" == '' ] && check_should_execute 'jshint'; then
 			echo "Installing JSHint"
-			npm install -g jshint
+			if ! npm install -g jshint 2>/dev/null; then
+				echo "Failed to install jshint (try manually doing: sudo npm install -g jshint), so skipping jshint"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,jshint"
+			fi
 		fi
 
 		# Install jscs
 		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && check_should_execute 'jscs'; then
 			echo "JSCS"
-			npm install -g jscs
+			if ! npm install -g jscs 2>/dev/null; then
+				echo "Failed to install jscs (try manually doing: sudo npm install -g jscs), so skipping jscs"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,jscs"
+			fi
 		fi
 
 		# Install ESLint
-		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" == '' ] && check_should_execute 'eslint'; then
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ ! -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
 			echo "Installing ESLint"
 			if ! npm install -g eslint 2>/dev/null; then
 				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
@@ -708,11 +728,11 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ "$( type -t eslint )" != '' ] && check_should_execute 'eslint'; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs "$(npm bin)/eslint" --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
@@ -732,6 +752,9 @@ function run_qunit {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'qunit'; then
 		return
 	fi
+	if grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
+		return
+	fi
 
 	for gruntfile in $( find $PATH_INCLUDES -name Gruntfile.js ); do
 		if ! grep -Eqs 'grunt\.loadNpmTasks.*grunt-contrib-qunit' "$gruntfile"; then
@@ -743,7 +766,7 @@ function run_qunit {
 		cd "$( dirname "$gruntfile" )"
 
 		# Make sure Node packages are installed in this location.
-		if [ -e package.json ]; then
+		if [ -e package.json ] && [ ! -e node_modules ]; then
 			npm install
 		fi
 
