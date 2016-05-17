@@ -408,7 +408,7 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ] && ! grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
+		if [ "$( type -t grunt )" == '' ] && check_should_execute 'grunt'; then
 			echo "Installing Grunt"
 			if ! npm install -g grunt-cli 2>/dev/null; then
 				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
@@ -749,10 +749,7 @@ function lint_js_files {
 }
 
 function run_qunit {
-	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'qunit'; then
-		return
-	fi
-	if grep -sqi 'grunt' <<< "$DEV_LIB_SKIP"; then
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'grunt'; then
 		return
 	fi
 
