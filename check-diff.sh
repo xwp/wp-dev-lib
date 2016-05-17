@@ -544,15 +544,16 @@ function run_phpunit_local {
 	(
 		echo "## phpunit"
 		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
-			if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+			else
+			    for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+                    (
+                        cd "$project"
+                        phpunit
+                    )
+                done
 			fi
-			for nested_project in $( find $PATH_INCLUDES -mindepth 2 -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
-				(
-					cd "$nested_project"
-					phpunit
-				)
-			done
 		elif [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in Vagrant
