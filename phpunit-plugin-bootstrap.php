@@ -55,7 +55,7 @@ function xwp_filter_active_plugins_for_phpunit( $active_plugins ) {
 	}
 	if ( ! empty( $forced_active_plugins ) ) {
 		foreach ( $forced_active_plugins as $forced_active_plugin ) {
-			$active_plugins[ "$forced_active_plugin" ] = time();
+			$active_plugins[] = $forced_active_plugin;
 		}
 	}
 	return $active_plugins;
