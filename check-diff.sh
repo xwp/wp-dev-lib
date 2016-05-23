@@ -765,8 +765,8 @@ function run_qunit {
 
 		cd "$( dirname "$gruntfile" )"
 
-		# Make sure Node packages are installed in this location.
-		if [ -e package.json ] && [ ! -e node_modules ]; then
+		# Make sure Node packages are installed in this location. Ignore symlink.
+		if [ -e package.json ] && [ ! -e node_modules -o -h node_modules ]; then
 			npm install
 		fi
 
