@@ -281,8 +281,8 @@ function set_environment_variables {
 		mkdir -p $LINTING_DIRECTORY/dev-lib
 		rsync -avzq --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
 
-		# Use node_modules from actual directory
-		if [ -e "$PROJECT_DIR/node_modules" ]; then
+		# Use node_modules from actual directory (create node_modules symlink even if it won't be created).
+		if [ -e "$PROJECT_DIR/package.json" ]; then
 			if [ -e "$LINTING_DIRECTORY/node_modules" ]; then
 				rm -r "$LINTING_DIRECTORY/node_modules"
 			fi
