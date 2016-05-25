@@ -19,6 +19,20 @@ if [ ! -e "$DEV_LIB_PATH/check-diff.sh" ]; then
 	exit 1
 fi
 
+# The following file is used in prepare-commit-msg hook:
+DEV_LIB_COMMIT_MESSAGE_FILE="/tmp/.dev-lib-commit-message.$PPID"
+if [ -e "$DEV_LIB_COMMIT_MESSAGE_FILE" ]; then
+	unlink "$DEV_LIB_COMMIT_MESSAGE_FILE"
+fi
+function append_commit_message {
+	LABEL=$1
+	VALUE=$2
+	if [ ! -e "$DEV_LIB_COMMIT_MESSAGE_FILE" ]; then
+		echo -e "" >> $DEV_LIB_COMMIT_MESSAGE_FILE
+	fi
+	echo -e "$LABEL: $VALUE" >> $DEV_LIB_COMMIT_MESSAGE_FILE
+}
+
 source "$DEV_LIB_PATH/check-diff.sh"
 set_environment_variables --diff-base ${DIFF_BASE:-HEAD} --diff-head ${DIFF_HEAD:-STAGE}
 install_tools

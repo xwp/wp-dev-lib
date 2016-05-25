@@ -1,0 +1,11 @@
+#!/bin/bash
+# WordPress prepare-commit-msg hook
+
+DEV_LIB_COMMIT_MESSAGE_FILE="/tmp/.dev-lib-commit-message.$PPID"
+COMMIT_EDITMSG=$1
+
+if [ -f "$DEV_LIB_COMMIT_MESSAGE_FILE" ]; then
+	cat "$DEV_LIB_COMMIT_MESSAGE_FILE" >> $COMMIT_EDITMSG
+	unlink "$DEV_LIB_COMMIT_MESSAGE_FILE"
+fi
+
