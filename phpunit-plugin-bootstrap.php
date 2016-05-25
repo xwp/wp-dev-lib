@@ -1,4 +1,10 @@
 <?php
+// Determine if we should update the content and plugin paths.
+if ( file_exists( dirname( __DIR__ ) . '/wp-load.php' ) ) {
+	define( 'WP_CONTENT_DIR', dirname( __DIR__ ) . '/wp-content/' );
+	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . 'plugins/' );
+}
+
 if ( file_exists( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' ) ) {
     require_once( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' );
 }
