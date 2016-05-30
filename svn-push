@@ -135,6 +135,7 @@ rsync -avz --delete --delete-excluded \
 	--exclude '/.git*' \
 	--exclude '/.jscsrc' \
 	--exclude '/.jshint*' \
+	--exclude '/.mailmap' \
 	--exclude '/.travis.yml' \
 	--exclude '/assets' \
 	--exclude '/dev-lib' \
