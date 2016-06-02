@@ -228,6 +228,11 @@ function set_environment_variables {
 		git ls-files -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	fi
 
+	if [ ! -z "$PATH_EXCLUDE_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDE_PATTERN" > "$TEMP_DIRECTORY/excluded-paths-scope"
+		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
+	fi
+
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
