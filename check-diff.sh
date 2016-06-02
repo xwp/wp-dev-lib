@@ -35,6 +35,7 @@ function set_environment_variables {
 	DEV_LIB_PATH=$(realpath "$DEV_LIB_PATH")
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
+	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'.*vendor.*'}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -228,8 +229,8 @@ function set_environment_variables {
 		git ls-files -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	fi
 
-	if [ ! -z "$PATH_EXCLUDE_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDE_PATTERN" > "$TEMP_DIRECTORY/excluded-paths-scope"
+	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-paths-scope"
 		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
 	fi
 
@@ -691,7 +692,7 @@ function lint_js_files {
 	set -e
 
 	# Run YUI Compressor.
-	cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | grep -v 'vendor/' > "$TEMP_DIRECTORY/paths-scope-js-yuicompressor"
+	cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range > "$TEMP_DIRECTORY/paths-scope-js-yuicompressor"
 	if [ "$YUI_COMPRESSOR_CHECK" == 1 ] && [ ! -s "$TEMP_DIRECTORY/paths-scope-js-yuicompressor" ] && command -v java >/dev/null 2>&1 && ! grep -sqi 'yuicompressor' <<< "$DEV_LIB_SKIP"; then
 		(
 			echo "## YUI Compressor"
