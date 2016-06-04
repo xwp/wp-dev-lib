@@ -35,7 +35,7 @@ function set_environment_variables {
 	DEV_LIB_PATH=$(realpath "$DEV_LIB_PATH")
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
-	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'.*vendor.*'}
+	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'.*/(vendor|bower_components)/.*'}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
