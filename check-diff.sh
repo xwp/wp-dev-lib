@@ -762,10 +762,20 @@ function run_qunit {
 		return
 	fi
 
-	for gruntfile in $( find $PATH_INCLUDES -name Gruntfile.js ); do
+	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
+	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-gruntfiles"
+		mv "$TEMP_DIRECTORY/excluded-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
+	fi
+	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then
+		return
+	fi
+
+	for gruntfile in $( cat "$TEMP_DIRECTORY/gruntfiles" ); do
 		if ! grep -Eqs 'grunt\.loadNpmTasks.*grunt-contrib-qunit' "$gruntfile"; then
 			continue
 		fi
+		echo "Gruntfile: $gruntfile"
 
 		# @todo Skip if there the CHECK_SCOPE is limited, and the dirname($gruntfile) is not among paths-scope-js; make sure root works
 
