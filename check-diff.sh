@@ -573,12 +573,12 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
-			    for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
-                    (
-                        cd "$project"
-                        phpunit
-                    )
-                done
+				for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+					(
+						cd "$project"
+						phpunit
+					)
+				done
 			fi
 		elif [ "$USER" != 'vagrant' ]; then
 
@@ -594,7 +594,7 @@ function run_phpunit_local {
 				cd - > /dev/null
 			fi
 
-            if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
+			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
 				echo "Running phpunit in Vagrant"
 				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && .git/hooks/pre-commit"
 			elif command -v vassh >/dev/null 2>&1; then
@@ -870,13 +870,13 @@ function check_execute_bit {
 }
 
 function check_should_execute {
-    if [ ! -z "$DEV_LIB_SKIP" ] && grep -sqi $1 <<< "$DEV_LIB_SKIP"; then
-        return 1
-    fi
+	if [ ! -z "$DEV_LIB_SKIP" ] && grep -sqi $1 <<< "$DEV_LIB_SKIP"; then
+		return 1
+	fi
 
-    if [ ! -z "$DEV_LIB_ONLY" ] && ! grep -sqi $1 <<< "$DEV_LIB_ONLY"; then
-        return 1
-    fi
+	if [ ! -z "$DEV_LIB_ONLY" ] && ! grep -sqi $1 <<< "$DEV_LIB_ONLY"; then
+		return 1
+	fi
 
-    return 0
+	return 0
 }
