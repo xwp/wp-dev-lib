@@ -24,6 +24,7 @@
 		"handle-callback-err": [2, "^err(or)?$"],
 		"id-length": [0],
 		"id-match": [0],
+		"indent": ["error", "tab"],
 		"init-declarations": [0],
 		"max-depth": [2, 3],
 		"max-nested-callbacks": [2, 3],
