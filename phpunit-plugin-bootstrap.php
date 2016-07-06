@@ -2,6 +2,10 @@
 // Determine if we should update the content and plugin paths.
 if ( file_exists( dirname( __DIR__ ) . '/wp-load.php' ) ) {
 	define( 'WP_CONTENT_DIR', dirname( __DIR__ ) . '/wp-content/' );
+} else if ( file_exists( '../../../wp-content' ) ) {
+	define( 'WP_CONTENT_DIR', dirname( dirname( dirname( getcwd() ) ) ) . '/wp-content/' );
+}
+if ( defined( 'WP_CONTENT_DIR' ) && ! defined( 'WP_PLUGIN_DIR' ) ) {
 	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . 'plugins/' );
 }
 
