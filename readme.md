@@ -38,6 +38,16 @@ ln -s dev-lib/.eslintignore . && git add .eslintignore
 cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 
+For ESLint, you'll also likely want to make `eslint` as a dev dependency for your NPM package:
+
+```bash
+npm init # if you don't have a package.json already
+npm install --save-dev eslint
+git add package.json
+echo 'node_modules' >> .gitignore
+git add .gitignore
+```
+
 See below for how to configure your `.travis.yml`.
 
 ### Install via symlink (non-submodule)
