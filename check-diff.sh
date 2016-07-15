@@ -309,6 +309,13 @@ function set_environment_variables {
 	if [ ! -z "$PHPCS_RULESET_FILE" ]; then PHPCS_RULESET_FILE=$(realpath "$PHPCS_RULESET_FILE"); fi
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
 	if [ ! -z "$VAGRANTFILE" ]; then VAGRANTFILE=$(realpath "$VAGRANTFILE"); fi
+	if [ -z "$PHPUNIT_CONFIG" ] && ( [ -e phpunit.xml ] || [ -e phpunit.xml.dist ] ); then
+		if [ -e phpunit.xml ]; then
+			PHPUNIT_CONFIG=phpunit.xml
+		else
+			PHPUNIT_CONFIG=phpunit.xml.dist
+		fi
+	fi
 	# Note: PHPUNIT_CONFIG must be a relative path for the sake of running in Vagrant
 
 	return 0
