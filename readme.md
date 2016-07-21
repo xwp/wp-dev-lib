@@ -35,6 +35,7 @@ ln -s dev-lib/.jshintrc . && git add .jshintrc
 ln -s dev-lib/.jscsrc . && git add .jscsrc
 ln -s dev-lib/.eslintrc . && git add .eslintrc
 ln -s dev-lib/.eslintignore . && git add .eslintignore
+ln -s dev-lib/.editorconfig . && git add .editorconfig
 cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 
