@@ -27,6 +27,12 @@ To install the pre-commit hook, symlink to [`pre-commit`](pre-commit) from your 
 cd .git/hooks && ln -s ../../dev-lib/pre-commit . && cd -
 ```
 
+To install the prepare-commit-msg hook, symlink to [`prepare-commit-msg`](prepare-commit-msg) from your project's `.git/hooks/prepare-commit-msg`:
+
+```bash
+cd .git/hooks && ln -s ../../dev-lib/prepare-commit-msg . && cd -
+```
+
 Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`phpcs.ruleset.xml`](phpcs.ruleset.xml), and [`phpunit-plugin.xml`](phpunit-plugin.xml) (note the PHPUnit config will need its paths modified if it is copied instead of symlinked):
 
 ```bash
@@ -59,6 +65,7 @@ Often installing as a submodule is not viable, for example when contributing to 
 git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
 cd my-plugin/.git/hooks
 ln -s ~/Projects/wp-dev-lib/pre-commit
+ln -s ~/Projects/wp-dev-lib/prepare-commit-msg
 ```
 
 For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
