@@ -8,31 +8,31 @@
 set -e
 
 # Store the initial directory to return back to it later
-OLDPWD=`pwd`
+OLDPWD=$(pwd)
 
 # Navigate to the script directory
-cd `dirname $0`
+cd "$(dirname $0)"
 
 # Get full path of the script directory
-BINDIR=`pwd`
+BINDIR=$(pwd)
 
 # Get back to the calling directory
 cd - &> /dev/null
 
 # If passed a destination, switch to it to get the full path and then .git/hooks directory
-if [ ! -z $1 ]; then
+if [ ! -z "$1" ]; then
 	cd $1
-	DEST=`pwd`
+	DEST=$(pwd)
 fi
 
 # Get the hooks directory of the current git repo
-cd `git rev-parse --git-dir`/hooks
+cd "$(git rev-parse --git-dir)/hooks"
 
 # Get relative path to the original file from within the hooks directory
 RELPATH=`perl -e 'use File::Spec; print File::Spec->abs2rel(@ARGV) . "\n"' $BINDIR/pre-commit $(pwd)`
 
 echo "## Placing pre-commit file in `pwd` from $RELPATH"
-ln -s $RELPATH .
+ln -s "$RELPATH" .
 
 # Return back to the calling directory
-cd $OLDPWD &> /dev/null
+cd "$OLDPWD" &> /dev/null
