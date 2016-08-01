@@ -7,6 +7,9 @@
 
 set -e
 
+# Check if Perl is installed
+command -v perl >/dev/null 2>&1 || { echo >&2 "Perl is not installed, and is required by this script. See how to install it on http://learn.perl.org/installing"; exit 1; }
+
 # Store the initial directory to return back to it later
 OLDPWD=$(pwd)
 
