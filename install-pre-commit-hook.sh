@@ -32,14 +32,14 @@ fi
 cd "$(git rev-parse --git-dir)/hooks"
 
 # Get relative path to the original file from within the hooks directory
-RELPATH=`perl -e 'use File::Spec; print File::Spec->abs2rel(@ARGV)' $BINDIR/pre-commit $(pwd)`
+RELPATH=$( perl -e 'use File::Spec; print File::Spec->abs2rel(@ARGV)' "$BINDIR/pre-commit" "$(pwd)" )
 
 if [ -z "$RELPATH" ]; then
     echo 'Could not determine the relative path, Sorry. Try symlinking the file manually.'
     exit 1
 fi
 
-echo "## Placing pre-commit file in `pwd` from $RELPATH"
+echo "## Placing pre-commit file in $(pwd) from $RELPATH"
 ln -s "$RELPATH" .
 
 # Return back to the calling directory
