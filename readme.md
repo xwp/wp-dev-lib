@@ -21,10 +21,10 @@ git add dev-lib
 git commit -m "Update dev-lib"
 ```
 
-To install the pre-commit hook, symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit`:
+To install the pre-commit hook, symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit`, you can use the bundled script to do this:
 
 ```bash
-cd .git/hooks && ln -s ../../dev-lib/pre-commit . && cd -
+./dev-lib/install-pre-commit-hook.sh
 ```
 
 Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`phpcs.ruleset.xml`](phpcs.ruleset.xml), and [`phpunit-plugin.xml`](phpunit-plugin.xml) (note the PHPUnit config will need its paths modified if it is copied instead of symlinked):
@@ -57,8 +57,7 @@ Often installing as a submodule is not viable, for example when contributing to 
 
 ```bash
 git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
-cd my-plugin/.git/hooks
-ln -s ~/Projects/wp-dev-lib/pre-commit
+~/Projects/wp-dev-lib/install-pre-commit-hook.sh /path/to/my-plugin
 ```
 
 For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
@@ -70,7 +69,7 @@ To install dev-lib for all themes and plugins that don't already have a `pre-com
 ```bash
 git clone https://github.com/xwp/wp-dev-lib.git ~/Shared/dev-lib
 cd ~/Shared/dev-lib
-./install-upgrade-pre-commit-hook.sh ~/Projects/wordpress
+./install-shared-pre-commit-hook.sh ~/Projects/wordpress
 ```
 
 ## Travis CI
