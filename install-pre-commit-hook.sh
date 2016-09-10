@@ -42,5 +42,8 @@ fi
 echo "## Placing pre-commit file in $(pwd) from $RELPATH"
 ln -s "$RELPATH" .
 
+# A workaround for Windows envs where symlinks are not working properly, hardcoding the path to dev-lib
+echo "$BINDIR" > .dev-lib-path
+
 # Return back to the calling directory
 cd "$OLDPWD" &> /dev/null
