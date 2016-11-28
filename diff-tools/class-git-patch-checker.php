@@ -32,10 +32,10 @@ class Git_Patch_Checker {
 			}
 			if ( preg_match( '#^@@ -(\d+)(?:,(\d+))? \+(?P<line_number>\d+)(?:,(?P<line_count>\d+))? @@#', $line, $matches ) ) {
 				if ( empty( $matches['line_count'] ) ) {
-					$matches['line_count'] = 0;
+					$matches['line_count'] = 1;
 				}
 				$start_line = intval( $matches['line_number'] );
-				$end_line = intval( $matches['line_number'] ) + intval( $matches['line_count'] );
+				$end_line = intval( $matches['line_number'] ) + max( 0, intval( $matches['line_count'] ) - 1 );
 				$file_path = $current_file_path;
 				$ranges[] = compact( 'file_path', 'start_line', 'end_line' );
 			}
