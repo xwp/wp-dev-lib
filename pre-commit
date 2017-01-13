@@ -10,6 +10,8 @@ if [ -L "$0" ]; then
 	else
 		DEV_LIB_PATH=$( dirname $( readlink "$0" ) )
 	fi
+elif [ -f "$0" ]; then
+	DEV_LIB_PATH=$( dirname "$0" )
 else
 	DEV_LIB_PATH=dev-lib
 fi

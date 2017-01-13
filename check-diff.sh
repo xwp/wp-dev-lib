@@ -595,8 +595,9 @@ function run_phpunit_local {
 			fi
 
 			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
+				VAGRANT_DEV_LIB_PATH=$ABSOLUTE_VAGRANT_PATH${DEV_LIB_PATH:${#PROJECT_DIR}}
 				echo "Running phpunit in Vagrant"
-				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && dev-lib/pre-commit"
+				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && $VAGRANT_DEV_LIB_PATH/pre-commit"
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
