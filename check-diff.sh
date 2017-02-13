@@ -133,6 +133,7 @@ function set_environment_variables {
 	VERBOSE=${VERBOSE:-0}
 	CODECEPTION_CHECK=${CODECEPTION_CHECK:-1}
 	VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
+	DOCKERFILE=$( upsearch 'Dockerfile' git_boundless )
 
 	if [ -z "$JSCS_CONFIG" ]; then
 		JSCS_CONFIG="$( upsearch .jscsrc )"
@@ -313,6 +314,7 @@ function set_environment_variables {
 	if [ ! -z "$PHPCS_RULESET_FILE" ]; then PHPCS_RULESET_FILE=$(realpath "$PHPCS_RULESET_FILE"); fi
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
 	if [ ! -z "$VAGRANTFILE" ]; then VAGRANTFILE=$(realpath "$VAGRANTFILE"); fi
+	if [ ! -z "$DOCKERFILE" ]; then DOCKERFILE=$(realpath "$DOCKERFILE"); fi
 	# Note: PHPUNIT_CONFIG must be a relative path for the sake of running in Vagrant
 
 	return 0
@@ -584,6 +586,12 @@ function run_phpunit_local {
 					)
 				done
 			fi
+		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "bin/phpunit" ]; then
+		    if [ -n "$PHPUNIT_CONFIG" ]; then
+                bin/phpunit -c "$PHPUNIT_CONFIG"
+            else
+                echo "Failed to run phpunit inside Docker"
+            fi
 		elif [ "$USER" != 'vagrant' ]; then
 
 			# Check if we're in Vagrant
