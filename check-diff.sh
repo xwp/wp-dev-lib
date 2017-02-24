@@ -379,7 +379,7 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ]; then
+	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
 	fi
 
