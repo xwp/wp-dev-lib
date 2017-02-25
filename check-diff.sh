@@ -379,7 +379,7 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ] && [ ! -e node_modules ]; then
+	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
 	fi
 
@@ -418,7 +418,7 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ] && check_should_execute 'grunt'; then
+		if check_should_execute 'grunt' && [ "$( type -t grunt )" == '' ] && [ ! -e "$(npm bin)/grunt" ]; then
 			echo "Installing Grunt"
 			if ! npm install -g grunt-cli 2>/dev/null; then
 				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
@@ -759,6 +759,7 @@ function lint_js_files {
 	fi
 }
 
+# @todo: This is wrong, as we should be doing `npm test` instead of calling `grunt qunit` directly.
 function run_qunit {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'grunt'; then
 		return
@@ -788,7 +789,11 @@ function run_qunit {
 			npm install
 		fi
 
-		grunt qunit
+		if [ -e "$(npm bin)/grunt" ]; then
+			$(npm bin)/grunt qunit
+		else
+			grunt qunit
+		fi
 
 		cd - /dev/null
 	done
