@@ -5,6 +5,11 @@ notifications:
     on_success: never
     on_failure: change
 
+cache:
+  directories:
+    - node_modules
+    - vendor
+
 language:
   - php
   - node_js
