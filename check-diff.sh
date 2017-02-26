@@ -462,7 +462,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer'; then
+	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
 		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
