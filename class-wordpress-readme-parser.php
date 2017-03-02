@@ -31,7 +31,7 @@ class WordPress_Readme_Parser {
 		}
 
 		// Parse metadata
-		$syntax_ok = preg_match( '/^=== (.+?) ===\n(.+?)\n\n(.+?)\n(.+)/s', $this->source, $matches );
+		$syntax_ok = preg_match( '/^=== (.+?) ===\r?\n(.+?)\r?\n\r?\n(.+?)\r?\n(.+)/s', $this->source, $matches );
 		if ( ! $syntax_ok ) {
 			throw new Exception( 'Malformed metadata block' );
 		}
@@ -49,7 +49,7 @@ class WordPress_Readme_Parser {
 		$this->metadata['Contributors'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Contributors'] ) );
 		$this->metadata['Tags'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Tags'] ) );
 
-		$syntax_ok = preg_match_all( '/(?:^|\n)== (.+?) ==\n(.+?)(?=\n== |$)/s', $readme_txt_rest, $section_matches, PREG_SET_ORDER );
+		$syntax_ok = preg_match_all( '/(?:^|\r?\n)== (.+?) ==\r?\n(.+?)(?=\r?\n== |$)/s', $readme_txt_rest, $section_matches, PREG_SET_ORDER );
 		if ( ! $syntax_ok ) {
 			throw new Exception( 'Failed to parse sections from readme.txt' );
 		}
@@ -61,7 +61,7 @@ class WordPress_Readme_Parser {
 			$subsections = array();
 
 			// Check if there is front matter
-			if ( preg_match( '/^(\s*[^=].+?)(?=\n=|$)(.*$)/s', $body, $matches ) ) {
+			if ( preg_match( '/^(\s*[^=].+?)(?=\r?\n=|$)(.*$)/s', $body, $matches ) ) {
 				$body = $matches[1];
 				$subsection_search_area = $matches[2];
 			} else {
@@ -70,7 +70,7 @@ class WordPress_Readme_Parser {
 			}
 
 			// Parse subsections
-			if ( preg_match_all( '/(?:^|\n)= (.+?) =\n(.+?)(?=\n= |$)/s', $subsection_search_area, $subsection_matches, PREG_SET_ORDER ) ) {
+			if ( preg_match_all( '/(?:^|\r?\n)= (.+?) =\r?\n(.+?)(?=\r?\n= |$)/s', $subsection_search_area, $subsection_matches, PREG_SET_ORDER ) ) {
 				foreach ( $subsection_matches as $subsection_match ) {
 					array_shift( $subsection_match );
 					$subsections[] = array(
@@ -100,7 +100,7 @@ class WordPress_Readme_Parser {
 			);
 			// Convert <pre lang="php"> into GitHub-flavored ```php markdown blocks
 			$body = preg_replace(
-				'#\n?<pre lang="(\w+)">\n?(.+?)\n?</pre>\n?#s',
+				'#\n?<pre lang="(\w+)">\r?\n?(.+?)\r?\n?</pre>\r?\n?#s',
 				"\n" . '```$1' . "\n" . '$2' . "\n" . '```' . "\n",
 				$body
 			);
