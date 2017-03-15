@@ -57,6 +57,13 @@ function set_environment_variables {
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
+
+			# Make sure the remote branch is fetched.
+			if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$TRAVIS_BRANCH"; then
+				git fetch origin "$TRAVIS_BRANCH"
+				git branch "$TRAVIS_BRANCH" FETCH_HEAD
+			fi
+
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_BRANCH}
 		else
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
