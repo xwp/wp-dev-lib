@@ -133,7 +133,7 @@ function set_environment_variables {
 	VERBOSE=${VERBOSE:-0}
 	CODECEPTION_CHECK=${CODECEPTION_CHECK:-1}
 	VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
-	DOCKERFILE=$( upsearch 'Dockerfile' git_boundless )
+	DOCKERFILE=$( upsearch 'docker-compose.yml' git_boundless )
 
 	if [ -z "$JSCS_CONFIG" ]; then
 		JSCS_CONFIG="$( upsearch .jscsrc )"
