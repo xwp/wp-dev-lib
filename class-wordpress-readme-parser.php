@@ -44,7 +44,7 @@ class WordPress_Readme_Parser {
 				throw new Exception( "Parse error in $metadatum" );
 			}
 			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
-			$this->metadata[ $name ] = $value;
+			$this->metadata[ $name ] = trim( $value );
 		}
 		$this->metadata['Contributors'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Contributors'] ) );
 		$this->metadata['Tags'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Tags'] ) );
