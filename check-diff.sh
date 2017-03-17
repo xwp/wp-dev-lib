@@ -57,6 +57,13 @@ function set_environment_variables {
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
+
+			# Make sure the remote branch is fetched.
+			if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$TRAVIS_BRANCH"; then
+				git fetch origin "$TRAVIS_BRANCH"
+				git branch "$TRAVIS_BRANCH" FETCH_HEAD
+			fi
+
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_BRANCH}
 		else
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
@@ -222,6 +229,7 @@ function set_environment_variables {
 		DIFF_ARGS="$DIFF_BASE...$DIFF_HEAD"
 	fi
 
+	echo "git diff $DIFF_ARGS"
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
 		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
@@ -381,7 +389,7 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ] && [ ! -e node_modules ]; then
+	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
 	fi
 
@@ -420,7 +428,7 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ] && check_should_execute 'grunt'; then
+		if check_should_execute 'grunt' && [ "$( type -t grunt )" == '' ] && [ ! -e "$(npm bin)/grunt" ]; then
 			echo "Installing Grunt"
 			if ! npm install -g grunt-cli 2>/dev/null; then
 				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
@@ -464,7 +472,7 @@ function install_tools {
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer'; then
+	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
 		if [ "$( type -t composer )" == '' ]; then
 			(
 				cd "$TEMP_TOOL_PATH"
@@ -767,6 +775,7 @@ function lint_js_files {
 	fi
 }
 
+# @todo: This is wrong, as we should be doing `npm test` instead of calling `grunt qunit` directly.
 function run_qunit {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'grunt'; then
 		return
@@ -796,7 +805,11 @@ function run_qunit {
 			npm install
 		fi
 
-		grunt qunit
+		if [ -e "$(npm bin)/grunt" ]; then
+			$(npm bin)/grunt qunit
+		else
+			grunt qunit
+		fi
 
 		cd - /dev/null
 	done

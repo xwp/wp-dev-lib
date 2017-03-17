@@ -3,7 +3,9 @@
 set -e
 
 echo "## Checking files, scope $CHECK_SCOPE:"
-cat "$TEMP_DIRECTORY/paths-scope"
+if [[ $CHECK_SCOPE != "all" ]]; then
+	cat "$TEMP_DIRECTORY/paths-scope"
+fi
 echo
 
 check_execute_bit
