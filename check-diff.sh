@@ -687,10 +687,7 @@ function run_phpunit_travisci {
 	fi
 
 	# Run the tests
-	if [ -n "$PHPUNIT_CONFIG" ] && [ ! -z "$DOCKERFILE" ] && [ ! -z "bin/phpunit" ]; then
-        PHPUNIT_COVERAGE_DIR=$(pwd)
-        bin/phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
-	elif [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
+	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 		PHPUNIT_COVERAGE_DIR=$(pwd)
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	fi
