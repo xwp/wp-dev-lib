@@ -592,7 +592,7 @@ function run_phpunit_local {
 					)
 				done
 			fi
-		elif [ "$USER" != 'vagrant' ]; then
+		elif [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1; then
 
 			# Check if we're in Vagrant
 			if [ ! -z "$VAGRANTFILE" ]; then
