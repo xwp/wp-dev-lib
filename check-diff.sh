@@ -690,15 +690,15 @@ function run_phpunit_travisci {
 	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
 		PHPUNIT_COVERAGE_DIR=$(pwd)
 		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	else
+        for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
+            (
+                cd "$nested_project"
+                echo "Running PHPUnit in nested project: $nested_project"
+                phpunit --stop-on-failure
+            )
+        done
 	fi
-
-	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
-		(
-			cd "$nested_project"
-			echo "Running PHPUnit in nested project: $nested_project"
-			phpunit --stop-on-failure
-		)
-	done
 	cd "$PROJECT_DIR"
 }
 
