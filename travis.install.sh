@@ -20,6 +20,5 @@ if [[ ! -z "$PHPUNIT_VERSION" ]]; then
   fi
 fi
 
-install_tools
 set_environment_variables
 install_tools
