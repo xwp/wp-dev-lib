@@ -567,6 +567,15 @@ function install_db {
 	echo "DB $DB_NAME created"
 }
 
+function find_phpunit_dirs {
+	find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; > $TEMP_DIRECTORY/phpunitdirs
+	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/phpunitdirs" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-phpunitdirs"
+		mv "$TEMP_DIRECTORY/included-phpunitdirs" "$TEMP_DIRECTORY/phpunitdirs"
+	fi
+	cat $TEMP_DIRECTORY/phpunitdirs
+}
+
 function run_phpunit_local {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
@@ -585,7 +594,7 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
-				for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+				for project in $( find_phpunit_dirs ); do
 					(
 						cd "$project"
 						phpunit
@@ -678,19 +687,17 @@ function run_phpunit_travisci {
 		after_wp_install
 	fi
 
-	# Run the tests
-	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
-		PHPUNIT_COVERAGE_DIR=$(pwd)
-		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	INITIAL_DIR=$(pwd)
+	if [ -n "$PHPUNIT_CONFIG" ]; then
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+	else
+		for project in $( find_phpunit_dirs ); do
+			(
+				cd "$project"
+				phpunit --stop-on-failure $( if [ "$project" == "$INITIAL_DIR" ]; then coverage_clover; fi )
+			)
+		done
 	fi
-
-	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
-		(
-			cd "$nested_project"
-			echo "Running PHPUnit in nested project: $nested_project"
-			phpunit --stop-on-failure
-		)
-	done
 	cd "$PROJECT_DIR"
 }
 
@@ -775,8 +782,8 @@ function run_qunit {
 
 	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-gruntfiles"
-		mv "$TEMP_DIRECTORY/excluded-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
+		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-gruntfiles"
+		mv "$TEMP_DIRECTORY/included-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
 	fi
 	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then
 		return
