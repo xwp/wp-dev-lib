@@ -601,7 +601,7 @@ function run_phpunit_local {
             else
                 echo "Failed to run phpunit inside Docker"
             fi
-		elif [ "$USER" != 'vagrant' ]; then
+		elif [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1; then
 
 			# Check if we're in Vagrant
 			if [ ! -z "$VAGRANTFILE" ]; then
@@ -856,7 +856,9 @@ function lint_php_files {
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
 			if ! cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range | xargs phpcs -s --report-emacs="$TEMP_DIRECTORY/phpcs-report" --standard="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )" $( if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi ); then
-				if [ "$CHECK_SCOPE" == 'patches' ]; then
+				if [ ! -s "$TEMP_DIRECTORY/phpcs-report" ]; then
+					return 1
+				elif [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
 					if [[ $phpcs_status != 0 ]]; then
