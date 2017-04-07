@@ -141,6 +141,7 @@ function set_environment_variables {
 	CODECEPTION_CHECK=${CODECEPTION_CHECK:-1}
 	VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
 	DOCKERFILE=$( upsearch 'docker-compose.yml' git_boundless )
+	DOCKER_PHPUNIT_BIN=${DOCKER_PHPUNIT_BIN:-bin/phpunit}
 
 	if [ -z "$JSCS_CONFIG" ]; then
 		JSCS_CONFIG="$( upsearch .jscsrc )"
@@ -594,9 +595,9 @@ function run_phpunit_local {
 					)
 				done
 			fi
-		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "bin/phpunit" ]; then
+		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "$DOCKER_PHPUNIT_BIN" ]; then
 		    if [ -n "$PHPUNIT_CONFIG" ]; then
-                bin/phpunit -c "$PHPUNIT_CONFIG"
+                "$DOCKER_PHPUNIT_BIN" -c "$PHPUNIT_CONFIG"
             else
                 echo "Failed to run phpunit inside Docker"
             fi
