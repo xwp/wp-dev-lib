@@ -53,8 +53,10 @@ function set_environment_variables {
 		echo "LIMIT_TRAVIS_PR_CHECK_SCOPE is obsolete; use CHECK_SCOPE env var instead" 1>&2
 		return 1
 	fi
-
 	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
+
+	echo $TRAVIS
+	echo "printenv"
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
@@ -70,9 +72,7 @@ function set_environment_variables {
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
 		fi
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
-	fi
-
-	if [[ -n "${BITBUCKET_BRANCH+set}" ]]; then
+	elif [[ ! -z "${BITBUCKET_BRANCH}" ]]; then
 		DIFF_BASE=${DIFF_BASE:-$BITBUCKET_COMMIT^}
 		DIFF_HEAD=${DIFF_HEAD:-$BITBUCKET_COMMIT}
 	else
