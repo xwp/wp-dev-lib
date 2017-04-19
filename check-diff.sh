@@ -55,9 +55,6 @@ function set_environment_variables {
 	fi
 	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
-	echo $TRAVIS
-	echo "printenv"
-
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
 
