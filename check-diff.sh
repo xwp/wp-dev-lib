@@ -55,6 +55,9 @@ function set_environment_variables {
 	fi
 	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
+	echo $TRAVIS
+	echo "printenv"
+
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
 
@@ -69,10 +72,16 @@ function set_environment_variables {
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
 		fi
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	fi
+
+	if [[ -n "${BITBUCKET_BRANCH+set}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-$BITBUCKET_COMMIT^}
+		DIFF_HEAD=${DIFF_HEAD:-$BITBUCKET_COMMIT}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
 	fi
+
 	while [[ $# > 0 ]]; do
 		key="$1"
 		case "$key" in
