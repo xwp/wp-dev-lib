@@ -1,7 +1,7 @@
 <?php
 // Determine if we should update the content and plugin paths.
-if ( file_exists( dirname( __DIR__ ) . '/wp-load.php' ) ) {
-	define( 'WP_CONTENT_DIR', dirname( __DIR__ ) . '/wp-content/' );
+if ( file_exists( dirname( dirname( __FILE__ ) ) . '/wp-load.php' ) ) {
+	define( 'WP_CONTENT_DIR', dirname( dirname( __FILE__ ) ) . '/wp-content/' );
 } else if ( file_exists( '../../../wp-content' ) ) {
 	define( 'WP_CONTENT_DIR', dirname( dirname( dirname( getcwd() ) ) ) . '/wp-content/' );
 }
@@ -9,8 +9,8 @@ if ( defined( 'WP_CONTENT_DIR' ) && ! defined( 'WP_PLUGIN_DIR' ) ) {
 	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . 'plugins/' );
 }
 
-if ( file_exists( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' ) ) {
-    require_once( __DIR__ . '/../phpunit-plugin-bootstrap.project.php' );
+if ( file_exists( dirname( __FILE__ ) . '/../phpunit-plugin-bootstrap.project.php' ) ) {
+    require_once( dirname( __FILE__ ) . '/../phpunit-plugin-bootstrap.project.php' );
 }
 
 global $_plugin_file;

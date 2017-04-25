@@ -34,7 +34,7 @@ try {
 	$readme_root = dirname( $readme_txt_path );
 	$readme_md_path = preg_replace( '/txt$/', 'md', $readme_txt_path );
 
-	require_once __DIR__ . '/class-wordpress-readme-parser.php';
+	require_once dirname( __FILE__ ) . '/class-wordpress-readme-parser.php';
 
 	$readme = new WordPress_Readme_Parser( array( 'path' => $readme_txt_path ) );
 
