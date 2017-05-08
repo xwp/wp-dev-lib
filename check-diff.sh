@@ -103,7 +103,7 @@ function set_environment_variables {
 	done
 
 	# TODO: Change back to https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar once 3.x compat is done.
-	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/blob/700168ede59d6a7d45fc4a2feefde1d156eb4573/phpcs.phar?raw=true
+	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar
 	PHPCS_RULESET_FILE=$( upsearch phpcs.ruleset.xml )
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
