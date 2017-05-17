@@ -254,7 +254,7 @@ function set_environment_variables {
 
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-css"
+	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.css(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-css"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
