@@ -102,7 +102,8 @@ function set_environment_variables {
 		shift # past argument or value
 	done
 
-	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+	# TODO: Change back to https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar once 3.x compat is done.
+	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar
 	PHPCS_RULESET_FILE=$( upsearch phpcs.ruleset.xml )
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
@@ -397,8 +398,9 @@ function install_tools {
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if [ -z "$( type -t phpunit )" ] && check_should_execute 'phpunit'; then
-			echo "Downloading PHPUnit phar"
-			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
+			PHPUNIT_VERSION=${PHPUNIT_VERSION:-5.7}
+			echo "Downloading PHPUnit $PHPUNIT_VERSION phar"
+			download https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
 		fi
 
@@ -570,6 +572,15 @@ function install_db {
 	echo "DB $DB_NAME created"
 }
 
+function find_phpunit_dirs {
+	find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; > $TEMP_DIRECTORY/phpunitdirs
+	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/phpunitdirs" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-phpunitdirs"
+		mv "$TEMP_DIRECTORY/included-phpunitdirs" "$TEMP_DIRECTORY/phpunitdirs"
+	fi
+	cat $TEMP_DIRECTORY/phpunitdirs
+}
+
 function run_phpunit_local {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
@@ -588,7 +599,7 @@ function run_phpunit_local {
 			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
-				for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+				for project in $( find_phpunit_dirs ); do
 					(
 						cd "$project"
 						phpunit
@@ -688,20 +699,16 @@ function run_phpunit_travisci {
 	fi
 
 	# Run the tests
-	if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then
-		PHPUNIT_COVERAGE_DIR=$(pwd)
-		phpunit $(verbose_arg) $( if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then echo -c "$TRAVIS_PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
-	elif [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
-		PHPUNIT_COVERAGE_DIR=$(pwd)
-		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	PHPUNIT_COVERAGE_DIR=$(pwd)
+	if [ -n "$PHPUNIT_CONFIG" ]; then
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
 	else
-        for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
-            (
-                cd "$nested_project"
-                echo "Running PHPUnit in nested project: $nested_project"
-                phpunit --stop-on-failure
-            )
-        done
+		for project in $( find_phpunit_dirs ); do
+			(
+				cd "$project"
+				phpunit --stop-on-failure $( if [ "$project" == "$PHPUNIT_COVERAGE_DIR" ]; then coverage_clover; fi )
+			)
+		done
 	fi
 	cd "$PROJECT_DIR"
 }
@@ -787,8 +794,8 @@ function run_qunit {
 
 	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-gruntfiles"
-		mv "$TEMP_DIRECTORY/excluded-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
+		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-gruntfiles"
+		mv "$TEMP_DIRECTORY/included-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
 	fi
 	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then
 		return
