@@ -167,10 +167,12 @@ function set_environment_variables {
 	fi
 
 	if [ -z "$STYLELINT_CONFIG" ]; then
-		STYLELINT_CONFIG="$( upsearch .stylelintrc )"
-	fi
-	if [ -z "$STYLELINT_CONFIG" ]; then
-		STYLELINT_CONFIG="$( upsearch stylelint.config.js )"
+		for SEARCHED_STYLELINT_CONFIG in .stylelintrc{,.yaml,.yml,.js,.json} stylelint.config.js; do
+			STYLELINT_CONFIG="$( upsearch $SEARCHED_STYLELINT_CONFIG )"
+			if [ ! -z "$STYLELINT_CONFIG" ]; then
+				break
+			fi
+		done
 	fi
 
 	# Load any environment variable overrides from config files
@@ -290,7 +292,7 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .stylelintrc stylelint.config.js phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .stylelintrc{,.yaml,.yml,.js,.json} stylelint.config.js phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
