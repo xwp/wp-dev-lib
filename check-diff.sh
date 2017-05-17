@@ -478,6 +478,9 @@ function install_tools {
 			if ! npm install -g stylelint 2>/dev/null; then
 				echo "Failed to install stylelint (try manually doing: sudo npm install -g stylelint), so skipping stylelint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,stylelint"
+			elif ! -e node_modules/stylelint-formatter-compact; then
+				echo "The stylelint-formatter-compact node module is not installed, skipping stylelint."
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,stylelint"
 			fi
 		fi
 
@@ -807,8 +810,7 @@ function lint_css_files {
 		(
 			echo "## stylelint"
 			cd "$LINTING_DIRECTORY"
-			# TODO: --format=compact is not right.
-			if ! cat "$TEMP_DIRECTORY/paths-scope-css" | remove_diff_range | xargs "$(npm bin)/stylelint" --format=compact --config="$STYLELINT_CONFIG" > "$TEMP_DIRECTORY/stylelint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-css" | remove_diff_range | xargs "$(npm bin)/stylelint" --custom-formatter=node_modules/stylelint-formatter-compact --config="$STYLELINT_CONFIG" > "$TEMP_DIRECTORY/stylelint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/stylelint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-css" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					exit_code="${PIPESTATUS[1]}"
