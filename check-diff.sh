@@ -474,8 +474,8 @@ function install_tools {
 
 		# Install stylelint
 		if [ -n "$STYLELINT_CONFIG" ] && [ -e "$STYLELINT_CONFIG" ] && [ ! -e "$(npm bin)/stylelint" ] && check_should_execute 'stylelint'; then
-			echo "Installing ESLint"
-			if ! npm install -g eslint 2>/dev/null; then
+			echo "Installing stylelint"
+			if ! npm install -g stylelint 2>/dev/null; then
 				echo "Failed to install stylelint (try manually doing: sudo npm install -g stylelint), so skipping stylelint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,stylelint"
 			fi

@@ -40,7 +40,7 @@ ln -s dev-lib/.editorconfig . && git add .editorconfig
 cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 
-For ESLint and stylelint, you'll also likely want to make then dev dependencies for your NPM package:
+For ESLint and stylelint, you'll also likely want to make them dev dependencies for your NPM package:
 
 ```bash
 npm init # if you don't have a package.json already
