@@ -166,6 +166,13 @@ function set_environment_variables {
 		ESLINT_IGNORE="$( upsearch .eslintignore )"
 	fi
 
+	if [ -z "$STYLELINT_CONFIG" ]; then
+		STYLELINT_CONFIG="$( upsearch .stylelintrc )"
+	fi
+	if [ -z "$STYLELINT_CONFIG" ]; then
+		STYLELINT_CONFIG="$( upsearch stylelint.config.js )"
+	fi
+
 	# Load any environment variable overrides from config files
 	ENV_FILE=$( upsearch .ci-env.sh )
 	if [ ! -z "$ENV_FILE" ]; then
@@ -245,7 +252,7 @@ function set_environment_variables {
 
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
+	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-css"
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
@@ -283,7 +290,7 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .stylelintrc stylelint.config.js phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
@@ -460,6 +467,15 @@ function install_tools {
 			if ! npm install -g eslint 2>/dev/null; then
 				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
+			fi
+		fi
+
+		# Install stylelint
+		if [ -n "$STYLELINT_CONFIG" ] && [ -e "$STYLELINT_CONFIG" ] && [ ! -e "$(npm bin)/stylelint" ] && check_should_execute 'stylelint'; then
+			echo "Installing ESLint"
+			if ! npm install -g eslint 2>/dev/null; then
+				echo "Failed to install stylelint (try manually doing: sudo npm install -g stylelint), so skipping stylelint"
+				DEV_LIB_SKIP="$DEV_LIB_SKIP,stylelint"
 			fi
 		fi
 
@@ -769,6 +785,36 @@ function lint_js_files {
 					fi
 				elif [ -s "$TEMP_DIRECTORY/eslint-report" ]; then
 					cat "$TEMP_DIRECTORY/eslint-report" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					exit 1
+				fi
+			fi
+		)
+	fi
+}
+
+
+function lint_css_files {
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-css" ]; then
+		return
+	fi
+
+	set -e
+
+	# Run ESLint.
+	if [ -n "$STYLELINT_CONFIG" ] && [ -e "$STYLELINT_CONFIG" ] && [ -e "$(npm bin)/stylelint" ] && check_should_execute 'stylelint'; then
+		(
+			echo "## stylelint"
+			cd "$LINTING_DIRECTORY"
+			# TODO: --format=compact is not right.
+			if ! cat "$TEMP_DIRECTORY/paths-scope-css" | remove_diff_range | xargs "$(npm bin)/stylelint" --format=compact --config="$STYLELINT_CONFIG" > "$TEMP_DIRECTORY/stylelint-report"; then
+				if [ "$CHECK_SCOPE" == 'patches' ]; then
+					cat "$TEMP_DIRECTORY/stylelint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-css" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					exit_code="${PIPESTATUS[1]}"
+					if [[ $exit_code != 0 ]]; then
+						return $exit_code
+					fi
+				elif [ -s "$TEMP_DIRECTORY/stylelint-report" ]; then
+					cat "$TEMP_DIRECTORY/stylelint-report" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					exit 1
 				fi
 			fi
