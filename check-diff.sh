@@ -805,7 +805,7 @@ function lint_css_files {
 
 	set -e
 
-	# Run ESLint.
+	# Run stylelint.
 	if [ -n "$STYLELINT_CONFIG" ] && [ -e "$STYLELINT_CONFIG" ] && [ -e "$(npm bin)/stylelint" ] && check_should_execute 'stylelint'; then
 		(
 			echo "## stylelint"
