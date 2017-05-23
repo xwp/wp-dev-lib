@@ -5,8 +5,8 @@
  * @link https://github.com/markjaquith/WordPress-Plugin-Readme-Parser Alternative to WordPress-Plugin-Readme-Parser
  * @version 1.1.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
- * @copyright Copyright (c) 2013, XWP <https://xwp.co/>
- * @license GPLv2+
+ * @copyright Copyright (c) 2017, XWP <https://xwp.co/>
+ * @license MIT
  */
 
 class WordPress_Readme_Parser {
