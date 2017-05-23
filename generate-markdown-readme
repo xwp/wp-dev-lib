@@ -4,8 +4,8 @@
  * Look for WordPress readme in current directory or above and convert into markdown readme in same directory
  * @version 1.0.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
- * @copyright Copyright (c) 2014, XWP <https://xwp.co/>
- * @license GPLv2+
+ * @copyright Copyright (c) 2017, XWP <https://xwp.co/>
+ * @license MIT
  */
 
 try {
