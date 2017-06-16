@@ -1,6 +1,6 @@
-#!/bin/bash -v
+#!/bin/bash
 
-set -e
+set -exv
 
 function realpath {
 	php -r 'echo realpath( $argv[1] );' "$1"
