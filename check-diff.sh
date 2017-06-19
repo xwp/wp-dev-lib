@@ -246,7 +246,7 @@ function set_environment_variables {
 	fi
 
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-	    which grep
+	    which cat
 		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-paths-scope"
 		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
 	fi
