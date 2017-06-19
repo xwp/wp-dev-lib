@@ -29,6 +29,9 @@ function remove_diff_range {
 
 function set_environment_variables {
 
+    # Platform
+    uname
+
 	TEMP_DIRECTORY=$(mktemp -d 2>/dev/null || mktemp -d -t 'dev-lib')
 	PROJECT_DIR=$( git rev-parse --show-toplevel )
 	DEV_LIB_PATH=${DEV_LIB_PATH:-$( dirname "$0" )/}
