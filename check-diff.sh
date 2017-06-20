@@ -224,6 +224,7 @@ function set_environment_variables {
 	# treeishA to treeishB (git diff treeishA...treeishB)
 	# treeish to STAGE (git diff --staged treeish)
 	# HEAD to WORKING [default] (git diff HEAD)
+	DIFF_HEAD=$( tr '[a-z]' '[A-Z]' <<< $DIFF_HEAD )
 	if [ "$DIFF_HEAD" == 'STAGE' ]; then
 		if [ "$DIFF_BASE" == 'HEAD' ]; then
 			DIFF_ARGS="--staged"
@@ -256,7 +257,7 @@ function set_environment_variables {
 	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
-	if [ "$DIFF_HEAD" != 'working' ]; then
+	if [ "$DIFF_HEAD" != 'WORKING' ]; then
 		LINTING_DIRECTORY="$(realpath $TEMP_DIRECTORY)/index"
 		mkdir -p "$LINTING_DIRECTORY"
 
