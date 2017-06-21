@@ -69,11 +69,6 @@ function set_environment_variables {
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
 		fi
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
-	elif [[ ! -z "${GITLAB_CI}" ]]; then
-	    git fetch origin "$CI_COMMIT_REF_NAME"
-	    git branch "$CI_COMMIT_REF_NAME" FETCH_HEAD
-		DIFF_BASE=${DIFF_BASE:-$CI_BUILD_BEFORE_SHA}
-		DIFF_HEAD=${DIFF_HEAD:-HEAD}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
