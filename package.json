@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Common code used during development of WordPress plugins and themes",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prod": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./",
+    "dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env dev"
   },
   "repository": "xwp/wp-dev-lib",
   "keywords": [
@@ -15,5 +17,89 @@
   ],
   "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
   "license": "MIT",
-  "homepage": "https://github.com/xwp/wp-dev-lib#readme"
+  "homepage": "https://github.com/xwp/wp-dev-lib#readme",
+  "paths": {
+    "clean": "assets/dist",
+    "css": {
+      "glob": "**/*.scss",
+      "src": "assets/src/parent/css",
+      "dest": "assets/dist/css",
+      "includePaths": []
+    },
+    "images": {
+      "glob": "**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+      "src": "assets/src/images",
+      "dest": "assets/dist/images"
+    }
+  },
+  "browserslist": [
+    "Edge >= 13",
+    "Explorer >= 11",
+    "ExplorerMobile >= 11",
+    "Firefox >= 50",
+    "Chrome >= 55",
+    "ChromeAndroid >= 55",
+    "Android >= 55",
+    "Safari >= 10",
+    "Opera >= 42",
+    "iOS >= 9"
+  ],
+  "stylelint": {
+    "extends": "stylelint-config-wordpress/scss",
+    "rules": {
+      "at-rule-empty-line-before": [
+        "always",
+        {
+          "except": [
+            "first-nested"
+          ],
+          "ignore": [
+            "after-comment"
+          ]
+        }
+      ],
+      "selector-pseudo-element-colon-notation": "double",
+      "value-keyword-case": null
+    }
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": "Edge 15"
+          }
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^7.1.1",
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "del": "^3.0.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-compat": "^1.0.4",
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.1",
+    "gulp-flatten": "^0.3.1",
+    "gulp-if": "^2.0.2",
+    "gulp-postcss": "^7.0.0",
+    "gulp-progeny": "^0.4.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "postcss-assets": "^4.1.0",
+    "postcss-cli": "^4.0.0",
+    "postcss-cssnext": "^2.11.0",
+    "postcss-normalize": "^2.0.1",
+    "postcss-pxtorem": "^4.0.1",
+    "postcss-reporter": "^4.0.0",
+    "postcss-scss": "^1.0.2",
+    "require-dir": "^0.3.2",
+    "run-sequence": "^1.2.2",
+    "stylelint": "^7.12.0",
+    "stylelint-config-wordpress": "^11.0.0",
+    "yargs": "^8.0.2"
+  }
 }
