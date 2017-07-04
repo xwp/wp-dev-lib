@@ -15,30 +15,60 @@
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "scripts": {
     "theme:dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
-    "plugin-sample": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --workflow=plugin-1",
-    "all": "yarn run theme:dev && yarn run plugin-sample"
+    "theme:prod": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
+    "plugin": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --workflow=plugin",
+    "all": "yarn run theme:dev && yarn run plugin"
   },
   "workflows": {
     "theme": {
       "dev": {
-        "clean": "assets/dist",
+        "clean": "path/to/clean/folder",
         "css": {
           "glob": "**/*.scss",
-          "src": "assets/src/parent/css",
-          "dest": "assets/dist/css",
-          "includePaths": [],
+          "src": "path/to/src/folder",
+          "dest": "path/to/dest/folder",
+          "includePaths": [
+            "node_modules"
+          ],
           "enableStylelinter": false
         },
         "images": {
           "glob": "**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-          "src": "assets/src/images",
-          "dest": "assets/dist/images"
-        }
+          "src": "path/to/src/folder",
+          "dest": "path/to/dest/folder"
+        },
+        "js": [
+          {
+            "entries": [
+              "path/to/entry/file1.js",
+              "path/to/entry/file2.js"
+            ],
+            "bundle": "bundle.js",
+            "dest": "path/to/bundle/folder",
+            "includePaths": [
+              "node_modules"
+            ]
+          },
+          {
+            "entries": [
+              "path/to/another/bundle/entry/file.js"
+            ],
+            "bundle": "another-bundle.js",
+            "dest": "path/to/antother/bundle/dest/folder"
+          }
+        ]
       },
       "prod": {}
     },
-    "plugin-sample": {
-      "clean": "assets/dist"
+    "plugin": {
+      "clean": "path/to/plugin/clean/folder",
+      "js": {
+        "entries": [
+          "path/to/plugin/entry/file.js"
+        ],
+        "bundle": "bundle.js",
+        "dest": "path/to/plugin/bundle/folder"
+      }
     }
   },
   "browserslist": [
