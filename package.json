@@ -2,11 +2,6 @@
   "name": "wp-dev-lib",
   "version": "1.0.0",
   "description": "Common code used during development of WordPress plugins and themes",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prod": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./",
-    "dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env dev"
-  },
   "repository": "xwp/wp-dev-lib",
   "keywords": [
     "wordpress",
@@ -18,18 +13,32 @@
   "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
-  "paths": {
-    "clean": "assets/dist",
-    "css": {
-      "glob": "**/*.scss",
-      "src": "assets/src/parent/css",
-      "dest": "assets/dist/css",
-      "includePaths": []
+  "scripts": {
+    "theme:dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
+    "plugin-sample": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --workflow=plugin-1",
+    "all": "yarn run theme:dev && yarn run plugin-sample"
+  },
+  "workflows": {
+    "theme": {
+      "dev": {
+        "clean": "assets/dist",
+        "css": {
+          "glob": "**/*.scss",
+          "src": "assets/src/parent/css",
+          "dest": "assets/dist/css",
+          "includePaths": [],
+          "enableStylelinter": false
+        },
+        "images": {
+          "glob": "**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+          "src": "assets/src/images",
+          "dest": "assets/dist/images"
+        }
+      },
+      "prod": {}
     },
-    "images": {
-      "glob": "**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-      "src": "assets/src/images",
-      "dest": "assets/dist/images"
+    "plugin-sample": {
+      "clean": "assets/dist"
     }
   },
   "browserslist": [
