@@ -17,7 +17,7 @@
     "theme:dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
     "theme:prod": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
     "plugin": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --workflow=plugin",
-    "all": "yarn run theme:dev && yarn run plugin"
+    "all": "yarn run theme:prod && yarn run plugin"
   },
   "workflows": {
     "theme": {

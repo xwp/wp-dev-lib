@@ -13,8 +13,7 @@ import gutil from 'gulp-util';
 import es from 'event-stream';
 
 if ( undefined !== tasks.js ) {
-	const isDev  = 'dev' === env;
-
+	const isDev = 'dev' === env;
 	let preTasks = [];
 
 	gulp.task( 'js', preTasks, () => {
