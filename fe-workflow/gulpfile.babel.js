@@ -23,6 +23,8 @@ gulp.task( 'default', done => {
 		if ( undefined === gulp.tasks[ task ] ) {
 			gutil.log( `Task '${ gutil.colors.red( task ) }' is not defined, ignoring!` );
 			return false;
+		} else if ( 'js-lint' === task ) {
+			return false;
 		}
 		return true;
 	} );

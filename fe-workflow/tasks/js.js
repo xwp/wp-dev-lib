@@ -21,9 +21,8 @@ if ( undefined !== tasks.js ) {
 				}
 			} ]]
 		  };
-	let preTasks = [];
 
-	gulp.task( 'js', preTasks, () => {
+	gulp.task( 'js', [ 'js-lint' ], () => {
 		const options = {
 			paths: tasks.js.includePaths
 		};

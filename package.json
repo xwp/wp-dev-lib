@@ -56,7 +56,10 @@
             "bundle": "another-bundle.js",
             "dest": "path/to/antother/bundle/dest/folder"
           }
-        ]
+        ],
+        "js-lint": {
+          "src": [ "path/to/linted/file.js" ]
+        }
       },
       "prod": {}
     },
@@ -83,6 +86,9 @@
     "Opera >= 42",
     "iOS >= 9"
   ],
+  "babel": {
+    "presets": [[ "env" ]]
+  },
   "stylelint": {
     "extends": "stylelint-config-wordpress/scss",
     "rules": {

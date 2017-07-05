@@ -1,7 +1,6 @@
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import cache from 'gulp-cached';
-import yargs from 'yargs';
 import { join } from 'path';
 import { tasks, env } from '../utils/get-package-data';
 import gulpIf from 'gulp-if';
