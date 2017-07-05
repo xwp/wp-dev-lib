@@ -101,18 +101,6 @@
       "value-keyword-case": null
     }
   },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "browsers": "Edge 15"
-          }
-        }
-      ]
-    ]
-  },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel-cli": "^6.24.1",
