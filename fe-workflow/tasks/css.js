@@ -3,7 +3,7 @@ import gutil from 'gulp-util';
 import cache from 'gulp-cached';
 import progeny from 'gulp-progeny';
 import { join } from 'path';
-import { tasks, env } from '../utils/get-package-data';
+import { tasks, isDev } from '../utils/get-config';
 import sass from 'gulp-sass';
 import sourcemaps from 'gulp-sourcemaps';
 import flatten from 'gulp-flatten';
@@ -15,8 +15,7 @@ import autoprefixer from 'autoprefixer';
 //import assets from 'postcss-assets';
 
 if ( undefined !== tasks.css ) {
-	const isDev      = 'dev' === env,
-		  processors = [
+	const processors = [
 			  cssnext( { warnForDuplicates: false } ),
 			  autoprefixer(),
 			  pxtorem( {

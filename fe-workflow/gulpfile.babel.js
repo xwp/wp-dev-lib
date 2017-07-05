@@ -1,4 +1,4 @@
-import { env, workflow, tasks } from './utils/get-package-data';
+import { env, workflow, tasks } from './utils/get-config';
 import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';

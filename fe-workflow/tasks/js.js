@@ -1,4 +1,4 @@
-import { tasks, env, browserslist } from '../utils/get-package-data';
+import { tasks, isDev, browserslist } from '../utils/get-config';
 import gulp from 'gulp';
 import plumber from 'gulp-plumber';
 import browserify from 'browserify';
@@ -13,14 +13,13 @@ import gutil from 'gulp-util';
 import es from 'event-stream';
 
 if ( undefined !== tasks.js ) {
-	const isDev = 'dev' === env,
-		  babelifyOptions = {
-			presets: [[ 'env', {
-				targets: {
-					browsers: browserslist
-				}
-			} ]]
-		  };
+	const babelifyOptions = {
+		presets: [ [ 'env', {
+			targets: {
+				browsers: browserslist
+			}
+		} ] ]
+	};
 
 	gulp.task( 'js', [ 'js-lint' ], () => {
 		const options = {
