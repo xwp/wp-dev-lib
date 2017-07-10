@@ -60,7 +60,7 @@ if ( undefined !== tasks.css ) {
 			// Actual SASS compilation.
 			.pipe( gulpIf( isDev, sourcemaps.init() ) )
 			.pipe( sass( {
-				includetasks: tasks.css.includetasks,
+				includePaths: tasks.css.includePaths,
 				outputStyle:  isDev ? 'expanded' : 'compressed'
 			} ).on( 'error', sass.logError ) )
 			.pipe( postcss( processors ) )
