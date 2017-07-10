@@ -37,6 +37,11 @@
           "src": "path/to/src/folder",
           "dest": "path/to/dest/folder"
         },
+        "copy": {
+          "glob": "**/*",
+          "src": "path/to/copy/folder",
+          "dest": "path/to/dest/folder"
+        },
         "js": [
           {
             "entries": [
