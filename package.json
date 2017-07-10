@@ -14,10 +14,11 @@
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "scripts": {
-    "theme:dev": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
-    "theme:prod": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
-    "plugin": "gulp --gulpfile ./dev-lib/fe-workflow/gulpfile.babel.js --cwd ./ --workflow=plugin",
-    "all": "yarn run theme:prod && yarn run plugin"
+    "theme:dev": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
+    "theme:prod": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
+    "plugin": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
+    "prod": "yarn run theme:prod && yarn run plugin",
+    "dev": "yarn run theme:dev && yarn run plugin"
   },
   "workflows": {
     "theme": {
