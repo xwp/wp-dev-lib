@@ -1,5 +1,5 @@
 import gulp from 'gulp';
-import { tasks } from '../utils/get-config';
+import { tasks, cwd } from '../utils/get-config';
 import watch from 'gulp-watch';
 import { join } from 'path';
 import _without from 'lodash/without';
@@ -8,16 +8,14 @@ if ( undefined !== tasks.watch && undefined !== tasks.watch.tasks ) {
 	gulp.task( 'watch', () => {
 
 		// Omit some tasks, e.g. `js` is already watched by Watchify.
-		const filteredTasks = _without( tasks.watch.tasks, 'js', 'clean' );
+		const filteredTasks = _without( tasks.watch.tasks, 'js', 'js-lint', 'clean' );
 
 		filteredTasks.forEach( taskSlug => {
 			const task = tasks[ taskSlug ];
 			let source;
 
-			if ( undefined !== task.src && undefined !== task.glob ) {
-				source = join( task.src, task.glob );
-			} else if ( undefined !== task.src ) {
-				source = task.src;
+			if ( undefined !== task.src ) {
+				source = join( cwd, task.src );
 			} else {
 				return;
 			}

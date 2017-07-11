@@ -3,6 +3,7 @@ import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import runSequence from 'run-sequence';
+import _without from 'lodash/without';
 
 // Load all Gulp tasks from `tasks` dir.
 requireDir( 'tasks' );
@@ -19,11 +20,10 @@ gulp.task( 'default', done => {
 		gutil.log( `Using '${ gutil.colors.yellow( env ) }' environment...` );
 	}
 
-	const tasksList = Object.keys( tasks ).filter( task => {
+	let tasksList = _without( Object.keys( tasks ), 'js-lint', 'cwd' );
+	tasksList = tasksList.filter( task => {
 		if ( undefined === gulp.tasks[ task ] ) {
 			gutil.log( `Task '${ gutil.colors.red( task ) }' is not defined, ignoring!` );
-			return false;
-		} else if ( 'js-lint' === task ) {
 			return false;
 		}
 		return true;

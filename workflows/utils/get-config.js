@@ -3,18 +3,35 @@ import yargs from 'yargs';
 
 const json = JSON.parse( fs.readFileSync( './package.json' ) ),
 	  env = yargs.argv.env,
-	  isDev = 'development' === env || 'dev' === env,
-	  isTest = 'test' === env,
-	  isProd = 'production' === env || 'prod' === env,
 	  workflow = yargs.argv.workflow,
 	  browserslist = json.browserslist;
 
-let tasks;
+let tasks,
+	cwd = '',
+	isTest = false,
+	isProd = false,
+	isDev  = false;
+
+switch ( env ) {
+case 'test':
+	isTest = true;
+	break;
+case 'prod':
+case 'production':
+	isProd = true;
+	break;
+default:
+	isDev = true;
+}
+
 if ( undefined !== workflow && undefined !== json.workflows[ workflow ] ) {
 	tasks = json.workflows[ workflow ];
 }
 if ( undefined !== env && undefined !== tasks[ env ] ) {
 	tasks = tasks[ env ];
 }
+if ( undefined !== tasks.cwd ) {
+	cwd = tasks.cwd;
+}
 
-export { json, tasks, env, isDev, isTest, isProd, workflow, browserslist };
+export { json, tasks, env, cwd, isDev, isTest, isProd, workflow, browserslist };

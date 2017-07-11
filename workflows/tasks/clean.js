@@ -1,9 +1,16 @@
 import gulp from 'gulp';
 import { tasks } from '../utils/get-config';
 import del from 'del';
+import TaskHelper from '../utils/TaskHelper';
 
-if ( undefined !== tasks.clean ) {
-	gulp.task( 'clean', done => {
-		del( tasks.clean ).then( () => done() );
-	} );
-}
+const task = new TaskHelper( {
+	name: 'clean',
+	requiredPaths: ['src'],
+	config: tasks
+} );
+
+gulp.task( task.name, done => {
+	if ( task.isValid() ) {
+		del( task.src ).then( () => done() );
+	}
+} );

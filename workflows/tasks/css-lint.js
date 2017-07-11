@@ -1,28 +1,27 @@
 import gulp from 'gulp';
-import gutil from 'gulp-util';
 import cache from 'gulp-cached';
-import { join } from 'path';
 import { tasks, isDev } from '../utils/get-config';
 import gulpIf from 'gulp-if';
 import postcss from 'gulp-postcss';
 import reporter from 'postcss-reporter';
 import scss from 'postcss-scss';
 import stylelint from 'stylelint';
+import TaskHelper from '../utils/TaskHelper';
 
-if ( undefined !== tasks.css ) {
-	gulp.task( 'css-lint', () => {
-		if ( undefined === tasks.css.glob || undefined === tasks.css.src ) {
-			gutil.log( `Missing path in '${ gutil.colors.cyan( 'css-lint' ) }' task, aborting!` );
+const task = new TaskHelper( {
+	name: 'css-lint',
+	requiredPaths: ['src'],
+	config: tasks
+} );
+
+if ( undefined !== task.config ) {
+	gulp.task( task.name, () => {
+		if ( ! task.isValid() ) {
 			return null;
 		}
 
-		return gulp
-			.src( join( tasks.css.src, tasks.css.glob ) )
-
-			// Caching and incremental building (progeny) in Gulp.
-			.pipe( gulpIf( isDev, cache( 'css-lint-task-cache' ) ) )
-
-			// Lint styles.
+		return task.start()
+			.pipe( gulpIf( isDev, cache( task.cacheName ) ) )
 			.pipe( postcss( [
 				stylelint(),
 				reporter( { clearMessages: true } )

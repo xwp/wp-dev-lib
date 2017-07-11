@@ -1,4 +1,4 @@
-import { tasks, isDev, browserslist } from '../utils/get-config';
+import { tasks, isProd, browserslist, cwd } from '../utils/get-config';
 import gulp from 'gulp';
 import plumber from 'gulp-plumber';
 import browserify from 'browserify';
@@ -11,60 +11,76 @@ import sourcemaps from 'gulp-sourcemaps';
 import uglify from 'gulp-uglify';
 import gutil from 'gulp-util';
 import es from 'event-stream';
+import { join } from 'path';
 
 if ( undefined !== tasks.js ) {
-	const babelifyOptions = {
-		presets: [ [ 'env', {
-			targets: {
-				browsers: browserslist
-			}
-		} ] ]
-	};
+	let preTasks = undefined === tasks['js-lint'] ? [] : [ 'js-lint' ];
 
-	gulp.task( 'js', [ 'js-lint' ], () => {
-		const options = {
-			paths: tasks.js.includePaths
+	gulp.task( 'js', preTasks, () => {
+		let defaultBundler, prodBundler, jsTasks, jsTasksStream, addCwdToPaths, babelifyOptions;
+
+		babelifyOptions = {
+			presets: [ [ 'env', {
+				targets: {
+					browsers: browserslist
+				}
+			} ] ]
 		};
 
-		let devBundler, prodBundler, jsTasks, jsTasksStream;
+		addCwdToPaths = function( paths ) {
+			const path = Array.isArray( paths ) ? paths : [ paths ];
+			return path.map( entry => join( cwd, entry ) );
+		};
 
-		devBundler = function( task ) {
-			const opt    = Object.assign( { entries: task.entries, debug: true }, watchify.args, options ),
-				  w      = watchify( browserify( opt ).transform( babelify, babelifyOptions ) ),
-				  bundle = function() {
-					  return w.bundle()
-						  .on( 'error', ( error ) => {
-							  gutil.log( error.codeFrame + '\n' + gutil.colors.red( error.toString() ) );
-						  } )
-						  .pipe( plumber() )
-						  .pipe( source( task.bundle ) )
-						  .pipe( buffer() )
-						  .pipe( sourcemaps.init( { loadMaps: true } ) )
-						  .pipe( sourcemaps.write( '' ) )
-						  .pipe( gulp.dest( task.dest ) );
-				  };
+		defaultBundler = function( task ) {
+			let options, watchifyTask, bundle;
 
-			w.on( 'update', bundle );
-			w.on( 'log', gutil.log );
+			options = Object.assign( {
+				entries: addCwdToPaths( task.entries ),
+				paths:   addCwdToPaths( task.includePaths ),
+				debug:   true
+			}, watchify.args );
+
+			watchifyTask = watchify( browserify( options ).transform( babelify, babelifyOptions ) );
+
+			bundle = function() {
+				return watchifyTask.bundle()
+					.on( 'error', ( error ) => {
+						gutil.log( error.codeFrame + '\n' + gutil.colors.red( error.toString() ) );
+					} )
+					.pipe( plumber() )
+					.pipe( source( task.bundle ) )
+					.pipe( buffer() )
+					.pipe( sourcemaps.init( { loadMaps: true } ) )
+					.pipe( sourcemaps.write( '' ) )
+					.pipe( gulp.dest( task.dest, { cwd } ) );
+			};
+
+			watchifyTask.on( 'update', bundle );
+			watchifyTask.on( 'log', gutil.log );
 
 			return bundle();
 		};
 
 		prodBundler = function( task ) {
-			const opt = Object.assign( { entries: task.entries, debug: false }, options );
+			const options = {
+				entries: addCwdToPaths( task.entries ),
+				paths:   addCwdToPaths( task.includePaths ),
+				debug:   false
+			};
 
-			return browserify( opt )
+			return browserify( options )
 				.transform( babelify, babelifyOptions )
 				.bundle()
 				.pipe( plumber() )
 				.pipe( source( task.bundle ) )
 				.pipe( buffer() )
 				.pipe( uglify() )
-				.pipe( gulp.dest( task.dest ) );
+				.pipe( gulp.dest( task.dest, { cwd } ) );
 		};
 
 		jsTasks = Array.isArray( tasks.js ) ? tasks.js : [ tasks.js ];
-		jsTasksStream = jsTasks.map( isDev ? devBundler : prodBundler );
+		jsTasksStream = jsTasks.map( isProd ? prodBundler : defaultBundler );
 
 		return es.merge.apply( null, jsTasksStream );
 	} );

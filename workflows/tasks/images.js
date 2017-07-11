@@ -1,24 +1,24 @@
 import gulp from 'gulp';
-import gutil from 'gulp-util';
-import { tasks, isDev } from '../utils/get-config';
+import gulpIf from 'gulp-if';
 import cache from 'gulp-cached';
 import imagemin from 'gulp-imagemin';
-import { join } from 'path';
-import gulpIf from 'gulp-if';
-//import { bs } from './browser-sync';
+import { tasks, isDev } from '../utils/get-config';
+import TaskHelper from '../utils/TaskHelper';
 
-if ( undefined !== tasks.images ) {
-	gulp.task( 'images', () => {
-		if ( undefined === tasks.images.glob || undefined === tasks.images.src || undefined === tasks.images.dest ) {
-			gutil.log( `Missing path in '${ gutil.colors.cyan( 'images' ) }' task, aborting!` );
-			return null;
-		}
+const task = new TaskHelper( {
+	name: 'images',
+	requiredPaths: [ 'src', 'dest' ],
+	config: tasks
+} );
 
-		return gulp
-			.src( join( tasks.images.src, tasks.images.glob ) )
-			.pipe( gulpIf( isDev, cache( 'images-task-cache', { optimizeMemory: true } ) ) )
-			.pipe( imagemin() )
-			.pipe( gulp.dest( tasks.images.dest ) );
-		//.pipe( gulpIf( isDev, bs.stream() ) );
-	} );
-}
+gulp.task( task.name, () => {
+	if ( ! task.isValid() ) {
+		return null;
+	}
+
+	return task.start()
+		.pipe( gulpIf( isDev, cache( task.cacheName, { optimizeMemory: false } ) ) )
+		.pipe( imagemin() )
+		.pipe( task.end() );
+	//.pipe( gulpIf( isDev, bs.stream() ) );
+} );
