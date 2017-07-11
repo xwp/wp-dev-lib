@@ -22,26 +22,32 @@
   },
   "workflows": {
     "theme": {
+      "cwd": "common/working/directory",
       "dev": {
-        "clean": "path/to/clean/folder",
+        "clean": {
+          "src": "path/to/clean/folder"
+        },
         "css": {
-          "glob": "**/*.scss",
-          "src": "path/to/src/folder",
-          "dest": "path/to/dest/folder",
+          "src": "path/to/src/folder/**/*.scss",
+          "base": "path/to/src",
+          "dest": "dest/folder",
           "includePaths": [
             "node_modules"
-          ],
-          "enableStylelinter": false
+          ]
+        },
+        "css-lint": {
+          "src": "path/to/src/folder/**/*.scss",
+          "base": "path/to/src"
         },
         "images": {
-          "glob": "**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-          "src": "path/to/src/folder",
-          "dest": "path/to/dest/folder"
+          "src": "path/to/src/folder/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+          "base": "path/to/src",
+          "dest": "dest/folder"
         },
         "copy": {
-          "glob": "**/*",
-          "src": "path/to/copy/folder",
-          "dest": "path/to/dest/folder"
+          "src": [ "path/to/copy/folder/**/*", "path/to/another/folder/*.ext" ],
+          "base": "path/to/src",
+          "dest": "dest/folder"
         },
         "js": [
           {
@@ -50,33 +56,44 @@
               "path/to/entry/file2.js"
             ],
             "bundle": "bundle.js",
-            "dest": "path/to/bundle/folder",
+            "dest": "bundle/js/folder",
             "includePaths": [
               "node_modules"
             ]
           },
           {
             "entries": [
-              "path/to/another/bundle/entry/file.js"
+              "path/to/another/js/bundle/entry/file.js"
             ],
             "bundle": "another-bundle.js",
-            "dest": "path/to/antother/bundle/dest/folder"
+            "dest": "path/to/antother/js/bundle/dest/folder"
           }
         ],
         "js-lint": {
-          "src": [ "path/to/linted/file.js" ]
+          "src": [ "path/to/linted/file.js" ],
+          "base": "path/to/src"
+        },
+        "watch": {
+          "tasks": [
+            "css",
+            "copy",
+            "images"
+          ]
         }
       },
       "prod": {}
     },
     "plugin": {
-      "clean": "path/to/plugin/clean/folder",
+      "cwd": "path/to/plugin/directory",
+      "clean": {
+        "src": "clean/folder"
+      },
       "js": {
         "entries": [
-          "path/to/plugin/entry/file.js"
+          "entry/file.js"
         ],
         "bundle": "bundle.js",
-        "dest": "path/to/plugin/bundle/folder"
+        "dest": "bundle/folder"
       }
     }
   },
@@ -117,17 +134,26 @@
     "autoprefixer": "^7.1.1",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.4.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
     "del": "^3.0.0",
     "eslint": "^3.19.0",
     "eslint-plugin-compat": "^1.0.4",
+    "event-stream": "^3.3.4",
     "gulp": "^3.9.1",
     "gulp-cached": "^1.1.1",
+    "gulp-eslint": "^4.0.0",
     "gulp-flatten": "^0.3.1",
     "gulp-if": "^2.0.2",
+    "gulp-imagemin": "^3.3.0",
+    "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^7.0.0",
     "gulp-progeny": "^0.4.0",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp-watch": "^4.3.11",
+    "lodash": "^4.17.4",
     "postcss-assets": "^4.1.0",
     "postcss-cli": "^4.0.0",
     "postcss-cssnext": "^2.11.0",
@@ -139,6 +165,9 @@
     "run-sequence": "^1.2.2",
     "stylelint": "^7.12.0",
     "stylelint-config-wordpress": "^11.0.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0",
     "yargs": "^8.0.2"
   }
 }
