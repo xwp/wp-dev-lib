@@ -33,7 +33,15 @@
           "dest": "dest/folder",
           "includePaths": [
             "node_modules"
-          ]
+          ],
+          "postcssProcessors": {
+            "cssnext": true,
+            "autoprefixer": {
+              "minPixelValue": 0
+            },
+            "pxtorem": true,
+            "assets": true
+          }
         },
         "css-lint": {
           "src": "path/to/src/folder/**/*.scss",
