@@ -9,7 +9,7 @@ import postcss from 'gulp-postcss';
 import cssnext from 'postcss-cssnext';
 import pxtorem from 'postcss-pxtorem';
 import autoprefixer from 'autoprefixer';
-//import assets from 'postcss-assets';
+import assets from 'postcss-assets';
 import TaskHelper from '../utils/TaskHelper';
 
 const task = new TaskHelper( {
@@ -19,34 +19,7 @@ const task = new TaskHelper( {
 } );
 
 if ( undefined !== task.config ) {
-	const processors = [
-			  cssnext( { warnForDuplicates: false } ),
-			  autoprefixer(),
-			  pxtorem( {
-				  rootValue:         16,
-				  unitPrecision:     5,
-				  propList:          ['*'],
-				  selectorBlackList: [],
-				  replace:           true,
-				  mediaQuery:        true,
-				  minPixelValue:     2
-			  } )
-		  ];
-
-	let preTasks = [];
-
-	if ( undefined !== tasks['css-lint'] ) {
-		preTasks.push( 'css-lint' );
-	}
-
-//if ( undefined !== tasks.images.dest ) {
-//	processors.push(
-//		assets( {
-//			basePath:  '/',
-//			loadtasks: tasks.images.dest
-//		} )
-//	);
-//}
+	const preTasks = undefined === tasks['css-lint'] ? [] : [ 'css-lint' ];
 
 	gulp.task( task.name, preTasks, () => {
 		if ( ! task.isValid() ) {
@@ -62,10 +35,10 @@ if ( undefined !== task.config ) {
 			// Actual SASS compilation.
 			.pipe( gulpIf( isDev, sourcemaps.init() ) )
 			.pipe( sass( {
-				includePaths: task.config.includePaths,
+				includePaths: undefined !== task.config.includePaths ? task.config.includePaths : [],
 				outputStyle:  isDev ? 'expanded' : 'compressed'
 			} ).on( 'error', sass.logError ) )
-			.pipe( postcss( processors ) )
+			.pipe( postcss( getProcessors( task.config.postcssProcessors ) ) )
 			.pipe( gulpIf( isDev, sourcemaps.write( '' ) ) )
 
 			.pipe( task.end() );
@@ -77,4 +50,49 @@ if ( undefined !== task.config ) {
 		 */
 		//.pipe( gulpIf( isDev, bs.stream() ) );
 	} );
+}
+
+function getProcessors( settings ) {
+	let processors = [], defaults, s;
+
+	defaults = {
+		cssnext:      {
+			warnForDuplicates: false
+		},
+		autoprefixer: {},
+		pxtorem:      {
+			rootValue:         16,
+			unitPrecision:     5,
+			propList:          [ '*' ],
+			selectorBlackList: [],
+			replace:           true,
+			mediaQuery:        true,
+			minPixelValue:     2
+		},
+		assets:       {
+			relative: true
+		}
+	};
+
+	if ( false !== settings.cssnext ) {
+		s = true === settings.cssnext ? {} : settings.cssnext;
+		processors.push( cssnext( Object.assign( defaults.cssnext, s ) ) );
+	}
+
+	if ( false !== settings.autoprefixer ) {
+		s = true === settings.autoprefixer ? {} : settings.autoprefixer;
+		processors.push( autoprefixer( Object.assign( defaults.autoprefixer, s ) ) );
+	}
+
+	if ( false !== settings.pxtorem ) {
+		s = true === settings.pxtorem ? {} : settings.pxtorem;
+		processors.push( pxtorem( Object.assign( defaults.pxtorem, s ) ) );
+	}
+
+	if ( false !== settings.assets ) {
+		s = true === settings.assets ? {} : settings.assets;
+		processors.push( assets( Object.assign( defaults.assets, s ) ) );
+	}
+
+	return processors;
 }
