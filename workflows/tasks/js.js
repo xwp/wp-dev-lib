@@ -16,7 +16,7 @@ import { join } from 'path';
 if ( undefined !== tasks.js ) {
 	let preTasks = undefined === tasks['js-lint'] ? [] : [ 'js-lint' ];
 
-	gulp.task( 'js', preTasks, () => {
+	gulp.task( 'js', gulp.series( preTasks, () => {
 		let defaultBundler, prodBundler, jsTasks, jsTasksStream, addCwdToPaths, babelifyOptions;
 
 		babelifyOptions = {
@@ -83,5 +83,5 @@ if ( undefined !== tasks.js ) {
 		jsTasksStream = jsTasks.map( isProd ? prodBundler : defaultBundler );
 
 		return es.merge.apply( null, jsTasksStream );
-	} );
+	} ) );
 }

@@ -48,7 +48,7 @@ if ( undefined !== task.config ) {
 //	);
 //}
 
-	gulp.task( task.name, preTasks, () => {
+	gulp.task( task.name, gulp.series( preTasks, () => {
 		if ( ! task.isValid() ) {
 			return null;
 		}
@@ -76,5 +76,5 @@ if ( undefined !== task.config ) {
 		 * a full page reload (as it will not find any .map files in the DOM).
 		 */
 		//.pipe( gulpIf( isDev, bs.stream() ) );
-	} );
+	} ) );
 }

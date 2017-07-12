@@ -14,64 +14,68 @@
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "scripts": {
-    "theme:dev": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
-    "theme:prod": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
-    "plugin": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
+    "theme:dev": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
+    "theme:prod": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
+    "plugin": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
     "prod": "yarn run theme:prod && yarn run plugin",
     "dev": "yarn run theme:dev && yarn run plugin"
   },
   "workflows": {
     "theme": {
-      "cwd": "common/working/directory",
+      "cwd": "../wp-content/themes/test-theme",
       "dev": {
         "clean": {
-          "src": "path/to/clean/folder"
+          "src": "assets/dist"
         },
         "css": {
-          "src": "path/to/src/folder/**/*.scss",
-          "base": "path/to/src",
-          "dest": "dest/folder",
+          "src": "assets/src/scss/**/*.scss",
+          "base": "assets/src/scss",
+          "dest": "assets/dist/css",
           "includePaths": [
             "node_modules"
           ]
         },
         "css-lint": {
-          "src": "path/to/src/folder/**/*.scss",
-          "base": "path/to/src"
+          "src": "assets/src/scss/**/*.scss",
+          "base": "assets/src/scss"
         },
         "images": {
-          "src": "path/to/src/folder/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-          "base": "path/to/src",
-          "dest": "dest/folder"
+          "src": "assets/images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+          "base": "assets/images/",
+          "dest": "assets/images/"
         },
         "copy": {
-          "src": [ "path/to/copy/folder/**/*", "path/to/another/folder/*.ext" ],
+          "src": [
+            "path/to/copy/folder/**/*",
+            "path/to/another/folder/*.ext"
+          ],
           "base": "path/to/src",
           "dest": "dest/folder"
         },
         "js": [
           {
             "entries": [
-              "path/to/entry/file1.js",
-              "path/to/entry/file2.js"
+              "assets/src/js/app.js"
             ],
-            "bundle": "bundle.js",
-            "dest": "bundle/js/folder",
+            "bundle": "bundle.app.js",
+            "dest": "assets/dist/js",
             "includePaths": [
               "node_modules"
             ]
           },
           {
             "entries": [
-              "path/to/another/js/bundle/entry/file.js"
+              "assets/src/js/vendors.js"
             ],
-            "bundle": "another-bundle.js",
-            "dest": "path/to/antother/js/bundle/dest/folder"
+            "bundle": "bundle.vendor.js",
+            "dest": "assets/dist/js"
           }
         ],
         "js-lint": {
-          "src": [ "path/to/linted/file.js" ],
-          "base": "path/to/src"
+          "src": [
+            "assets/src/js/app.js"
+          ],
+          "base": "assets/src"
         },
         "watch": {
           "tasks": [
@@ -110,7 +114,11 @@
     "iOS >= 9"
   ],
   "babel": {
-    "presets": [[ "env" ]]
+    "presets": [
+      [
+        "env"
+      ]
+    ]
   },
   "stylelint": {
     "extends": "stylelint-config-wordpress/scss",
@@ -131,16 +139,16 @@
     }
   },
   "devDependencies": {
-    "autoprefixer": "^7.1.1",
+    "autoprefixer": "^7.1.2",
     "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.4.0",
+    "babel-preset-env": "^1.6.0",
     "babelify": "^7.3.0",
     "browserify": "^14.4.0",
     "del": "^3.0.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.2.0",
     "eslint-plugin-compat": "^1.0.4",
     "event-stream": "^3.3.4",
-    "gulp": "^3.9.1",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-cached": "^1.1.1",
     "gulp-eslint": "^4.0.0",
     "gulp-flatten": "^0.3.1",
@@ -154,16 +162,17 @@
     "gulp-uglify": "^3.0.0",
     "gulp-watch": "^4.3.11",
     "lodash": "^4.17.4",
+    "postcss": "^6.0.6",
     "postcss-assets": "^4.1.0",
-    "postcss-cli": "^4.0.0",
-    "postcss-cssnext": "^2.11.0",
+    "postcss-cli": "^4.1.0",
+    "postcss-cssnext": "^3.0.2",
     "postcss-normalize": "^2.0.1",
     "postcss-pxtorem": "^4.0.1",
     "postcss-reporter": "^4.0.0",
     "postcss-scss": "^1.0.2",
     "require-dir": "^0.3.2",
-    "run-sequence": "^1.2.2",
-    "stylelint": "^7.12.0",
+    "run-sequence": "^2.0.0",
+    "stylelint": "^7.13.0",
     "stylelint-config-wordpress": "^11.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
