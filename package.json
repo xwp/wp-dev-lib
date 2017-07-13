@@ -17,20 +17,20 @@
     "theme:dev": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
     "theme:prod": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
     "plugin": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
-    "prod": "yarn run theme:prod && yarn run plugin",
-    "dev": "yarn run theme:dev && yarn run plugin"
+    "prod": "npm run theme:prod && npm run plugin",
+    "dev": "npm run theme:dev && npm run plugin"
   },
   "workflows": {
     "theme": {
-      "cwd": "../wp-content/themes/test-theme",
       "dev": {
+        "cwd": "wp-content/themes/test-theme/assets",
         "clean": {
-          "src": "assets/dist"
+          "src": "dist"
         },
         "css": {
-          "src": "assets/src/scss/**/*.scss",
-          "base": "assets/src/scss",
-          "dest": "assets/dist/css",
+          "src": "src/css/**/*.scss",
+          "base": "src/css",
+          "dest": "dist/css",
           "includePaths": [
             "node_modules"
           ],
@@ -45,42 +45,14 @@
           }
         },
         "images": {
-          "src": "assets/images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-          "base": "assets/images/",
-          "dest": "assets/images/"
+          "src": "images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+          "base": "images/",
+          "dest": "images/"
         },
         "copy": {
-          "src": [
-            "path/to/copy/folder/**/*",
-            "path/to/another/folder/*.ext"
-          ],
-          "base": "path/to/src",
-          "dest": "dest/folder"
-        },
-        "js": [
-          {
-            "entries": [
-              "assets/src/js/app.js"
-            ],
-            "bundle": "bundle.app.js",
-            "dest": "assets/dist/js",
-            "includePaths": [
-              "node_modules"
-            ]
-          },
-          {
-            "entries": [
-              "assets/src/js/vendors.js"
-            ],
-            "bundle": "bundle.vendor.js",
-            "dest": "assets/dist/js"
-          }
-        ],
-        "js-lint": {
-          "src": [
-            "assets/src/js/app.js"
-          ],
-          "base": "assets/src"
+          "src": "src/copy-this/**/*",
+          "base": "src/copy-this",
+          "dest": "dist/copied"
         },
         "watch": {
           "tasks": [
@@ -93,16 +65,16 @@
       "prod": {}
     },
     "plugin": {
-      "cwd": "path/to/plugin/directory",
+      "cwd": "wp-content/plugins/test-plugin",
       "clean": {
-        "src": "clean/folder"
+        "src": "dist"
       },
       "js": {
         "entries": [
-          "entry/file.js"
+          "src/js/test.js"
         ],
         "bundle": "bundle.js",
-        "dest": "bundle/folder"
+        "dest": "dist/js"
       }
     }
   },
