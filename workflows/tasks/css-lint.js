@@ -25,7 +25,7 @@ if ( undefined !== task.config ) {
 			.pipe( gulpIf( isDev, cache( task.cacheName ) ) )
 			.pipe( postcss( [
 				stylelint(),
-				reporter( { clearMessages: true } )
+				reporter( { clearAllMessages: true } )
 			], { syntax: scss } ) );
 	} );
 }

@@ -19,12 +19,7 @@ const task = new TaskHelper( {
 } );
 
 if ( undefined !== task.config ) {
-	let preTasks = [];
-	if ( undefined !== task.config.enableLinter && true === task.config.enableLinter ) {
-		preTasks.push( 'css-lint' );
-	}
-
-	gulp.task( task.name, gulp.series( preTasks, () => {
+	function fn() {
 		if ( ! task.isValid() ) {
 			return null;
 		}
@@ -52,7 +47,15 @@ if ( undefined !== task.config ) {
 		 * a full page reload (as it will not find any .map files in the DOM).
 		 */
 		//.pipe( gulpIf( isDev, bs.stream() ) );
-	} ) );
+	}
+
+	fn.displayName = 'css-compile';
+
+	if ( undefined !== task.config.enableLinter && true === task.config.enableLinter ) {
+		gulp.task( 'css', gulp.series( 'css-lint', fn ) );
+	} else {
+		gulp.task( 'css', fn );
+	}
 }
 
 function getProcessors( settings ) {

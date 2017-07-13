@@ -14,9 +14,7 @@ import es from 'event-stream';
 import { join } from 'path';
 
 if ( undefined !== tasks.js ) {
-	let preTasks = undefined === tasks['js-lint'] ? [] : [ 'js-lint' ];
-
-	gulp.task( 'js', gulp.series( preTasks, () => {
+	function fn() {
 		let defaultBundler, prodBundler, jsTasks, jsTasksStream, addCwdToPaths, babelifyOptions;
 
 		babelifyOptions = {
@@ -79,9 +77,17 @@ if ( undefined !== tasks.js ) {
 				.pipe( gulp.dest( task.dest, { cwd } ) );
 		};
 
-		jsTasks = Array.isArray( tasks.js ) ? tasks.js : [ tasks.js ];
+		jsTasks       = Array.isArray( tasks.js ) ? tasks.js : [ tasks.js ];
 		jsTasksStream = jsTasks.map( isProd ? prodBundler : defaultBundler );
 
 		return es.merge.apply( null, jsTasksStream );
-	} ) );
+	}
+
+	fn.displayName = 'js-compile';
+
+	if ( undefined !== tasks['js-lint'] ) {
+		gulp.task( 'js', gulp.series( 'js-lint', fn ) );
+	} else {
+		gulp.task( 'js', fn );
+	}
 }
