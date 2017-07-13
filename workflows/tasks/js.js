@@ -26,7 +26,8 @@ if ( undefined !== tasks.js ) {
 		};
 
 		addCwdToPaths = function( paths ) {
-			const path = Array.isArray( paths ) ? paths : [ paths ];
+			let path = Array.isArray( paths ) ? paths : [ paths ];
+			path = path.filter( function(element) { return element != undefined } )
 			return path.map( entry => join( cwd, entry ) );
 		};
 
