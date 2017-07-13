@@ -33,11 +33,8 @@
           "dest": "assets/dist/css",
           "includePaths": [
             "node_modules"
-          ]
-        },
-        "css-lint": {
-          "src": "assets/src/scss/**/*.scss",
-          "base": "assets/src/scss"
+          ],
+          "enableLinter": true
         },
         "images": {
           "src": "assets/images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
@@ -171,7 +168,6 @@
     "postcss-reporter": "^4.0.0",
     "postcss-scss": "^1.0.2",
     "require-dir": "^0.3.2",
-    "run-sequence": "^2.0.0",
     "stylelint": "^7.13.0",
     "stylelint-config-wordpress": "^11.0.0",
     "vinyl-buffer": "^1.0.0",

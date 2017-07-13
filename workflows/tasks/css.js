@@ -35,7 +35,7 @@ if ( undefined !== task.config ) {
 
 	let preTasks = [];
 
-	if ( undefined !== tasks['css-lint'] ) {
+	if ( undefined !== task.config.enableLinter && true === task.config.enableLinter ) {
 		preTasks.push( 'css-lint' );
 	}
 

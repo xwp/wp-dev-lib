@@ -11,7 +11,8 @@ import TaskHelper from '../utils/TaskHelper';
 const task = new TaskHelper( {
 	name: 'css-lint',
 	requiredPaths: ['src'],
-	config: tasks
+	config: tasks,
+	configSlug: 'css'
 } );
 
 if ( undefined !== task.config ) {
