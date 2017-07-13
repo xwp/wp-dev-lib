@@ -34,7 +34,15 @@
           "includePaths": [
             "node_modules"
           ],
-          "enableLinter": true
+          "enableLinter": true,
+          "postcssProcessors": {
+            "cssnext": true,
+            "autoprefixer": {
+              "minPixelValue": 0
+            },
+            "pxtorem": true,
+            "assets": true
+          }
         },
         "images": {
           "src": "assets/images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
