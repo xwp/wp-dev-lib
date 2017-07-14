@@ -1,4 +1,4 @@
-import { env, workflow, tasks } from './utils/get-config';
+import { env, workflow, tasks, isProd } from './utils/get-config';
 import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
@@ -17,8 +17,16 @@ if ( undefined === workflow ) {
 	}
 
 	// To add a new task, simply create a new task file in `tasks` folder.
-	let tasksList = _without( Object.keys( tasks ), 'js-lint', 'cwd' );
-	tasksList     = tasksList.filter( task => {
+	let tasksList;
+	const ignoredTasks = [
+		'js-lint',
+		'cwd',
+		isProd ? 'watch' : ''
+	];
+	tasksList = Object.keys( tasks ).filter( task => {
+		if ( ignoredTasks.includes( task ) ) {
+			return false;
+		}
 		if ( undefined === gulp.task( task ) ) {
 			gutil.log( `Task '${ gutil.colors.red( task ) }' is not defined, ignoring!` );
 			return false;
