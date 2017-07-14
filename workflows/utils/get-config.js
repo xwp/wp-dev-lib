@@ -27,9 +27,6 @@ default:
 if ( undefined !== workflow && undefined !== json.workflows[ workflow ] ) {
 	tasks = json.workflows[ workflow ];
 }
-if ( undefined !== env && undefined !== tasks[ env ] ) {
-	tasks = tasks[ env ];
-}
 if ( undefined !== tasks.cwd ) {
 	cwd = tasks.cwd;
 }
