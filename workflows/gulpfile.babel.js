@@ -2,7 +2,6 @@ import { env, workflow, tasks, isProd } from './utils/get-config';
 import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import _without from 'lodash/without';
 
 // Load all Gulp tasks from `tasks` dir.
 requireDir( 'tasks' );
@@ -17,7 +16,7 @@ if ( undefined === workflow ) {
 	}
 
 	// To add a new task, simply create a new task file in `tasks` folder.
-	let tasksList;
+	let tasksList, hasCleanTask = false;
 	const ignoredTasks = [
 		'js-lint',
 		'cwd',
@@ -25,6 +24,10 @@ if ( undefined === workflow ) {
 	];
 	tasksList = Object.keys( tasks ).filter( task => {
 		if ( ignoredTasks.includes( task ) ) {
+			return false;
+		}
+		if ( 'clean' === task ) {
+			hasCleanTask = true;
 			return false;
 		}
 		if ( undefined === gulp.task( task ) ) {
@@ -36,7 +39,9 @@ if ( undefined === workflow ) {
 
 	if ( 0 === tasksList.length ) {
 		gutil.log( `No tasks provided for workflow '${ gutil.colors.yellow( workflow ) }', aborting!` );
+	} else if ( hasCleanTask ) {
+		gulp.task( 'default', gulp.series( 'clean', gulp.parallel( tasksList ) ) );
 	} else {
-		gulp.task( 'default', gulp.series( tasksList ) );
+		gulp.task( 'default', gulp.parallel( tasksList ) );
 	}
 }
