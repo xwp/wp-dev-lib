@@ -10,7 +10,7 @@ import sourcemaps from 'gulp-sourcemaps';
 //import { bs } from './browser-sync';
 import uglify from 'gulp-uglify';
 import gutil from 'gulp-util';
-import es from 'event-stream';
+import mergeStream from 'merge-stream';
 import { join } from 'path';
 
 if ( undefined !== tasks.js ) {
@@ -26,9 +26,8 @@ if ( undefined !== tasks.js ) {
 		};
 
 		addCwdToPaths = function( paths ) {
-			let path = Array.isArray( paths ) ? paths : [ paths ];
-			path = path.filter( function(element) { return element != undefined } )
-			return path.map( entry => join( cwd, entry ) );
+			const path = Array.isArray( paths ) ? paths : [ paths ];
+			return path.filter( element => element !== undefined ).map( entry => join( cwd, entry ) );
 		};
 
 		defaultBundler = function( task ) {
@@ -81,7 +80,7 @@ if ( undefined !== tasks.js ) {
 		jsTasks       = Array.isArray( tasks.js ) ? tasks.js : [ tasks.js ];
 		jsTasksStream = jsTasks.map( isProd ? prodBundler : defaultBundler );
 
-		return es.merge.apply( null, jsTasksStream );
+		return mergeStream( jsTasksStream );
 	}
 
 	fn.displayName = 'js-compile';
