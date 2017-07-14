@@ -3,12 +3,16 @@ import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 
-// Load all Gulp tasks from `tasks` dir.
-requireDir( 'tasks' );
+const minNodeVersion = 7;
 
-if ( undefined === workflow ) {
+if ( minNodeVersion > parseInt( process.version.slice( 1, 2 ), 10 ) ) {
+	gutil.log( gutil.colors.red( `You must run at least Node version 7. Please update your Node version.` ) );
+} else if ( undefined === workflow ) {
 	gutil.log( gutil.colors.red( `No workflow provided, aborting!` ) );
 } else {
+	// Load all Gulp tasks from `tasks` dir.
+	requireDir( 'tasks' );
+
 	gutil.log( `Using '${ gutil.colors.yellow( workflow ) }' workflow...` );
 
 	if ( undefined !== env ) {
@@ -16,7 +20,7 @@ if ( undefined === workflow ) {
 	}
 
 	// To add a new task, simply create a new task file in `tasks` folder.
-	let tasksList, hasCleanTask = false;
+	let tasksList, hasCleanTask = false, hasWatchTask = false, serialTasks = [];
 	const ignoredTasks = [
 		'js-lint',
 		isProd ? 'watch' : ''
@@ -29,6 +33,10 @@ if ( undefined === workflow ) {
 			hasCleanTask = true;
 			return false;
 		}
+		if ( 'watch' === task ) {
+			hasWatchTask = true;
+			return false;
+		}
 		if ( undefined === gulp.task( task ) ) {
 			gutil.log( `Task '${ gutil.colors.red( task ) }' is not defined, ignoring!` );
 			return false;
@@ -38,9 +46,14 @@ if ( undefined === workflow ) {
 
 	if ( 0 === tasksList.length ) {
 		gutil.log( `No tasks provided for workflow '${ gutil.colors.yellow( workflow ) }', aborting!` );
-	} else if ( hasCleanTask ) {
-		gulp.task( 'default', gulp.series( 'clean', gulp.parallel( tasksList ) ) );
-	} else {
+	} else if ( ! hasCleanTask && ! hasWatchTask ) {
 		gulp.task( 'default', gulp.parallel( tasksList ) );
+	} else {
+		serialTasks = [
+			hasCleanTask ? 'clean' : '',
+			gulp.parallel( tasksList ),
+			hasWatchTask ? 'watch' : ''
+		];
+		gulp.task( 'default', gulp.series( serialTasks ) );
 	}
 }
