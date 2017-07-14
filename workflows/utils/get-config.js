@@ -6,7 +6,7 @@ const json = JSON.parse( fs.readFileSync( './package.json' ) ),
 	  workflow = yargs.argv.workflow,
 	  browserslist = json.browserslist;
 
-let tasks,
+let tasks = [],
 	cwd = '',
 	isTest = false,
 	isProd = false,
@@ -29,6 +29,7 @@ if ( undefined !== workflow && undefined !== json.workflows[ workflow ] ) {
 }
 if ( undefined !== tasks.cwd ) {
 	cwd = tasks.cwd;
+	delete tasks.cwd;
 }
 
 export { json, tasks, env, cwd, isDev, isTest, isProd, workflow, browserslist };

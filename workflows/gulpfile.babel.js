@@ -19,7 +19,6 @@ if ( undefined === workflow ) {
 	let tasksList, hasCleanTask = false;
 	const ignoredTasks = [
 		'js-lint',
-		'cwd',
 		isProd ? 'watch' : ''
 	];
 	tasksList = Object.keys( tasks ).filter( task => {
