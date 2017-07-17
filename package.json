@@ -76,16 +76,16 @@
     }
   },
   "browserslist": [
-    "Edge >= 13",
-    "Explorer >= 11",
-    "ExplorerMobile >= 11",
-    "Firefox >= 50",
-    "Chrome >= 55",
-    "ChromeAndroid >= 55",
-    "Android >= 55",
-    "Safari >= 10",
-    "Opera >= 42",
-    "iOS >= 9"
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "last 2 Opera versions",
+    "last 2 iOS versions",
+    "last 1 Android version",
+    "last 1 ChromeAndroid version",
+    "ie 11",
+    "> 1%"
   ],
   "babel": {
     "presets": [
