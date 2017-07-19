@@ -17,7 +17,7 @@ export default class TaskHelper {
 	}
 
 	get config() {
-		return '' !== this.configSlug ? this._config[ this.configSlug ] : this._config;
+		return '' === this.configSlug ? this._config : this._config[ this.configSlug ];
 	}
 
 	get name() {

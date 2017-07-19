@@ -22,44 +22,8 @@
   },
   "workflows": {
     "theme": {
-      "cwd": "wp-content/themes/test-theme/assets",
-      "clean": {
-        "src": "dist"
-      },
-      "css": {
-        "src": "src/css/**/*.scss",
-        "base": "src/css",
-        "dest": "dist/css",
-        "includePaths": [
-          "node_modules"
-        ],
-        "enableLinter": true,
-        "postcssProcessors": {
-          "cssnext": true,
-          "autoprefixer": {
-            "minPixelValue": 0
-          },
-          "pxtorem": true,
-          "assets": true
-        }
-      },
-      "images": {
-        "src": "images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
-        "base": "images/",
-        "dest": "images/"
-      },
-      "copy": {
-        "src": "src/copy-this/**/*",
-        "base": "src/copy-this",
-        "dest": "dist/copied"
-      },
-      "watch": {
-        "tasks": [
-          "css",
-          "copy",
-          "images"
-        ]
-      }
+      "schema": "theme",
+      "cwd": "wp-content/themes/test-theme/assets"
     },
     "plugin": {
       "cwd": "wp-content/plugins/test-plugin",

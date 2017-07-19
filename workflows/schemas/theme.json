@@ -1,0 +1,39 @@
+{
+	"clean": {
+		"src": "dist"
+	},
+	"css": {
+		"src": "src/css/**/*.scss",
+		"base": "src/css",
+		"dest": "dist",
+		"includePaths": [
+			"node_modules"
+		],
+		"enableLinter": true,
+		"postcssProcessors": {
+			"cssnext": true,
+			"autoprefixer": {
+				"minPixelValue": 0
+			},
+			"pxtorem": true,
+			"assets": true
+		}
+	},
+	"images": {
+		"src": "images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
+		"base": "images",
+		"dest": "images"
+	},
+	"copy": {
+		"src": "src/fonts/**/*",
+		"base": "src/fonts",
+		"dest": "dist"
+	},
+	"watch": {
+		"tasks": [
+			"css",
+			"copy",
+			"images"
+		]
+	}
+}
