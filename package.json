@@ -14,9 +14,9 @@
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "scripts": {
-    "theme:dev": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
-    "theme:prod": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
-    "plugin": "gulp --gulpfile ./workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
+    "theme:dev": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=dev --workflow=theme",
+    "theme:prod": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
+    "plugin": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
     "prod": "npm run theme:prod && npm run plugin",
     "dev": "npm run theme:dev && npm run plugin"
   },
@@ -40,16 +40,16 @@
     }
   },
   "browserslist": [
-    "Edge >= 13",
-    "Explorer >= 11",
-    "ExplorerMobile >= 11",
-    "Firefox >= 50",
-    "Chrome >= 55",
-    "ChromeAndroid >= 55",
-    "Android >= 55",
-    "Safari >= 10",
-    "Opera >= 42",
-    "iOS >= 9"
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "last 2 Opera versions",
+    "last 2 iOS versions",
+    "last 1 Android version",
+    "last 1 ChromeAndroid version",
+    "ie 11",
+    "> 1%"
   ],
   "babel": {
     "presets": [
