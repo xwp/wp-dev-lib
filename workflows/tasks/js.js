@@ -1,84 +1,61 @@
-import { tasks, isProd, browserslist, cwd } from '../utils/get-config';
+import { tasks, isProd, isDev, browserslist, cwd } from '../utils/get-config';
 import gulp from 'gulp';
-import plumber from 'gulp-plumber';
-import browserify from 'browserify';
-import babelify from 'babelify';
-import watchify from 'watchify';
-import source from 'vinyl-source-stream';
-import buffer from 'vinyl-buffer';
-import sourcemaps from 'gulp-sourcemaps';
-//import { bs } from './browser-sync';
-import uglify from 'gulp-uglify';
-import gutil from 'gulp-util';
 import mergeStream from 'merge-stream';
-import { join } from 'path';
+import { join, resolve } from 'path';
+import webpack from 'webpack';
+import webpackStream from 'webpack-stream';
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const {removeEmpty} = require('webpack-config-utils')
 
 if ( undefined !== tasks.js ) {
 	function fn() {
-		let defaultBundler, prodBundler, jsTasks, jsTasksStream, addCwdToPaths, babelifyOptions;
+		let jsTasks, jsTasksStream, babelifyOptions;
+		const paths = tasks.js;
 
 		babelifyOptions = {
-			presets: [ [ 'env', {
-				targets: {
-					browsers: browserslist
-				}
-			} ] ]
-		};
+			presets: [
+				["env", {
+					"targets": {
+						browsers: browserslist
+					}
+				}]
+			]
+		}
 
-		addCwdToPaths = function( paths ) {
-			const path = Array.isArray( paths ) ? paths : [ paths ];
-			return path.filter( element => element !== undefined ).map( entry => join( cwd, entry ) );
-		};
+		const webpackConfig = {
+			context: resolve( cwd, paths.base ),
+			entry: paths.entry,
+			output: {
+				filename: '[name].js',
+				pathinfo: true == isDev,
+			},
+			devtool: isProd ? 'source-map': 'eval',
+			module: {
+				loaders: [
+					{
+						test: /\.js$/,
+						loader: 'babel-loader',
+						options: babelifyOptions,
+						exclude: /node_modules/
+					},
+				],
+			},
+			plugins: removeEmpty([
+				new ProgressBarPlugin(),
+				isProd ? new webpack.optimize.UglifyJsPlugin() : undefined
+			]),
+			watch: true,
+			cache: true,
+		}
 
-		defaultBundler = function( task ) {
-			let options, watchifyTask, bundle;
-
-			options = Object.assign( {
-				entries: addCwdToPaths( task.entries ),
-				paths:   addCwdToPaths( task.includePaths ),
-				debug:   true
-			}, watchify.args );
-
-			watchifyTask = watchify( browserify( options ).transform( babelify, babelifyOptions ) );
-
-			bundle = function() {
-				return watchifyTask.bundle()
-					.on( 'error', ( error ) => {
-						gutil.log( error.codeFrame + '\n' + gutil.colors.red( error.toString() ) );
-					} )
-					.pipe( plumber() )
-					.pipe( source( task.bundle ) )
-					.pipe( buffer() )
-					.pipe( sourcemaps.init( { loadMaps: true } ) )
-					.pipe( sourcemaps.write( '' ) )
-					.pipe( gulp.dest( task.dest, { cwd } ) );
-			};
-
-			watchifyTask.on( 'update', bundle );
-			watchifyTask.on( 'log', gutil.log );
-
-			return bundle();
-		};
-
-		prodBundler = function( task ) {
-			const options = {
-				entries: addCwdToPaths( task.entries ),
-				paths:   addCwdToPaths( task.includePaths ),
-				debug:   false
-			};
-
-			return browserify( options )
-				.transform( babelify, babelifyOptions )
-				.bundle()
-				.pipe( plumber() )
-				.pipe( source( task.bundle ) )
-				.pipe( buffer() )
-				.pipe( uglify() )
-				.pipe( gulp.dest( task.dest, { cwd } ) );
-		};
+		const webpackJs = function( task ) {
+			return gulp.src( resolve( cwd, paths.base ) )
+				.pipe( webpackStream( webpackConfig, webpack ) )
+				.pipe( gulp.dest( resolve( cwd, paths.dest ) ) );
+		}
 
 		jsTasks       = Array.isArray( tasks.js ) ? tasks.js : [ tasks.js ];
-		jsTasksStream = jsTasks.map( isProd ? prodBundler : defaultBundler );
+		jsTasksStream = jsTasks.map( webpackJs );
 
 		return mergeStream( jsTasksStream );
 	}
