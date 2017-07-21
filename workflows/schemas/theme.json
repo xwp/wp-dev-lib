@@ -19,6 +19,13 @@
 			"assets": true
 		}
 	},
+	"js": {
+		"base": "src/js",
+		"dest": "dist/js",
+		"entry": {
+			"main": "./main.js"
+		}
+	},
 	"images": {
 		"src": "images/**/*.+(png|jpg|jpeg|gif|bmp|svg)",
 		"base": "images",
