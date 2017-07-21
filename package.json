@@ -25,10 +25,7 @@
       "schema": "theme",
       "cwd": "wp-content/themes/test-theme/assets",
       "js": {
-        "base": "src/js",
-        "dest": "dist/js",
         "entry": {
-          "app": "./app.js",
           "vendor": "./vendors.js"
         }
       }
