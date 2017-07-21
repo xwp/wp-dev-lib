@@ -5,7 +5,7 @@
 	"css": {
 		"src": "src/css/**/*.scss",
 		"base": "src/css",
-		"dest": "dist",
+		"dest": "dist/css",
 		"includePaths": [
 			"node_modules"
 		],
@@ -27,7 +27,7 @@
 	"copy": {
 		"src": "src/fonts/**/*",
 		"base": "src/fonts",
-		"dest": "dist"
+		"dest": "dist/fonts"
 	},
 	"watch": {
 		"tasks": [
