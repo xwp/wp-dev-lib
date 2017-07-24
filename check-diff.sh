@@ -227,7 +227,6 @@ function set_environment_variables {
 	# treeishA to treeishB (git diff treeishA...treeishB)
 	# treeish to STAGE (git diff --staged treeish)
 	# HEAD to WORKING [default] (git diff HEAD)
-	DIFF_HEAD=$( tr '[a-z]' '[A-Z]' <<< $DIFF_HEAD )
 	if [ "$DIFF_HEAD" == 'STAGE' ]; then
 		if [ "$DIFF_BASE" == 'HEAD' ]; then
 			DIFF_ARGS="--staged"
