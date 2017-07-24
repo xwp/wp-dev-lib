@@ -49,8 +49,6 @@ function getSchema( slug ) {
 if ( undefined !== tasks.schema ) {
 	schema = getSchema( tasks.schema );
 	delete tasks.schema;
-
-	//let settings = {};
 	tasks = _defaultsDeep( tasks, schema );
 }
 

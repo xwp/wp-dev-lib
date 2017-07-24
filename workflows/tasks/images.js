@@ -20,5 +20,4 @@ gulp.task( task.name, () => {
 		.pipe( gulpIf( isDev, cache( task.cacheName, { optimizeMemory: false } ) ) )
 		.pipe( imagemin() )
 		.pipe( task.end() );
-	//.pipe( gulpIf( isDev, bs.stream() ) );
 } );

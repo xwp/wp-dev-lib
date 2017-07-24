@@ -12,15 +12,12 @@ if ( undefined !== tasks.watch && undefined !== tasks.watch.tasks ) {
 
 		filteredTasks.forEach( taskSlug => {
 			const task = tasks[ taskSlug ];
-			let source;
 
-			if ( undefined !== task.src ) {
-				source = join( cwd, task.src );
-			} else {
+			if ( undefined === task.src ) {
 				return;
 			}
 
-			watch( source, () => gulp.start( taskSlug ) );
+			watch( join( cwd, task.src ), () => gulp.start( taskSlug ) );
 		} );
 	} );
 }

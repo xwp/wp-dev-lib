@@ -3,8 +3,8 @@ import requireDir from 'require-dir';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 
-const minNodeVersion = 6.11;
-const currentNodeVersion = parseFloat( process.version.slice( 1, 5 ) ).toFixed( 2 );
+const minNodeVersion = 6.11,
+	  currentNodeVersion = parseFloat( process.version.slice( 1, 5 ) ).toFixed( 2 );
 
 if ( minNodeVersion > currentNodeVersion ) {
 	gutil.log( gutil.colors.red( `You need at least Node version 6.11 to run this build. \nPlease update your Node version.` ) );

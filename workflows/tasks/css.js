@@ -19,7 +19,7 @@ const task = new TaskHelper( {
 } );
 
 if ( undefined !== task.config ) {
-	function fn() {
+	let fn = function() {
 		if ( ! task.isValid() ) {
 			return null;
 		}
@@ -40,14 +40,7 @@ if ( undefined !== task.config ) {
 			.pipe( gulpIf( isDev, sourcemaps.write( '' ) ) )
 
 			.pipe( task.end() );
-
-		/*
-		 * If you generate source maps to a separate `.map` file you need to add `{match: '** / *.css'}` option to stream.
-		 * These files end up being sent down stream and when browserSync.stream() receives them, it will attempt
-		 * a full page reload (as it will not find any .map files in the DOM).
-		 */
-		//.pipe( gulpIf( isDev, bs.stream() ) );
-	}
+	};
 
 	fn.displayName = 'css-compile';
 
