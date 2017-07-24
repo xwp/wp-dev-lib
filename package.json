@@ -65,6 +65,9 @@
   },
   "stylelint": {
     "extends": "stylelint-config-wordpress/scss",
+    "plugins": [
+      "stylelint-no-unsupported-browser-features"
+    ],
     "rules": {
       "at-rule-empty-line-before": [
         "always",
@@ -77,6 +80,7 @@
           ]
         }
       ],
+      "plugin/no-unsupported-browser-features": [true, { "severity": "warning" }],
       "selector-pseudo-element-colon-notation": "double",
       "value-keyword-case": null
     }
@@ -117,6 +121,7 @@
     "require-dir": "^0.3.2",
     "stylelint": "^7.13.0",
     "stylelint-config-wordpress": "^11.0.0",
+    "stylelint-no-unsupported-browser-features": "^1.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0",
