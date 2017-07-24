@@ -13,6 +13,7 @@
 		"jQuery": true,
 		"wp": false
 	},
+	"extends": 'wordpress',
 	"rules": {
 		"accessor-pairs": [2],
 		"block-scoped-var": [2],

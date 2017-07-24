@@ -23,6 +23,11 @@
     {
       "name": "Mike Crantea",
       "email": "mike.crantea@xwp.co"
+    },
+    {
+      "name": "Justin Kopepasah",
+      "email": "justin.kopepasah@xwp.co",
+      "url": "https://kopepasah.com"
     }
   ],
   "license": "MIT",
@@ -84,14 +89,23 @@
       "stylelint-no-unsupported-browser-features"
     ],
     "rules": {
+      "string-quotes": "single",
+      "color-hex-length": "long",
+      "function-parentheses-space-inside": "always",
+      "function-url-quotes": "always",
       "at-rule-empty-line-before": [
         "always",
         {
           "except": [
-            "first-nested"
+            "first-nested",
+            "blockless-after-same-name-blockless"
           ],
           "ignore": [
             "after-comment"
+          ],
+          "ignoreAtRules": [
+            "else",
+            "elseif"
           ]
         }
       ],
@@ -112,6 +126,7 @@
     "babel-preset-env": "^1.6.0",
     "del": "^3.0.0",
     "eslint": "^4.3.0",
+    "eslint-config-wordpress": "^2.0.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-compat": "^1.0.4",
     "gulp": "gulpjs/gulp.git#4.0",
