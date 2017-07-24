@@ -69,6 +69,9 @@ function set_environment_variables {
 			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
 		fi
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	elif [[ ! -z "${GITLAB_CI}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-master}
+		DIFF_HEAD=${DIFF_HEAD:-$CI_COMMIT_SHA}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
