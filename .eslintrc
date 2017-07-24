@@ -10,7 +10,7 @@
 	"globals": {
 		"_": false,
 		"Backbone": false,
-		"jQuery": false,
+		"jQuery": true,
 		"wp": false
 	},
 	"rules": {
