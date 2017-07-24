@@ -126,7 +126,6 @@
     "gulp-sourcemaps": "^2.6.0",
     "gulp-watch": "^4.3.11",
     "lodash": "^4.17.4",
-    "merge-stream": "^1.0.1",
     "postcss": "^6.0.8",
     "postcss-assets": "^4.2.0",
     "postcss-cssnext": "^3.0.2",
