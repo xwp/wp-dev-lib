@@ -11,18 +11,18 @@
     "tools"
   ],
   "author": {
-    "name": "Piotr Delawski",
-    "email": "piotr.delawski@xwp.co",
+    "name": "Weston Ruter",
+    "email": "weston.ruter@xwp.co",
     "url": "https://www.xwp.co"
   },
   "contributors": [
     {
-      "name": "Mike Crantea",
-      "email": "mike.crantea@xwp.co"
+      "name": "Piotr Delawski",
+      "email": "piotr.delawski@xwp.co"
     },
     {
-      "name": "Weston Ruter",
-      "email": "weston.ruter@xwp.co"
+      "name": "Mike Crantea",
+      "email": "mike.crantea@xwp.co"
     }
   ],
   "license": "MIT",
