@@ -10,7 +10,21 @@
     "development",
     "tools"
   ],
-  "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
+  "author": {
+    "name": "Piotr Delawski",
+    "email": "piotr.delawski@xwp.co",
+    "url": "https://www.xwp.co"
+  },
+  "contributors": [
+    {
+      "name": "Mike Crantea",
+      "email": "mike.crantea@xwp.co"
+    },
+    {
+      "name": "Weston Ruter",
+      "email": "weston.ruter@xwp.co"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "scripts": {
@@ -80,24 +94,28 @@
           ]
         }
       ],
-      "plugin/no-unsupported-browser-features": [true, { "severity": "warning" }],
+      "plugin/no-unsupported-browser-features": [
+        true,
+        {
+          "severity": "warning"
+        }
+      ],
       "selector-pseudo-element-colon-notation": "double",
       "value-keyword-case": null
     }
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
-    "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
     "babel-preset-env": "^1.6.0",
     "del": "^3.0.0",
-    "eslint": "^4.2.0",
+    "eslint": "^4.3.0",
+    "eslint-loader": "^1.9.0",
     "eslint-plugin-compat": "^1.0.4",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "gulpjs/gulp.git#4.0",
     "gulp-cached": "^1.1.1",
     "gulp-eslint": "^4.0.0",
-    "gulp-flatten": "^0.3.1",
     "gulp-if": "^2.0.2",
     "gulp-imagemin": "^3.3.0",
     "gulp-plumber": "^1.1.0",
@@ -105,26 +123,20 @@
     "gulp-progeny": "^0.4.0",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
-    "gulp-uglify": "^3.0.0",
     "gulp-watch": "^4.3.11",
     "lodash": "^4.17.4",
     "merge-stream": "^1.0.1",
-    "postcss": "^6.0.6",
-    "postcss-assets": "^4.1.0",
-    "postcss-cli": "^4.1.0",
+    "postcss": "^6.0.8",
+    "postcss-assets": "^4.2.0",
     "postcss-cssnext": "^3.0.2",
-    "postcss-normalize": "^2.0.1",
     "postcss-pxtorem": "^4.0.1",
     "postcss-reporter": "^4.0.0",
     "postcss-scss": "^1.0.2",
     "progress-bar-webpack-plugin": "^1.10.0",
     "require-dir": "^0.3.2",
     "stylelint": "^7.13.0",
-    "stylelint-config-wordpress": "^11.0.0",
+    "stylelint-config-wordpress": "^12.0.0",
     "stylelint-no-unsupported-browser-features": "^1.0.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.9.0",
     "webpack": "^3.3.0",
     "webpack-config-utils": "^2.3.0",
     "webpack-stream": "^3.2.0",
