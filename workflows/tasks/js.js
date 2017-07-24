@@ -6,10 +6,11 @@ import webpack from 'webpack';
 import webpackStream from 'webpack-stream';
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const {removeEmpty} = require('webpack-config-utils')
+import plumber from 'gulp-plumber';
 
 if ( undefined !== tasks.js ) {
 	function fn() {
-		let jsTasks, jsTasksStream, babelifyOptions;
+		let jsTasks, jsTasksStream, babelifyOptions, esLintOptions = {};
 		const paths = tasks.js;
 
 		babelifyOptions = {
@@ -22,6 +23,15 @@ if ( undefined !== tasks.js ) {
 			]
 		}
 
+		// Avoid linting for the test environment
+		if ( isDev || isProd ) {
+			esLintOptions = {
+				test: /\.js$/,
+				loader: 'eslint-loader',
+				exclude: /(node_modules)/
+			}
+		}
+
 		const webpackConfig = {
 			context: resolve( cwd, paths.base ),
 			entry: paths.entry,
@@ -31,6 +41,9 @@ if ( undefined !== tasks.js ) {
 			},
 			devtool: isProd ? 'source-map': 'eval',
 			module: {
+				rules: [
+					esLintOptions
+				],
 				loaders: [
 					{
 						test: /\.js$/,
@@ -50,7 +63,9 @@ if ( undefined !== tasks.js ) {
 
 		const webpackJs = function( task ) {
 			return gulp.src( resolve( cwd, paths.base ) )
+				.pipe( plumber() )
 				.pipe( webpackStream( webpackConfig, webpack ) )
+				.pipe( plumber.stop() )
 				.pipe( gulp.dest( resolve( cwd, paths.dest ) ) );
 		}
 
