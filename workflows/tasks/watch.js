@@ -7,7 +7,7 @@ import _without from 'lodash/without';
 if ( undefined !== tasks.watch && undefined !== tasks.watch.tasks ) {
 	gulp.task( 'watch', () => {
 
-		// Omit some tasks, e.g. `js` is already watched by Watchify.
+		// Omit some tasks, e.g. `js` is already watched by Webpack.
 		const filteredTasks = _without( tasks.watch.tasks, 'js', 'js-lint', 'clean' );
 
 		filteredTasks.forEach( taskSlug => {
