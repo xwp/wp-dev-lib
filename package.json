@@ -32,7 +32,8 @@
     "theme:prod": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --env=prod --workflow=theme",
     "plugin": "gulp --gulpfile ./dev-lib/workflows/gulpfile.babel.js --cwd ./ --workflow=plugin",
     "prod": "npm run theme:prod && npm run plugin",
-    "dev": "npm run theme:dev && npm run plugin"
+    "dev": "npm run theme:dev && npm run plugin",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workflows": {
     "theme": {
