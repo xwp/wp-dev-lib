@@ -31,6 +31,7 @@ Also symlink (or copy) the desired linting configs and [`phpunit-plugin.xml`](ph
 
 ```bash
 ln -s dev-lib/phpunit-plugin.xml phpunit.xml.dist && git add phpunit.xml.dist # (if working with a plugin)
+ln -s dev-lib/phpcs.xml . && git add phpcs.xml
 ln -s dev-lib/.jshintrc . && git add .jshintrc
 ln -s dev-lib/.jscsrc . && git add .jscsrc
 ln -s dev-lib/.eslintrc . && git add .eslintrc
@@ -64,7 +65,7 @@ git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
 
 For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
 
-To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`.eslintrc`](.eslintrc), [`.stylelintrc`](.stylelintrc), and (especially optionally) [`phpcs.ruleset.xml`](phpcs.ruleset.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
+To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`.eslintrc`](.eslintrc), [`.stylelintrc`](.stylelintrc), and (especially optionally) [`phpcs.xml`](phpcs.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
 
 To install dev-lib for all themes and plugins that don't already have a `pre-commit` hook installed, and to upgrade the dev-lib for any submodule installations, you can run the bundled script [`install-upgrade-pre-commit-hook.sh`](install-upgrade-pre-commit-hook.sh) which will look for any repos in the current directory tree and attempt to auto-install. For example:
 

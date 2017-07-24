@@ -5,17 +5,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xwp/wp-dev-lib.git"
-  },
+  "repository": "xwp/wp-dev-lib",
   "keywords": [
-    "wordpress"
+    "wordpress",
+    "plugins",
+    "themes",
+    "development",
+    "tools"
   ],
-  "author": "",
-  "license": "GPL-2.0",
-  "bugs": {
-    "url": "https://github.com/xwp/wp-dev-lib/issues"
-  },
+  "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
+  "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme"
 }
