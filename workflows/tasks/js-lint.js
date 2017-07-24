@@ -20,7 +20,7 @@ if ( undefined !== task.config ) {
 		return task.start()
 			.pipe( gulpIf( isDev, cache( task.cacheName ) ) )
 			.pipe( eslint() )
-			.pipe( eslint.format() )
+			.pipe( gulpIf( isProd, eslint.format() ) )
 			.pipe( gulpIf( isProd, eslint.failAfterError() ) );
 	} );
 }
