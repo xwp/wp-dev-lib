@@ -90,8 +90,8 @@
     ],
     "rules": {
       "string-quotes": "single",
-      "color-hex-length": "long",
-      "function-parentheses-space-inside": "always",
+      "color-hex-length": null,
+      "function-parentheses-space-inside": null,
       "function-url-quotes": "always",
       "at-rule-empty-line-before": [
         "always",
