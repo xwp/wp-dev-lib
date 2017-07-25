@@ -58,7 +58,7 @@ if (undefined !== tasks.cwd) {
 }
 
 function getSchema(slug) {
-	var file = (0, _path.resolve)(__dirname, '../schemas/' + slug + '.json');
+	var file = (0, _path.resolve)(__dirname, '../../schemas/' + slug + '.json');
 
 	if (!_fs2.default.existsSync(file)) {
 		_gulpUtil2.default.log(_gulpUtil2.default.colors.yellow('Schema \'' + slug + '\' not found, ignoring...'));

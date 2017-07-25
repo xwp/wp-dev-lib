@@ -37,7 +37,7 @@ if ( undefined !== tasks.cwd ) {
 }
 
 function getSchema( slug ) {
-	const file = resolve( __dirname, `../schemas/${ slug }.json` );
+	const file = resolve( __dirname, `../../schemas/${ slug }.json` );
 
 	if ( ! fs.existsSync( file ) ) {
 		gutil.log( gutil.colors.yellow( `Schema '${ slug }' not found, ignoring...` ) );
