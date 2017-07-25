@@ -50,4 +50,28 @@ describe( 'sortTasks()', () => {
 			after:  []
 		} );
 	} );
+
+	test( 'specified tasks are ignored', () => {
+		expect( sortTasks( [ 'watch', 'clean', 'js', 'css' ], [ 'css' ] ) ).toEqual( {
+			before: [ 'clean' ],
+			tasks:  [ 'js' ],
+			after:  [ 'watch' ]
+		} );
+	} );
+
+	test( 'specified tasks are ignored', () => {
+		expect( sortTasks( [ 'watch', 'clean', 'js', 'css' ], [ 'clean' ] ) ).toEqual( {
+			before: [],
+			tasks:  [ 'js', 'css' ],
+			after:  [ 'watch' ]
+		} );
+	} );
+
+	test( 'specified tasks are ignored', () => {
+		expect( sortTasks( [ 'watch', 'clean', 'js', 'css' ], [ 'watch' ] ) ).toEqual( {
+			before: [ 'clean' ],
+			tasks:  [ 'js', 'css' ],
+			after:  []
+		} );
+	} );
 } );

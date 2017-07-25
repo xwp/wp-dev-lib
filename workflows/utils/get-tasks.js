@@ -21,7 +21,7 @@ export const getTasks = function() {
 	} );
 
 	// Sort tasks into `before`, `after` and `tasks` lists.
-	tasksList = sortTasks( tasksList );
+	tasksList = sortTasks( tasksList, [ 'js-lint' ] );
 	gulpTasks = [];
 
 	if ( 0 < tasksList.before.length ) {
