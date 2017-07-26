@@ -59,40 +59,7 @@
     ]
   },
   "stylelint": {
-    "extends": "stylelint-config-wordpress/scss",
-    "plugins": [
-      "stylelint-no-unsupported-browser-features"
-    ],
-    "rules": {
-      "string-quotes": "single",
-      "color-hex-length": null,
-      "function-parentheses-space-inside": null,
-      "function-url-quotes": "always",
-      "at-rule-empty-line-before": [
-        "always",
-        {
-          "except": [
-            "first-nested",
-            "blockless-after-same-name-blockless"
-          ],
-          "ignore": [
-            "after-comment"
-          ],
-          "ignoreAtRules": [
-            "else",
-            "elseif"
-          ]
-        }
-      ],
-      "plugin/no-unsupported-browser-features": [
-        true,
-        {
-          "severity": "warning"
-        }
-      ],
-      "selector-pseudo-element-colon-notation": "double",
-      "value-keyword-case": null
-    }
+    "extends": "stylelint-config-wordpress/scss"
   },
   "dependencies": {
     "autoprefixer": "^7.1.2",
@@ -125,9 +92,8 @@
     "postcss-scss": "^1.0.2",
     "progress-bar-webpack-plugin": "^1.10.0",
     "require-dir": "^0.3.2",
-    "stylelint": "^7.13.0",
+    "stylelint": "^8.0.0",
     "stylelint-config-wordpress": "^12.0.0",
-    "stylelint-no-unsupported-browser-features": "^1.0.0",
     "validate-node-version": "^1.1.1",
     "webpack": "^3.3.0",
     "webpack-config-utils": "^2.3.0",
