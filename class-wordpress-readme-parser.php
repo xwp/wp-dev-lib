@@ -112,7 +112,7 @@ class WordPress_Readme_Parser {
 			'Screenshots' => function ( $body ) use ( $that, $params ) {
 				$body = trim( $body );
 				$new_body = '';
-				if ( ! preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
+				if ( ! preg_match_all( '/^\d+\. (.+?)\s*$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
 					throw new Exception( 'Malformed screenshot section' );
 				}
 				foreach ( $screenshot_matches as $i => $screenshot_match ) {
