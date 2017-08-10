@@ -129,6 +129,7 @@ You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
 specifying a `.dev-lib` (formerly `.ci-env.sh`) Bash script in the root of the repo, for example:
 
 ```bash
+DEFAULT_BASE_BRANCH=develop
 PHPCS_GITHUB_SRC=xwp/PHP_CodeSniffer
 PHPCS_GIT_TREE=phpcs-patch
 PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
@@ -140,7 +141,7 @@ PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-
 CHECK_SCOPE=patches
 ```
 
-The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
+Set `DEFAULT_BASE_BRANCH` to be whatever your default branch is in GitHub; this is use when doing diff-checks on changes in a branch build on Travis CI. The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore`; there is a `PATH_EXCLUDES_PATTERN` as well.
 
 ## Pre-commit tips
 
