@@ -56,11 +56,11 @@ function set_environment_variables {
 	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ "$TRAVIS" == true ]; then
-		GITHUB_DEFAULT_BRANCH=${GITHUB_DEFAULT_BRANCH:-master}
+		DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
 			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
-			DIFF_BASE_BRANCH=$GITHUB_DEFAULT_BRANCH
+			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
 		fi
 
 		# Make sure the remote branch is fetched.
