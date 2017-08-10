@@ -10,13 +10,26 @@ if [ -L "$0" ]; then
 	else
 		DEV_LIB_PATH=$( dirname $( readlink "$0" ) )
 	fi
+elif [ -f "$0" ]; then
+	DEV_LIB_PATH=$( dirname "$0" )
 else
 	DEV_LIB_PATH=dev-lib
 fi
 
 if [ ! -e "$DEV_LIB_PATH/check-diff.sh" ]; then
 	echo "Unable to determine DEV_LIB_PATH"
-	exit 1
+
+    exec < /dev/tty # to be able to use read
+    read -p "Would you like to clone wp-dev-lib to a temporary dir? [y/N] " -r -n 1
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    else
+        echo
+	    DEV_LIB_PATH=/tmp/.wp-dev-lib
+	    if [ ! -e "$DEV_LIB_PATH" ]; then
+	        git clone https://github.com/xwp/wp-dev-lib.git $DEV_LIB_PATH
+        fi
+    fi
 fi
 
 source "$DEV_LIB_PATH/check-diff.sh"

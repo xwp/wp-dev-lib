@@ -1,0 +1,19 @@
+{
+  "name": "wp-dev-lib",
+  "version": "1.0.0",
+  "description": "Common code used during development of WordPress plugins and themes",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "xwp/wp-dev-lib",
+  "keywords": [
+    "wordpress",
+    "plugins",
+    "themes",
+    "development",
+    "tools"
+  ],
+  "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
+  "license": "MIT",
+  "homepage": "https://github.com/xwp/wp-dev-lib#readme"
+}
