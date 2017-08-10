@@ -9,6 +9,7 @@ fi
 echo
 
 check_execute_bit
+lint_css_files
 lint_js_files
 lint_php_files
 lint_xml_files
