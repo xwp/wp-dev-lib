@@ -36,6 +36,7 @@ function set_environment_variables {
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
+	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -57,17 +58,18 @@ function set_environment_variables {
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
-
-			# Make sure the remote branch is fetched.
-			if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$TRAVIS_BRANCH"; then
-				git fetch origin "$TRAVIS_BRANCH"
-				git branch "$TRAVIS_BRANCH" FETCH_HEAD
-			fi
-
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_BRANCH}
+			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
+			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
 		fi
+
+		# Make sure the remote branch is fetched.
+		if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$DIFF_BASE_BRANCH" > /dev/null; then
+			git fetch origin "$DIFF_BASE_BRANCH"
+			git branch "$DIFF_BASE_BRANCH" FETCH_HEAD
+		fi
+
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
