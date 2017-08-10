@@ -71,10 +71,14 @@ function set_environment_variables {
 
 		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	elif [[ ! -z "${BITBUCKET_BRANCH}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-$BITBUCKET_COMMIT^}
+		DIFF_HEAD=${DIFF_HEAD:-$BITBUCKET_COMMIT}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
 	fi
+
 	while [[ $# > 0 ]]; do
 		key="$1"
 		case "$key" in
