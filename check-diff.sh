@@ -409,13 +409,6 @@ function install_tools {
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
-	# Config npm for GitLab.
-	if [[ ! -z "${GITLAB_CI}" ]]; then
-		npm config set prefix $TEMP_DIRECTORY
-		export NODE_PATH=$TEMP_DIRECTORY/lib/node_modules:$NODE_PATH
-		export PATH=$TEMP_DIRECTORY/bin:$PATH
-	fi
-
 	# Install Node packages.
 	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
