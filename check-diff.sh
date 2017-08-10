@@ -36,6 +36,7 @@ function set_environment_variables {
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
+	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -56,7 +57,6 @@ function set_environment_variables {
 	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ "$TRAVIS" == true ]; then
-		DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
 			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
