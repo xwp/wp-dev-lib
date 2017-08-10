@@ -101,7 +101,7 @@ try {
 			}
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
-			$branch = isset( $env_vars['COVERALLS_BADGE_BRANCH'] ) ? $env_vars['COVERALLS_BADGE_BRANCH'] : 'master';
+			$branch = isset( $env_vars['DEFAULT_BASE_BRANCH'] ) ? $env_vars['DEFAULT_BASE_BRANCH'] : 'master';
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
 			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg?branch=$branch";
 			if ( isset( $coveralls_badge ) ) {
