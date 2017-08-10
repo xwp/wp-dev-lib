@@ -71,6 +71,9 @@ function set_environment_variables {
 
 		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	elif [[ ! -z "${GITLAB_CI}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
+		DIFF_HEAD=${DIFF_HEAD:-$CI_COMMIT_SHA}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
@@ -248,17 +251,17 @@ function set_environment_variables {
 	fi
 
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-paths-scope"
+		cat "$TEMP_DIRECTORY/paths-scope" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/excluded-paths-scope"
 		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
 	fi
 
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.php(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-php"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.jsx?(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(css|scss)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-scss"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(xml|svg|xml.dist)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
-	if [ "$DIFF_HEAD" != 'working' ]; then
+	if [ "$DIFF_HEAD" != 'WORKING' ]; then
 		LINTING_DIRECTORY="$(realpath $TEMP_DIRECTORY)/index"
 		mkdir -p "$LINTING_DIRECTORY"
 
@@ -394,6 +397,13 @@ function install_tools {
 	# Skip installing Composer when the PHP version does not meet the php-coveralls package requirements.
 	if ! min_php_version "5.5.0" && [ -e composer.json ] && check_should_execute 'composer' && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
+	fi
+
+	# Config npm for GitLab.
+	if [[ ! -z "${GITLAB_CI}" ]]; then
+		npm config set prefix $TEMP_DIRECTORY
+		export NODE_PATH=$TEMP_DIRECTORY/lib/node_modules:$NODE_PATH
+		export PATH=$TEMP_DIRECTORY/bin:$PATH
 	fi
 
 	# Install Node packages.
@@ -581,7 +591,7 @@ function install_db {
 function find_phpunit_dirs {
 	find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; > $TEMP_DIRECTORY/phpunitdirs
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/phpunitdirs" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-phpunitdirs"
+		cat "$TEMP_DIRECTORY/phpunitdirs" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-phpunitdirs"
 		mv "$TEMP_DIRECTORY/included-phpunitdirs" "$TEMP_DIRECTORY/phpunitdirs"
 	fi
 	cat $TEMP_DIRECTORY/phpunitdirs
@@ -793,7 +803,7 @@ function run_qunit {
 
 	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-gruntfiles"
+		cat "$TEMP_DIRECTORY/gruntfiles" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-gruntfiles"
 		mv "$TEMP_DIRECTORY/included-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
 	fi
 	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then
