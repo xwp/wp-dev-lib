@@ -736,7 +736,7 @@ function run_phpunit_travisci {
 
 	INITIAL_DIR=$(pwd)
 	if [ -n "$PHPUNIT_CONFIG" ]; then
-		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) $(coverage_clover)
 	else
 		for project in $( find_phpunit_dirs ); do
 			(
