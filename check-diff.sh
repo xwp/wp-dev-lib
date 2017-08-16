@@ -673,8 +673,8 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP / DEV_LIB_ONLY"
 		return
 	fi
-	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
-		echo "Skipping PHPUnit since only applicable to site or plugin project types"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ] && [ "$PROJECT_TYPE" != theme ]; then
+		echo "Skipping PHPUnit since only applicable to site, theme or plugin project types"
 		return
 	fi
 	echo
@@ -703,8 +703,27 @@ function run_phpunit_travisci {
 
 		# Rsync the files into the right location
 		mkdir -p "$INSTALL_PATH"
-		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		rsync -a $(verbose_arg) --exclude .git --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
 		cd "$INSTALL_PATH"
+
+		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == theme ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/themes/$PROJECT_SLUG"
+
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		# Clone the theme dependencies (i.e. plugins) into the plugins directory
+		if [ ! -z "$THEME_GIT_PLUGIN_DEPENDENCIES" ]; then
+			IFS=',' read -r -a dependencies <<< "$THEME_GIT_PLUGIN_DEPENDENCIES"
+			for dep in "${dependencies[@]}"
+			do
+				filename=$(basename "$dep")
+				git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+			done
+		fi
 
 		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
@@ -717,7 +736,7 @@ function run_phpunit_travisci {
 
 	INITIAL_DIR=$(pwd)
 	if [ -n "$PHPUNIT_CONFIG" ]; then
-		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) $(coverage_clover)
 	else
 		for project in $( find_phpunit_dirs ); do
 			(
