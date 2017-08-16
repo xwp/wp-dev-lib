@@ -9,8 +9,18 @@ cd "$( dirname $0 )"
 dev_lib_dir=$(pwd)
 cd ..
 
-if [ ! -e svn-url ]; then
-	echo "Error: Missing svn-url file" >&2
+
+if [ -e .dev-lib ]; then
+	source .dev-lib
+elif [ -e .ci-env.sh ]; then
+	source .ci-env.sh
+fi
+if [ -e svn-url ]; then
+	SVN_URL=$(cat svn-url)
+fi
+
+if [ -z "$SVN_URL" ]; then
+	echo "Error: Missing SVN_URL" >&2
 	exit 1
 fi
 
@@ -48,7 +58,6 @@ fi
 
 git pull --ff-only origin master
 git push origin master
-svn_url=$(cat svn-url)
 git_root_hash=$(md5sum <<< "$git_root" | cut -c1-32)
 plugin_uniq_slug="$(basename "$git_root")-$git_root_hash"
 lock_file="/tmp/$plugin_uniq_slug.lock"
@@ -96,7 +105,7 @@ touch "$lock_file"
 
 # SVN: Checkout or update
 if [ ! -e $svn_tmp_repo_dir ]; then
-	svn checkout $svn_url $svn_tmp_repo_dir
+	svn checkout $SVN_URL $svn_tmp_repo_dir
 	cd $svn_tmp_repo_dir
 else
 	cd $svn_tmp_repo_dir
@@ -114,15 +123,25 @@ fi
 
 # rsync all committed files from the Git repo to SVN
 rsync -avz --delete --delete-excluded \
+	--exclude '/.david-dev' \
+	--exclude '/package.json' \
+	--exclude '/contributing.md' \
+	--exclude '/composer.json' \
+	--exclude '/Gruntfile.js' \
+	--exclude '/readme.md' \
 	--exclude '/.ci-env.sh' \
+	--exclude '/.dev-lib' \
 	--exclude '/.coveralls.yml' \
 	--exclude '/.git*' \
 	--exclude '/.jscsrc' \
+	--exclude '/.eslintrc' \
 	--exclude '/.jshint*' \
+	--exclude '/.mailmap' \
 	--exclude '/.travis.yml' \
 	--exclude '/assets' \
 	--exclude '/dev-lib' \
 	--exclude '/svn-url' \
+	--exclude '/tests' \
 	--exclude 'phpunit.xml*' \
 	--exclude 'phpcs.ruleset.xml' \
 	$git_tmp_repo_dir/ $svn_tmp_repo_dir/trunk/

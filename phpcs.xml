@@ -3,6 +3,15 @@
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
 	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Docs" />
+
+	<arg name="extensions" value="php"/>
+
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
+	<!-- Allow invoking just `phpcs` on command line without assuming STDIN for file input. -->
+	<file>.</file>
 
 	<exclude-pattern>*/dev-lib/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
