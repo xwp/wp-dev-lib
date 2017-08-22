@@ -703,7 +703,7 @@ function run_phpunit_travisci {
 
 		# Rsync the files into the right location
 		mkdir -p "$INSTALL_PATH"
-		rsync -a $(verbose_arg) --exclude .git --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
 		cd "$INSTALL_PATH"
 
 		echo "Location: $INSTALL_PATH"
@@ -712,7 +712,7 @@ function run_phpunit_travisci {
 
 		# Rsync the files into the right location
 		mkdir -p "$INSTALL_PATH"
-		rsync -a $(verbose_arg) --exclude .git --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
 		cd "$INSTALL_PATH"
 
 		# Clone the theme dependencies (i.e. plugins) into the plugins directory
