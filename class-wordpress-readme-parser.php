@@ -220,7 +220,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $url );
 				}
 				if ( 'david_dev_url' === $badge ) {
-					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $url );
+					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s?type=dev) ', $url );
 				}
 				if ( 'gemnasium_url' === $badge ) {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s)](%2$s) ', $params['gemnasium_badge_src'], $url );
