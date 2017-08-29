@@ -752,7 +752,7 @@ function run_phpunit_travisci {
 		for project in $( find_phpunit_dirs ); do
 			(
 				cd "$project"
-				phpunit --stop-on-failure $( if [ "$project" == "$PHPUNIT_COVERAGE_DIR" ]; then coverage_clover; fi )
+				phpunit --stop-on-failure $( if [ "$project" == "$INITIAL_DIR" ]; then coverage_clover; fi )
 			)
 		done
 	fi
