@@ -27,10 +27,11 @@ To install the pre-commit hook, symlink to [`pre-commit`](pre-commit) from your 
 ./dev-lib/install-pre-commit-hook.sh
 ```
 
-Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`phpcs.ruleset.xml`](phpcs.ruleset.xml), and [`phpunit-plugin.xml`](phpunit-plugin.xml) (note the PHPUnit config will need its paths modified if it is copied instead of symlinked):
+Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`phpcs.xml`](phpcs.xml), and [`phpunit-plugin.xml`](phpunit-plugin.xml) (note the PHPUnit config will need its paths modified if it is copied instead of symlinked):
 
 ```bash
 ln -s dev-lib/phpunit-plugin.xml phpunit.xml.dist && git add phpunit.xml.dist # (if working with a plugin)
+ln -s dev-lib/phpcs.xml . && git add phpcs.xml
 ln -s dev-lib/.jshintrc . && git add .jshintrc
 ln -s dev-lib/.jscsrc . && git add .jscsrc
 ln -s dev-lib/.eslintrc . && git add .eslintrc
@@ -62,7 +63,7 @@ git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
 
 For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
 
-To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), and (especially optionally) [`phpcs.ruleset.xml`](phpcs.ruleset.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
+To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), and (especially optionally) [`phpcs.xml`](phpcs.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
 
 To install dev-lib for all themes and plugins that don't already have a `pre-commit` hook installed, and to upgrade the dev-lib for any submodule installations, you can run the bundled script [`install-upgrade-pre-commit-hook.sh`](install-upgrade-pre-commit-hook.sh) which will look for any repos in the current directory tree and attempt to auto-install. For example:
 
@@ -128,6 +129,7 @@ You may customize the behavior of the `.travis.yml` and `pre-commit` hook by
 specifying a `.dev-lib` (formerly `.ci-env.sh`) Bash script in the root of the repo, for example:
 
 ```bash
+DEFAULT_BASE_BRANCH=develop
 PHPCS_GITHUB_SRC=xwp/PHP_CodeSniffer
 PHPCS_GIT_TREE=phpcs-patch
 PHPCS_IGNORE='tests/*,includes/vendor/*' # See also PATH_INCLUDES below
@@ -139,7 +141,7 @@ PATH_INCLUDES="docroot/wp-content/plugins/acme-* docroot/wp-content/themes/acme-
 CHECK_SCOPE=patches
 ```
 
-The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore` (it would be better to have a `PATH_EXCLUDES` as well).
+Set `DEFAULT_BASE_BRANCH` to be whatever your default branch is in GitHub; this is use when doing diff-checks on changes in a branch build on Travis CI. The `PATH_INCLUDES` is especially useful when the dev-lib is used in the context of an entire site, so you can target just the themes and plugins that you're responsible for. For *excludes*, you can specify a `PHPCS_IGNORE` var and override the `.jshintignore`; there is a `PATH_EXCLUDES_PATTERN` as well.
 
 ## Pre-commit tips
 

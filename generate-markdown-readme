@@ -4,8 +4,8 @@
  * Look for WordPress readme in current directory or above and convert into markdown readme in same directory
  * @version 1.0.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
- * @copyright Copyright (c) 2014, XWP <https://xwp.co/>
- * @license GPLv2+
+ * @copyright Copyright (c) 2017, XWP <https://xwp.co/>
+ * @license MIT
  */
 
 try {
@@ -101,14 +101,15 @@ try {
 			}
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
+			$branch = isset( $env_vars['DEFAULT_BASE_BRANCH'] ) ? $env_vars['DEFAULT_BASE_BRANCH'] : 'master';
 			$md_args['coveralls_url'] = "https://coveralls.io/github/$github_account_repo";
-			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg?branch=master";
+			$md_args['coveralls_badge_src'] = "https://coveralls.io/repos/$github_account_repo/badge.svg?branch=$branch";
 			if ( isset( $coveralls_badge ) ) {
 				$md_args['coveralls_badge_src'] .= "&service=github&t=$coveralls_badge";
 			}
 		}
 		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
-			$md_args['grunt_url'] = "gruntjs.com";
+			$md_args['grunt_url'] = 'gruntjs.com';
 		}
 		if ( file_exists( $readme_root . '/.david' ) ) {
 			$md_args['david_url'] = "https://david-dm.org/$github_account_repo";

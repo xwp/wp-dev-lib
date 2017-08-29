@@ -36,6 +36,7 @@ function set_environment_variables {
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
+	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -57,18 +58,22 @@ function set_environment_variables {
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
-
-			# Make sure the remote branch is fetched.
-			if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$TRAVIS_BRANCH"; then
-				git fetch origin "$TRAVIS_BRANCH"
-				git branch "$TRAVIS_BRANCH" FETCH_HEAD
-			fi
-
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_BRANCH}
+			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
+			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
 		fi
+
+		# Make sure the remote branch is fetched.
+		if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$DIFF_BASE_BRANCH" > /dev/null; then
+			git fetch origin "$DIFF_BASE_BRANCH"
+			git branch "$DIFF_BASE_BRANCH" FETCH_HEAD
+		fi
+
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	elif [[ ! -z "${GITLAB_CI}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
+		DIFF_HEAD=${DIFF_HEAD:-$CI_COMMIT_SHA}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
@@ -104,7 +109,14 @@ function set_environment_variables {
 
 	# TODO: Change back to https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar once 3.x compat is done.
 	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar
-	PHPCS_RULESET_FILE=$( upsearch phpcs.ruleset.xml )
+	if [ -z "$PHPCS_RULESET_FILE" ]; then
+		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
+			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
+			if [ ! -z "$PHPCS_RULESET_FILE" ]; then
+				break
+			fi
+		done
+	fi
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
@@ -241,17 +253,17 @@ function set_environment_variables {
 	fi
 
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-paths-scope"
+		cat "$TEMP_DIRECTORY/paths-scope" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/excluded-paths-scope"
 		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
 	fi
 
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.php(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-php"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.jsx?(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(css|scss)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-scss"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(xml|svg|xml.dist)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
-	if [ "$DIFF_HEAD" != 'working' ]; then
+	if [ "$DIFF_HEAD" != 'WORKING' ]; then
 		LINTING_DIRECTORY="$(realpath $TEMP_DIRECTORY)/index"
 		mkdir -p "$LINTING_DIRECTORY"
 
@@ -285,7 +297,7 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.xml phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
@@ -325,6 +337,13 @@ function set_environment_variables {
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
 	if [ ! -z "$VAGRANTFILE" ]; then VAGRANTFILE=$(realpath "$VAGRANTFILE"); fi
 	if [ ! -z "$DOCKERFILE" ]; then DOCKERFILE=$(realpath "$DOCKERFILE"); fi
+	if [ -z "$PHPUNIT_CONFIG" ] && ( [ -e phpunit.xml ] || [ -e phpunit.xml.dist ] ); then
+		if [ -e phpunit.xml ]; then
+			PHPUNIT_CONFIG=phpunit.xml
+		else
+			PHPUNIT_CONFIG=phpunit.xml.dist
+		fi
+	fi
 	# Note: PHPUNIT_CONFIG must be a relative path for the sake of running in Vagrant
 
 	return 0
@@ -388,6 +407,13 @@ function install_tools {
 	# Skip installing Composer when the PHP version does not meet the php-coveralls package requirements.
 	if ! min_php_version "5.5.0" && [ -e composer.json ] && check_should_execute 'composer' && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
+	fi
+
+	# Config npm for GitLab.
+	if [[ ! -z "${GITLAB_CI}" ]]; then
+		npm config set prefix $TEMP_DIRECTORY
+		export NODE_PATH=$TEMP_DIRECTORY/lib/node_modules:$NODE_PATH
+		export PATH=$TEMP_DIRECTORY/bin:$PATH
 	fi
 
 	# Install Node packages.
@@ -575,7 +601,7 @@ function install_db {
 function find_phpunit_dirs {
 	find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; > $TEMP_DIRECTORY/phpunitdirs
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/phpunitdirs" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-phpunitdirs"
+		cat "$TEMP_DIRECTORY/phpunitdirs" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-phpunitdirs"
 		mv "$TEMP_DIRECTORY/included-phpunitdirs" "$TEMP_DIRECTORY/phpunitdirs"
 	fi
 	cat $TEMP_DIRECTORY/phpunitdirs
@@ -656,8 +682,8 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP / DEV_LIB_ONLY"
 		return
 	fi
-	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
-		echo "Skipping PHPUnit since only applicable to site or plugin project types"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ] && [ "$PROJECT_TYPE" != theme ]; then
+		echo "Skipping PHPUnit since only applicable to site, theme or plugin project types"
 		return
 	fi
 	echo
@@ -690,6 +716,25 @@ function run_phpunit_travisci {
 		cd "$INSTALL_PATH"
 
 		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == theme ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/themes/$PROJECT_SLUG"
+
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		# Clone the theme dependencies (i.e. plugins) into the plugins directory
+		if [ ! -z "$THEME_GIT_PLUGIN_DEPENDENCIES" ]; then
+			IFS=',' read -r -a dependencies <<< "$THEME_GIT_PLUGIN_DEPENDENCIES"
+			for dep in "${dependencies[@]}"
+			do
+				filename=$(basename "$dep")
+				git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+			done
+		fi
+
+		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
 		cd "$PROJECT_DIR"
 	fi
@@ -698,12 +743,11 @@ function run_phpunit_travisci {
 		after_wp_install
 	fi
 
-	# Run the tests
-	PHPUNIT_COVERAGE_DIR=$(pwd)
+	INITIAL_DIR=$(pwd)
 	if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then
-		phpunit $( if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then echo -c "$TRAVIS_PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+		phpunit $( if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then echo -c "$TRAVIS_PHPUNIT_CONFIG"; fi ) $(coverage_clover)
 	elif [ -n "$PHPUNIT_CONFIG" ]; then
-		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) $(coverage_clover)
 	else
 		for project in $( find_phpunit_dirs ); do
 			(
@@ -796,7 +840,7 @@ function run_qunit {
 
 	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/included-gruntfiles"
+		cat "$TEMP_DIRECTORY/gruntfiles" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-gruntfiles"
 		mv "$TEMP_DIRECTORY/included-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
 	fi
 	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then

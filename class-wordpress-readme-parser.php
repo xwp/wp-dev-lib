@@ -5,8 +5,8 @@
  * @link https://github.com/markjaquith/WordPress-Plugin-Readme-Parser Alternative to WordPress-Plugin-Readme-Parser
  * @version 1.1.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
- * @copyright Copyright (c) 2013, XWP <https://xwp.co/>
- * @license GPLv2+
+ * @copyright Copyright (c) 2017, XWP <https://xwp.co/>
+ * @license MIT
  */
 
 class WordPress_Readme_Parser {
@@ -112,7 +112,7 @@ class WordPress_Readme_Parser {
 			'Screenshots' => function ( $body ) use ( $that, $params ) {
 				$body = trim( $body );
 				$new_body = '';
-				if ( ! preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
+				if ( ! preg_match_all( '/^\d+\. (.+?)\s*$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
 					throw new Exception( 'Malformed screenshot section' );
 				}
 				foreach ( $screenshot_matches as $i => $screenshot_match ) {
@@ -220,7 +220,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $url );
 				}
 				if ( 'david_dev_url' === $badge ) {
-					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $url );
+					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s?type=dev) ', $url );
 				}
 				if ( 'gemnasium_url' === $badge ) {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s)](%2$s) ', $params['gemnasium_badge_src'], $url );
