@@ -633,11 +633,11 @@ function run_phpunit_local {
 				done
 			fi
 		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "$DOCKER_PHPUNIT_BIN" ]; then
-		    if [ -n "$PHPUNIT_CONFIG" ]; then
-                "$DOCKER_PHPUNIT_BIN" -c "$PHPUNIT_CONFIG"
-            else
-                echo "Failed to run phpunit inside Docker"
-            fi
+			if [ -n "$PHPUNIT_CONFIG" ]; then
+				"$DOCKER_PHPUNIT_BIN" -c "$PHPUNIT_CONFIG"
+			else
+				echo "Failed to run phpunit inside Docker"
+			fi
 		elif [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1; then
 
 			# Check if we're in Vagrant
