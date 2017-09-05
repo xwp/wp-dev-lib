@@ -107,8 +107,7 @@ function set_environment_variables {
 		shift # past argument or value
 	done
 
-	# TODO: Change back to https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar once 3.x compat is done.
-	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar
+	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
 	if [ -z "$PHPCS_RULESET_FILE" ]; then
 		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
 			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
@@ -328,11 +327,6 @@ function set_environment_variables {
 		PATH="$( npm bin ):$PATH"
 	fi
 
-	# Make sure the Composer bin is on the PATH.
-	if [ -e composer.json ]; then
-		PATH="$( composer config bin-dir --absolute ):$PATH"
-	fi
-
 	if [ -L "$JSHINT_IGNORE" ]; then
 		echo "Warning: .jshintignore may not work as expected as symlink."
 	fi
@@ -421,6 +415,26 @@ function install_tools {
 		npm install
 	fi
 
+	# Install Composer
+	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
+		if ! command -v composer >/dev/null 2>&1; then
+			(
+				cd "$TEMP_TOOL_PATH"
+				download "http://getcomposer.org/installer" composer-installer.php
+				php composer-installer.php
+				mv composer.phar composer
+				chmod +x composer
+			)
+		fi
+
+		composer install
+	fi
+
+	# Make sure the Composer bin is on the PATH.
+	if [ -e composer.json ] && command -v composer >/dev/null 2>&1; then
+		PATH="$( composer config bin-dir --absolute ):$PATH"
+	fi
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
@@ -498,21 +512,6 @@ function install_tools {
 				download https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar "$YUI_COMPRESSOR_PATH"
 			fi
 		fi
-	fi
-
-	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
-		if ! command -v composer >/dev/null 2>&1; then
-			(
-				cd "$TEMP_TOOL_PATH"
-				download "http://getcomposer.org/installer" composer-installer.php
-				php composer-installer.php
-				mv composer.phar composer
-				chmod +x composer
-			)
-		fi
-
-		composer install
 	fi
 }
 
