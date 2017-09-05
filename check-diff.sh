@@ -323,7 +323,7 @@ function set_environment_variables {
 	fi
 
 	# Make sure the Node bin is on the PATH.
-	if [ -e package.json ]; then
+	if [ -e package.json ] && command -v npm >/dev/null; then
 		PATH="$( npm bin ):$PATH"
 	fi
 
