@@ -49,18 +49,13 @@ git add package.json
 echo 'node_modules' >> .gitignore
 
 composer init # if you don't have a composer.json already
+composer require php '>=5.2' # increase this if you need
 composer require --dev "wp-coding-standards/wpcs=*"
+composer require --dev "wimg/php-compatibility=*"
+composer require --dev dealerdirect/phpcodesniffer-composer-installer
 echo 'vendor' >> .gitignore
 
 git add .gitignore
-```
-
-Also make sure you configure your `composer.json` to automatically add WPCS to the `installed_paths` for PHPCS:
-
-```json
-  "scripts": {
-    "post-install-cmd": [ "phpcs --config-set installed_paths ../../wp-coding-standards/wpcs/" ]
-  }
 ```
 
 See below for how to configure your `.travis.yml`.
