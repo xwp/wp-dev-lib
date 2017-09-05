@@ -107,8 +107,7 @@ function set_environment_variables {
 		shift # past argument or value
 	done
 
-	# TODO: Change back to https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar once 3.x compat is done.
-	PHPCS_PHAR_URL=https://github.com/squizlabs/PHP_CodeSniffer/releases/download/2.9.0/phpcs.phar
+	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
 	if [ -z "$PHPCS_RULESET_FILE" ]; then
 		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
 			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
@@ -323,6 +322,11 @@ function set_environment_variables {
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
 
+	# Make sure the Node bin is on the PATH.
+	if [ -e package.json ] && command -v npm >/dev/null; then
+		PATH="$( npm bin ):$PATH"
+	fi
+
 	if [ -L "$JSHINT_IGNORE" ]; then
 		echo "Warning: .jshintignore may not work as expected as symlink."
 	fi
@@ -406,21 +410,34 @@ function install_tools {
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
-	# Config npm for GitLab.
-	if [[ ! -z "${GITLAB_CI}" ]]; then
-		npm config set prefix $TEMP_DIRECTORY
-		export NODE_PATH=$TEMP_DIRECTORY/lib/node_modules:$NODE_PATH
-		export PATH=$TEMP_DIRECTORY/bin:$PATH
-	fi
-
 	# Install Node packages.
 	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
 	fi
 
+	# Install Composer
+	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
+		if ! command -v composer >/dev/null 2>&1; then
+			(
+				cd "$TEMP_TOOL_PATH"
+				download "http://getcomposer.org/installer" composer-installer.php
+				php composer-installer.php
+				mv composer.phar composer
+				chmod +x composer
+			)
+		fi
+
+		composer install
+	fi
+
+	# Make sure the Composer bin is on the PATH.
+	if [ -e composer.json ] && command -v composer >/dev/null 2>&1 && check_should_execute 'composer'; then
+		PATH="$( composer config bin-dir --absolute ):$PATH"
+	fi
+
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if [ -z "$( type -t phpunit )" ] && check_should_execute 'phpunit'; then
+		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
 			PHPUNIT_VERSION=${PHPUNIT_VERSION:-5.7}
 			echo "Downloading PHPUnit $PHPUNIT_VERSION phar"
 			download https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar "$TEMP_TOOL_PATH/phpunit"
@@ -432,7 +449,7 @@ function install_tools {
 		elif [ -z "$WPCS_STANDARD" ]; then
 			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
 		else
-			if [ "$( type -t phpcs )" == '' ]; then
+			if ! command -v phpcs >/dev/null 2>&1; then
 				echo "Downloading PHPCS phar"
 				download "$PHPCS_PHAR_URL" "$TEMP_TOOL_PATH/phpcs"
 				chmod +x "$TEMP_TOOL_PATH/phpcs"
@@ -454,37 +471,37 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if check_should_execute 'grunt' && [ "$( type -t grunt )" == '' ] && [ ! -e "$(npm bin)/grunt" ]; then
+		if check_should_execute 'grunt' && ! command -v grunt >/dev/null; then
 			echo "Installing Grunt"
 			if ! npm install -g grunt-cli 2>/dev/null; then
-				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
+				echo "Failed to install grunt (try installing as a local package via 'npm install --save-dev grunt-cli'), so skipping grunt"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,grunt"
 			fi
 		fi
 
 		# Install JSHint
-		if [ "$( type -t jshint )" == '' ] && check_should_execute 'jshint'; then
+		if check_should_execute 'jshint' && ! command -v jscs >/dev/null; then
 			echo "Installing JSHint"
 			if ! npm install -g jshint 2>/dev/null; then
-				echo "Failed to install jshint (try manually doing: sudo npm install -g jshint), so skipping jshint"
+				echo "Failed to install jshint (try installing as a local package via 'npm install --save-dev jshint'), so skipping jshint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,jshint"
 			fi
 		fi
 
 		# Install jscs
-		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && check_should_execute 'jscs'; then
-			echo "JSCS"
+		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && check_should_execute 'jscs' && ! command -v jscs >/dev/null 2>&1; then
+			echo "Installing JSCS"
 			if ! npm install -g jscs 2>/dev/null; then
-				echo "Failed to install jscs (try manually doing: sudo npm install -g jscs), so skipping jscs"
+				echo "Failed to install jscs (try installing as a local package via 'npm install --save-dev jscs'), so skipping jscs"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,jscs"
 			fi
 		fi
 
 		# Install ESLint
-		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ ! -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && check_should_execute 'eslint' && ! command -v eslint >/dev/null 2>&1; then
 			echo "Installing ESLint"
 			if ! npm install -g eslint 2>/dev/null; then
-				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
+				echo "Failed to install eslint (try installing as a local package via 'npm install --save-dev eslint'), so skipping eslint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
 			fi
 		fi
@@ -496,21 +513,6 @@ function install_tools {
 			fi
 		fi
 	fi
-
-	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
-		if [ "$( type -t composer )" == '' ]; then
-			(
-				cd "$TEMP_TOOL_PATH"
-				download "http://getcomposer.org/installer" composer-installer.php
-				php composer-installer.php
-				mv composer.phar composer
-				chmod +x composer
-			)
-		fi
-
-		composer install
-	fi
 }
 
 ## Begin functions for phpunit ###########################
@@ -520,7 +522,7 @@ function install_wp {
 	if [ -d "$WP_CORE_DIR" ]; then
 		return 0
 	fi
-	if [ "$( type -t svn )" == '' ]; then
+	if ! command -v svn >/dev/null 2>&1; then
 		echo "install_wp failure: svn is not installed"
 		return 1
 	fi
@@ -563,7 +565,7 @@ function install_test_suite {
 }
 
 function install_db {
-	if [ "$( type -t mysqladmin )" == '' ]; then
+	if ! command -v mysqladmin >/dev/null 2>&1; then
 		echo "install_db failure: mysqladmin is not present"
 		return 1
 	fi
@@ -618,7 +620,7 @@ function run_phpunit_local {
 
 	(
 		echo "## phpunit"
-		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
+		if command -v phpunit >/dev/null 2>&1 && [ -n "$WP_TESTS_DIR" ]; then
 			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
@@ -664,7 +666,7 @@ function run_phpunit_travisci {
 		return
 	fi
 
-	if [ "$( type -t phpunit )" == '' ]; then
+	if ! command -v phpunit >/dev/null 2>&1; then
 		echo "Skipping PHPUnit because phpunit tool not installed"
 		return
 	fi
@@ -769,7 +771,7 @@ function lint_js_files {
 	fi
 
 	# Run JSHint.
-	if [ -n "$JSHINT_CONFIG" ] && [ "$( type -t jshint )" != '' ] && check_should_execute 'jshint'; then
+	if [ -n "$JSHINT_CONFIG" ] && check_should_execute 'jshint'; then
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
@@ -785,7 +787,7 @@ function lint_js_files {
 	fi
 
 	# Run JSCS.
-	if [ -n "$JSCS_CONFIG" ] && [ "$( type -t jscs )" != '' ] && check_should_execute 'jscs'; then
+	if [ -n "$JSCS_CONFIG" ] && check_should_execute 'jscs'; then
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
@@ -801,11 +803,11 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && check_should_execute 'eslint'; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs "$(npm bin)/eslint" --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
@@ -893,7 +895,7 @@ function lint_php_files {
 	fi
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
-	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
+	if ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
 		(
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"

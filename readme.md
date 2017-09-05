@@ -40,13 +40,21 @@ ln -s dev-lib/.editorconfig . && git add .editorconfig
 cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
 ```
 
-For ESLint, you'll also likely want to make `eslint` as a dev dependency for your NPM package:
+It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version. To install packages locally, for example:
 
 ```bash
 npm init # if you don't have a package.json already
-npm install --save-dev eslint
+npm install --save-dev eslint jshint jscs grunt-cli
 git add package.json
 echo 'node_modules' >> .gitignore
+
+composer init # if you don't have a composer.json already
+composer require php '>=5.2' # increase this if you need
+composer require --dev "wp-coding-standards/wpcs=*"
+composer require --dev "wimg/php-compatibility=*"
+composer require --dev dealerdirect/phpcodesniffer-composer-installer
+echo 'vendor' >> .gitignore
+
 git add .gitignore
 ```
 
