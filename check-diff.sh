@@ -431,7 +431,7 @@ function install_tools {
 	fi
 
 	# Make sure the Composer bin is on the PATH.
-	if [ -e composer.json ] && command -v composer >/dev/null 2>&1; then
+	if [ -e composer.json ] && command -v composer >/dev/null 2>&1 && check_should_execute 'composer'; then
 		PATH="$( composer config bin-dir --absolute ):$PATH"
 	fi
 
