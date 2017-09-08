@@ -305,7 +305,7 @@ function set_environment_variables {
 				fi
 			fi
 		done
-		if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
+		if [ ! -z "$JSHINT_IGNORE" ] && [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
 			JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
 		fi
 
