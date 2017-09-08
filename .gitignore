@@ -1,1 +1,3 @@
 codecept.phar
+node_modules
+npm-debug.log

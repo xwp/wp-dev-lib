@@ -1,13 +1,19 @@
 {
 	"env": {
-		"browser": true
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+	"parserOptions": {
+		"sourceType": "module"
 	},
 	"globals": {
 		"_": false,
 		"Backbone": false,
-		"jQuery": false,
+		"jQuery": true,
 		"wp": false
 	},
+	"extends": "wordpress",
 	"rules": {
 		"accessor-pairs": [2],
 		"block-scoped-var": [2],
