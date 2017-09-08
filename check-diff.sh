@@ -152,6 +152,8 @@ function set_environment_variables {
 	VERBOSE=${VERBOSE:-0}
 	CODECEPTION_CHECK=${CODECEPTION_CHECK:-1}
 	VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
+	DOCKERFILE=$( upsearch 'docker-compose.yml' git_boundless )
+	DOCKER_PHPUNIT_BIN=${DOCKER_PHPUNIT_BIN:-bin/phpunit}
 
 	if [ -z "$JSCS_CONFIG" ]; then
 		JSCS_CONFIG="$( upsearch .jscsrc )"
@@ -338,6 +340,7 @@ function set_environment_variables {
 	if [ ! -z "$PHPCS_RULESET_FILE" ]; then PHPCS_RULESET_FILE=$(realpath "$PHPCS_RULESET_FILE"); fi
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
 	if [ ! -z "$VAGRANTFILE" ]; then VAGRANTFILE=$(realpath "$VAGRANTFILE"); fi
+	if [ ! -z "$DOCKERFILE" ]; then DOCKERFILE=$(realpath "$DOCKERFILE"); fi
 	if [ -z "$PHPUNIT_CONFIG" ] && ( [ -e phpunit.xml ] || [ -e phpunit.xml.dist ] ); then
 		if [ -e phpunit.xml ]; then
 			PHPUNIT_CONFIG=phpunit.xml
@@ -631,6 +634,12 @@ function run_phpunit_local {
 					)
 				done
 			fi
+		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "$DOCKER_PHPUNIT_BIN" ]; then
+			if [ -n "$PHPUNIT_CONFIG" ]; then
+				"$DOCKER_PHPUNIT_BIN" -c "$PHPUNIT_CONFIG"
+			else
+				echo "Failed to run phpunit inside Docker"
+			fi
 		elif [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1; then
 
 			# Check if we're in Vagrant
@@ -737,7 +746,9 @@ function run_phpunit_travisci {
 	fi
 
 	INITIAL_DIR=$(pwd)
-	if [ -n "$PHPUNIT_CONFIG" ]; then
+	if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then
+		phpunit $( if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then echo -c "$TRAVIS_PHPUNIT_CONFIG"; fi ) $(coverage_clover)
+	elif [ -n "$PHPUNIT_CONFIG" ]; then
 		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) $(coverage_clover)
 	else
 		for project in $( find_phpunit_dirs ); do
