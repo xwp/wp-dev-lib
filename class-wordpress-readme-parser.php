@@ -141,7 +141,7 @@ class WordPress_Readme_Parser {
 
 		// Format metadata
 		$formatted_metadata = array_filter( $this->metadata );
-		$formatted_metadata['Contributors'] = join(
+		$formatted_metadata['Contributors'] = implode(
 			', ',
 			array_map(
 				function ( $contributor ) {
@@ -153,11 +153,11 @@ class WordPress_Readme_Parser {
 			)
 		);
 		if ( ! empty( $this->metadata['Tags'] ) ) {
-			$formatted_metadata['Tags'] = join(
+			$formatted_metadata['Tags'] = implode(
 				', ',
 				array_map(
 					function ( $tag ) {
-						return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%1$s)', $tag );
+						return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%2$s)', $tag, str_replace( ' ', '-', $tag ) );
 					},
 					$this->metadata['Tags']
 				)
