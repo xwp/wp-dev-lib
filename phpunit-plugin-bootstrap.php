@@ -32,11 +32,11 @@ if ( empty( $_tests_dir ) ) {
 }
 
 // Relative path to Core tests directory.
-if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
+if ( ! is_dir( $_tests_dir . '/includes/' ) ) {
 	$_tests_dir = '../../../../tests/phpunit';
 }
 
-if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
+if ( ! is_dir( $_tests_dir . '/includes/' ) ) {
 	trigger_error( 'Unable to locate wordpress-tests-lib', E_USER_ERROR );
 }
 require_once $_tests_dir . '/includes/functions.php';
