@@ -1,10 +1,19 @@
 <?php
-// Determine if we should update the content and plugin paths.
-if ( file_exists( dirname( __DIR__ ) . '/wp-load.php' ) ) {
-	define( 'WP_CONTENT_DIR', dirname( __DIR__ ) . '/wp-content/' );
-} else if ( file_exists( '../../../wp-content' ) ) {
-	define( 'WP_CONTENT_DIR', dirname( dirname( dirname( getcwd() ) ) ) . '/wp-content/' );
+
+/**
+ * Determine if we should update the content and plugin paths.
+ */
+if ( ! defined( 'WP_CONTENT_DIR' ) && getenv( 'WP_CONTENT_DIR' ) ) {
+	define( 'WP_CONTENT_DIR', getenv( 'WP_CONTENT_DIR' ) );
 }
+if ( ! defined( 'WP_CONTENT_DIR' ) ) {
+	if ( file_exists( dirname( __DIR__ ) . '/wp-load.php' ) ) {
+		define( 'WP_CONTENT_DIR', dirname( __DIR__ ) . '/wp-content/' );
+	} else if ( file_exists( '../../../wp-content' ) ) {
+		define( 'WP_CONTENT_DIR', dirname( dirname( dirname( getcwd() ) ) ) . '/wp-content/' );
+	}
+}
+
 if ( defined( 'WP_CONTENT_DIR' ) && ! defined( 'WP_PLUGIN_DIR' ) ) {
 	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . 'plugins/' );
 }
@@ -23,11 +32,11 @@ if ( empty( $_tests_dir ) ) {
 }
 
 // Relative path to Core tests directory.
-if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
+if ( ! is_dir( $_tests_dir . '/includes/' ) ) {
 	$_tests_dir = '../../../../tests/phpunit';
 }
 
-if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
+if ( ! is_dir( $_tests_dir . '/includes/' ) ) {
 	trigger_error( 'Unable to locate wordpress-tests-lib', E_USER_ERROR );
 }
 require_once $_tests_dir . '/includes/functions.php';
