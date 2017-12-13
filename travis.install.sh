@@ -14,7 +14,7 @@ if [[ ! -z "$PHPUNIT_VERSION" ]]; then
   mkdir -p $HOME/phpunit-bin/$PHPUNIT_VERSION
   echo "Opting for phpunit $PHPUNIT_VERSION for PHP $TRAVIS_PHP_VERSION"
   export PATH="$HOME/phpunit-bin/$PHPUNIT_VERSION:$PATH"
-  if [[ ! -e $HOME/phpunit-bin/$PHPUNIT_VERSION/phpnit ]]; then
+  if [[ ! -e $HOME/phpunit-bin/$PHPUNIT_VERSION/phpunit ]]; then
     wget -O $HOME/phpunit-bin/$PHPUNIT_VERSION/phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar
     chmod +x $HOME/phpunit-bin/$PHPUNIT_VERSION/phpunit
   fi
