@@ -14,9 +14,7 @@ if can_generate_coverage_clover && [ -s "$TEMP_DIRECTORY/paths-scope-php" ] && [
 		COVERALLS_BIN="vendor/bin/php-coveralls"
 	fi
 
-	if [ -e "$COVERALLS_BIN" ]; then
-	    php $COVERALLS_BIN -v
-	fi
+	php $COVERALLS_BIN -v
 
 	cd - > /dev/null
 fi
