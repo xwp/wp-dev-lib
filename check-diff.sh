@@ -383,7 +383,7 @@ function download {
 
 function can_generate_coverage_clover {
 	if [ -e .coveralls.yml ] && [ -e composer.json ] && check_should_execute 'coverage'; then
-		if min_php_version "5.5.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
+		if min_php_version "5.5.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"(~2.0|dev-master)"'; then
 			return 0
 		elif min_php_version "5.3.0" && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"~1.0"'; then
 			return 0
