@@ -109,7 +109,7 @@ function set_environment_variables {
 
 	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
 	if [ -z "$PHPCS_RULESET_FILE" ]; then
-		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
+		for SEARCHED_PHPCS_RULESET_FILE in .phpcs.xml phpcs.xml .phpcs.xml.dist phpcs.xml.dist phpcs.ruleset.xml; do
 			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
 			if [ ! -z "$PHPCS_RULESET_FILE" ]; then
 				break
@@ -296,7 +296,7 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.xml phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .phpcs.xml phpcs.xml .phpcs.xml.dist phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
