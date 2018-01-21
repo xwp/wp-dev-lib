@@ -92,6 +92,8 @@ class WordPress_Readme_Parser {
 	function to_markdown( $params = array() ) {
 		$that = $this;
 
+		$github_assets_url = ! empty( $params['github_assets_url'] ) ? $params['github_assets_url'] : $params['assets_dir'];
+
 		$general_section_formatter = function ( $body ) use ( $params ) {
 			$body = preg_replace(
 				'#\[youtube\s+(?:https?://www\.youtube\.com/watch\?v=|https?://youtu\.be/)(.+?)\]#',
@@ -109,7 +111,7 @@ class WordPress_Readme_Parser {
 
 		// Parse sections
 		$section_formatters = array(
-			'Screenshots' => function ( $body ) use ( $that, $params ) {
+			'Screenshots' => function ( $body ) use ( $that, $params, $github_assets_url ) {
 				$body = trim( $body );
 				$new_body = '';
 				if ( ! preg_match_all( '/^\d+\. (.+?)\s*$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
@@ -119,6 +121,7 @@ class WordPress_Readme_Parser {
 					$img_extensions = array( 'jpg', 'gif', 'png' );
 					foreach ( $img_extensions as $ext ) {
 						$filepath = sprintf( '%s/screenshot-%d.%s', $params['assets_dir'], $i + 1, $ext );
+						$fileurl = sprintf( '%s/screenshot-%d.%s', $github_assets_url, $i + 1, $ext );
 						if ( file_exists( dirname( $that->path ) . DIRECTORY_SEPARATOR . $filepath ) ) {
 							break;
 						} else {
@@ -132,7 +135,7 @@ class WordPress_Readme_Parser {
 					$screenshot_name = $screenshot_match[1];
 					$new_body .= sprintf( "### %s\n", $screenshot_name );
 					$new_body .= "\n";
-					$new_body .= sprintf( "![%s](%s)\n", $screenshot_name, $filepath );
+					$new_body .= sprintf( "![%s](%s)\n", $screenshot_name, $fileurl );
 					$new_body .= "\n";
 				}
 				return $new_body;
@@ -179,7 +182,7 @@ class WordPress_Readme_Parser {
 		$markdown .= sprintf( "# %s\n", $this->title );
 		$markdown .= "\n";
 		if ( file_exists( $params['assets_dir'] . '/banner-1544x500.png' ) ) {
-			$markdown .= "![Banner]({$params['assets_dir']}/banner-1544x500.png)";
+			$markdown .= "![Banner]({$github_assets_url}/banner-1544x500.png)";
 			$markdown .= "\n";
 		}
 		$markdown .= sprintf( "%s\n", $this->short_description );

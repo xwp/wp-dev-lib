@@ -89,6 +89,13 @@ try {
 			}
 			if ( isset( $env_vars['ASSETS_DIR'] ) ) {
 				$md_args['assets_dir'] = $env_vars['ASSETS_DIR'];
+
+				$md_args['github_assets_url'] = sprintf(
+					'https://github.com/%s/raw/%s/%s',
+					$github_account_repo,
+					isset( $env_vars['DEFAULT_BASE_BRANCH'] ) ? $env_vars['DEFAULT_BASE_BRANCH'] : 'master',
+					$env_vars['ASSETS_DIR']
+				);
 			}
 			$md_args['skip_generation_notice'] = ! empty( $env_vars['SKIP_README_MD_GENERATION_COMMENT'] );
 		}
