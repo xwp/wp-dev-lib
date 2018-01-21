@@ -90,6 +90,7 @@ try {
 			if ( isset( $env_vars['ASSETS_DIR'] ) ) {
 				$md_args['assets_dir'] = $env_vars['ASSETS_DIR'];
 			}
+			$md_args['skip_generation_notice'] = ! empty( $env_vars['SKIP_README_MD_GENERATION_COMMENT'] );
 		}
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
 			if ( isset( $travis_ci_pro_badge ) ) {
