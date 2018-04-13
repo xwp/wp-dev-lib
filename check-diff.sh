@@ -415,7 +415,7 @@ function install_tools {
 
 	# Install Node packages.
 	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
-		npm install
+		npm install --loglevel error > /dev/null
 	fi
 
 	# Install Composer
