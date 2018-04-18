@@ -81,6 +81,16 @@ cd ~/Shared/dev-lib
 ./install-shared-pre-commit-hook.sh ~/Projects/wordpress
 ```
 
+### Install via Composer
+
+Add `wp-dev-lib` as a [Composer](https://getcomposer.org) developer dependancy to your project:
+
+```bash
+composer require xwp/wp-dev-lib:dev-master --dev
+```
+
+which will place this library under `vendor/xwp/wp-dev-lib`.
+
 ## Travis CI
 
 Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
