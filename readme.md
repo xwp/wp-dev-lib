@@ -1,44 +1,65 @@
-wp-dev-lib
-==========
+# wp-dev-lib
 
 **Common tools to facilitate the development and testing of WordPress themes and plugins**
 
 ## Installation
 
-### Install as submodule
-
-To install as Git submodule (recommended):
+Add it as a developer dependancy to your project using [Composer](https://getcomposer.org):
 
 ```bash
-git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib
+composer require --dev xwp/wp-dev-lib
 ```
 
-To **update** the library with the latest changes:
+which will place it under `vendor/xwp/wp-dev-lib`.
+
+Or using [npm](https://www.npmjs.com):
 
 ```bash
-git submodule update --remote dev-lib
-git add dev-lib
-git commit -m "Update dev-lib"
+npm install --save-dev xwp/wp-dev-lib
 ```
 
-To install the pre-commit hook, symlink to [`pre-commit`](pre-commit) from your project's `.git/hooks/pre-commit`, you can use the bundled script to do this:
+which will place it under `node_modules/xwp/wp-dev-lib`.
 
-```bash
-./dev-lib/install-pre-commit-hook.sh
+
+## Configure the Git Pre-commit Hook
+
+`wp-dev-lib` comes with a pre-commit hook which runs all linters, tests and checks before every commit to your project.
+
+To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks) and the following config added to `composer.json`:
+
+```json
+{
+  "extra": {
+    "hooks": {
+      "pre-commit": "scripts/test"
+    }
+  }
+}
 ```
 
-Also symlink (or copy) the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), [`phpcs.xml`](phpcs.xml), and [`phpunit-plugin.xml`](phpunit-plugin.xml) (note the PHPUnit config will need its paths modified if it is copied instead of symlinked):
+With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with the following script added to your `package.json`:
 
-```bash
-ln -s dev-lib/phpunit-plugin.xml phpunit.xml.dist && git add phpunit.xml.dist # (if working with a plugin)
-ln -s dev-lib/phpcs.xml . && git add phpcs.xml
-ln -s dev-lib/.jshintrc . && git add .jshintrc
-ln -s dev-lib/.jscsrc . && git add .jscsrc
-ln -s dev-lib/.eslintrc . && git add .eslintrc
-ln -s dev-lib/.eslintignore . && git add .eslintignore
-ln -s dev-lib/.editorconfig . && git add .editorconfig
-cp dev-lib/.jshintignore . && git add .jshintignore # don't use symlink for this
+```json
+{
+  "scripts": {
+    "precommit": "./node_modules/wp-dev-lib/pre-commit"
+  },
+}
 ```
+
+
+## Configure Code Linters
+
+This tool comes with sample configuration files fow the following linters:
+
+- [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for PHPUnit
+- [`phpcs.xml`](sample-config/phpcs.xml) for phpcs
+- [`.jshintrc`](sample-config/.jshintrc) and [`.jshintignore`](sample-config/.jshintignore) for JSHint
+- [`.jscsrc`](sample-config/.jscsrc) for JSCS
+- [`.eslintrc`](sample-config/.eslintrc) and [`.eslintignore`](sample-config/.eslintignore) for ESLint
+- [`.editorconfig`](sample-config/.editorconfig) for [EditorConfig](http://editorconfig.org/).
+
+Copy the files you need to the root directory of your project.
 
 It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version. To install packages locally, for example:
 
@@ -60,36 +81,6 @@ git add .gitignore
 
 See below for how to configure your `.travis.yml`.
 
-### Install via symlink (non-submodule)
-
-Often installing as a submodule is not viable, for example when contributing to an existing project, such as WordPress Core itself.  If you don't want to install as a submodule you can instead just clone the repo somewhere on your system and then just add the `pre-commit` hook (see below) to symlink to this location, for example:
-
-```bash
-git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
-~/Projects/wp-dev-lib/install-pre-commit-hook.sh /path/to/my-plugin
-```
-
-For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
-
-To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), and (especially optionally) [`phpcs.xml`](phpcs.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
-
-To install dev-lib for all themes and plugins that don't already have a `pre-commit` hook installed, and to upgrade the dev-lib for any submodule installations, you can run the bundled script [`install-upgrade-pre-commit-hook.sh`](install-upgrade-pre-commit-hook.sh) which will look for any repos in the current directory tree and attempt to auto-install. For example:
-
-```bash
-git clone https://github.com/xwp/wp-dev-lib.git ~/Shared/dev-lib
-cd ~/Shared/dev-lib
-./install-shared-pre-commit-hook.sh ~/Projects/wordpress
-```
-
-### Install via Composer
-
-Add `wp-dev-lib` as a [Composer](https://getcomposer.org) developer dependancy to your project:
-
-```bash
-composer require xwp/wp-dev-lib:dev-master --dev
-```
-
-which will place this library under `vendor/xwp/wp-dev-lib`.
 
 ## Travis CI
 
