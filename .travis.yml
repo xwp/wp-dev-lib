@@ -1,42 +1,10 @@
-sudo: false
-dist: precise
+#
+# Important: This file is for the wp-dev-lib Travis CI runs.
+# See sample-config/.travis.yml for a sample config for a WordPress project.
+#
 
-notifications:
-  email:
-    on_success: never
-    on_failure: change
-
-cache:
-  directories:
-    - node_modules
-    - vendor
-    - $HOME/phpunit-bin
-
-language:
-  - php
-  - node_js
-
-php:
-  - 5.2
-  - 5.3
-  - 5.6
-  - 7.0
-
-env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=latest WP_MULTISITE=1
-  - WP_VERSION=trunk WP_MULTISITE=0
-  - WP_VERSION=trunk WP_MULTISITE=1
-
-install:
-  - nvm install 6 && nvm use 6
-  - export DEV_LIB_PATH=dev-lib
-  - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
-  - if [ ! -e "$DEV_LIB_PATH" ]; then git clone https://github.com/xwp/wp-dev-lib.git $DEV_LIB_PATH; fi
-  - source $DEV_LIB_PATH/travis.install.sh
+language: php
 
 script:
-  - source $DEV_LIB_PATH/travis.script.sh
-
-after_script:
-  - source $DEV_LIB_PATH/travis.after_script.sh
+  - shellcheck *.sh
+  - php -l *.php
