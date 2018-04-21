@@ -5,6 +5,9 @@
 
 language: php
 
+notifications:
+  email: false
+
 script:
   - shellcheck *.sh
   - php -l *.php
