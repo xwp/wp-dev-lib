@@ -78,7 +78,8 @@ function set_environment_variables {
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
 	fi
-	while [[ $# > 0 ]]; do
+
+	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			-b|--diff-base)
