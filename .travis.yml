@@ -9,5 +9,6 @@ notifications:
   email: false
 
 script:
-  - shellcheck *.sh
-  - php -l *.php
+  - php -l *.php # Ensure valid PHP syntax
+  - shellcheck *.sh || true # Run shellcheck but ignore the output
+  - shellcheck --format json *.sh | grep --quiet '"level":"error"' # Fail only if shellcheck finds errors.
