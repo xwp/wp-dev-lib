@@ -11,4 +11,4 @@ notifications:
 script:
   - php -l *.php # Ensure valid PHP syntax
   - shellcheck *.sh || true # Run shellcheck but ignore the output
-  - shellcheck --format json *.sh | grep --quiet '"level":"error"' # Fail only if shellcheck finds errors.
+  - shellcheck --format json *.sh | grep --quiet --invert-match '"level":"error"' # Fail only if shellcheck finds errors.
