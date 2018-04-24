@@ -79,8 +79,6 @@ echo 'vendor' >> .gitignore
 git add .gitignore
 ```
 
-See below for how to configure your `.travis.yml`.
-
 
 ## Travis CI
 
