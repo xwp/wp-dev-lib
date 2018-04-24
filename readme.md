@@ -25,7 +25,7 @@ which will place it under `node_modules/xwp/wp-dev-lib`.
 
 This tool comes with a [pre-commit hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_committing_workflow_hooks) which runs all linters, tests and checks before every commit to your project.
 
-To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks) and the following config added to `composer.json`:
+To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks) and the following configuration added to `composer.json`:
 
 ```json
 {
