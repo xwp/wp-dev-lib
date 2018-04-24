@@ -31,7 +31,7 @@ To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks
 {
   "extra": {
     "hooks": {
-      "pre-commit": "scripts/test"
+      "pre-commit": "./vendor/xwp/wp-dev-lib/pre-commit"
     }
   }
 }
