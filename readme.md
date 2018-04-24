@@ -84,10 +84,10 @@ See below for how to configure your `.travis.yml`.
 
 ## Travis CI
 
-Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
+Copy the [`sample-config/.travis.yml`](sample-config/.travis.yml) file into the root of your repo:
 
 ```bash
-cp dev-lib/.travis.yml .
+cp dev-lib/sample-config/.travis.yml .
 ```
 
 Note that the bulk of the logic in this config file is located in [`travis.install.sh`](travis.install.sh), [`travis.script.sh`](travis.script.sh), and [`travis.after_script.sh`](travis.after_script.sh), so there is minimal chance for the `.travis.yml` to diverge from upstream. Additionally, since each project likely may need to have unique environment targets (such as which PHP versions, whether multisite is relevant, etc), it makes sense that `.travis.yml` gets forked.
