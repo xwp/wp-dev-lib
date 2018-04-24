@@ -52,11 +52,11 @@ With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with t
 
 This tool comes with sample configuration files fow the following linters:
 
-- [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for PHPUnit
-- [`phpcs.xml`](sample-config/phpcs.xml) for phpcs
-- [`.jshintrc`](sample-config/.jshintrc) and [`.jshintignore`](sample-config/.jshintignore) for JSHint
-- [`.jscsrc`](sample-config/.jscsrc) for JSCS
-- [`.eslintrc`](sample-config/.eslintrc) and [`.eslintignore`](sample-config/.eslintignore) for ESLint
+- [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for [PHPUnit](https://phpunit.de)
+- [`phpcs.xml`](sample-config/phpcs.xml) for [phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
+- [`.jshintrc`](sample-config/.jshintrc) and [`.jshintignore`](sample-config/.jshintignore) for [JSHint](http://jshint.com)
+- [`.jscsrc`](sample-config/.jscsrc) for [JSCS](http://jscs.info)
+- [`.eslintrc`](sample-config/.eslintrc) and [`.eslintignore`](sample-config/.eslintignore) for [ESLint](https://eslint.org)
 - [`.editorconfig`](sample-config/.editorconfig) for [EditorConfig](http://editorconfig.org/).
 
 Copy the files you need to the root directory of your project.
