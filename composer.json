@@ -21,6 +21,5 @@
   "support": {
     "issues": "https://github.com/xwp/wp-dev-lib/issues",
     "source": "https://github.com/xwp/wp-dev-lib"
-  },
-  "require": {}
+  }
 }
