@@ -1,4 +1,4 @@
-# ![wp-dev-lib](logo.svg)
+# ![wp-dev-lib](assets/logo.svg)
 
 **Common tools to facilitate the development and testing of WordPress themes and plugins**
 
