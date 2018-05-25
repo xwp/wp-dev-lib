@@ -78,7 +78,8 @@ function set_environment_variables {
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
 	fi
-	while [[ $# > 0 ]]; do
+
+	while [[ $# -gt 0 ]]; do
 		key="$1"
 		case "$key" in
 			-b|--diff-base)
@@ -109,7 +110,7 @@ function set_environment_variables {
 
 	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
 	if [ -z "$PHPCS_RULESET_FILE" ]; then
-		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
+		for SEARCHED_PHPCS_RULESET_FILE in .phpcs.xml phpcs.xml .phpcs.xml.dist phpcs.xml.dist phpcs.ruleset.xml; do
 			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
 			if [ ! -z "$PHPCS_RULESET_FILE" ]; then
 				break
@@ -296,7 +297,7 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.xml phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .phpcs.xml phpcs.xml .phpcs.xml.dist phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
@@ -310,8 +311,18 @@ function set_environment_variables {
 		fi
 
 		# Make sure that all of the dev-lib is copied to the linting directory in case any configs extend instead of symlink.
-		mkdir -p $LINTING_DIRECTORY/dev-lib
+		mkdir -p "$LINTING_DIRECTORY/dev-lib"
 		rsync -avzq --exclude .git "$DEV_LIB_PATH/" "$LINTING_DIRECTORY/dev-lib/"
+
+		if [ -e "$PROJECT_DIR/composer.json" ] && command -v composer >/dev/null 2>&1; then
+			# Get the Composer vendor directory.
+			COMPOSER_VENDOR_DIR=$(composer config vendor-dir)
+
+			# Ensure the Composer vendor directory is available in case there are dev tools inside.
+			if [ -n "$COMPOSER_VENDOR_DIR" ] && [ -d "$PROJECT_DIR/$COMPOSER_VENDOR_DIR" ]; then
+				ln -sf "$PROJECT_DIR/$COMPOSER_VENDOR_DIR" "$LINTING_DIRECTORY/$COMPOSER_VENDOR_DIR"
+			fi
+		fi
 
 		# Use node_modules from actual directory (create node_modules symlink even if it won't be created).
 		if [ -e "$PROJECT_DIR/package.json" ]; then
@@ -415,7 +426,7 @@ function install_tools {
 
 	# Install Node packages.
 	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
-		npm install
+		npm install --loglevel error > /dev/null
 	fi
 
 	# Install Composer

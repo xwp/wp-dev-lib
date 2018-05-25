@@ -69,7 +69,7 @@ git clone https://github.com/xwp/wp-dev-lib.git ~/Projects/wp-dev-lib
 ~/Projects/wp-dev-lib/install-pre-commit-hook.sh /path/to/my-plugin
 ```
 
-For the Travis CI checks, the `.travis.yml` copied and committed to the repo (see below) will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
+For the Travis CI checks, the sample `.travis.yml` in the `sample-config` directory will clone the repo into the `dev-lib` directory if it doesn't exist (or whatever your `DEV_LIB_PATH` environment variable is set to).
 
 To install the [`.jshintrc`](.jshint), [`.jshintignore`](.jshintignore), [`.jscsrc`](.jscsrc), and (especially optionally) [`phpcs.xml`](phpcs.xml), copy the files into the repo root (as opposed to creating symlinks, as when installing via submodule).
 
@@ -81,12 +81,22 @@ cd ~/Shared/dev-lib
 ./install-shared-pre-commit-hook.sh ~/Projects/wordpress
 ```
 
-## Travis CI
+### Install via Composer
 
-Copy the [`.travis.yml`](.travis.yml) file into the root of your repo:
+Add `wp-dev-lib` as a [Composer](https://getcomposer.org) developer dependancy to your project:
 
 ```bash
-cp dev-lib/.travis.yml .
+composer require xwp/wp-dev-lib:dev-master --dev
+```
+
+which will place this library under `vendor/xwp/wp-dev-lib`.
+
+## Travis CI
+
+Copy the [`sample-config/.travis.yml`](sample-config/.travis.yml) file into the root of your repo:
+
+```bash
+cp dev-lib/sample-config/.travis.yml .
 ```
 
 Note that the bulk of the logic in this config file is located in [`travis.install.sh`](travis.install.sh), [`travis.script.sh`](travis.script.sh), and [`travis.after_script.sh`](travis.after_script.sh), so there is minimal chance for the `.travis.yml` to diverge from upstream. Additionally, since each project likely may need to have unique environment targets (such as which PHP versions, whether multisite is relevant, etc), it makes sense that `.travis.yml` gets forked.

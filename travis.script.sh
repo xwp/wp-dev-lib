@@ -3,7 +3,7 @@
 set -e
 
 echo "## Checking files, scope $CHECK_SCOPE:"
-if [[ $CHECK_SCOPE != "all" ]]; then
+if [[ -z $SKIP_ECHO_PATHS_SCOPE ]] && [[ $CHECK_SCOPE != "all" ]]; then
 	cat "$TEMP_DIRECTORY/paths-scope"
 fi
 echo
