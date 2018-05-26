@@ -13,5 +13,9 @@
     "post-update-cmd": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
     ]
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.0",
+    "wp-coding-standards/wpcs": "^0.14"
   }
 }
