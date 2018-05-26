@@ -1,9 +1,6 @@
 #!/bin/bash
 # WordPress pre-commit hook
 #
-# We assume that this will be called by a Composer or npm script so the
-# current working directory is the root of the project.
-#
 
 set -e
 shopt -s expand_aliases
