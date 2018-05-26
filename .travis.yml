@@ -17,14 +17,12 @@ notifications:
 
 install:
   - composer install --working-dir="tests/composer"
-  - export DEV_LIB_PATH=tests/composer/vendor/xwp/wp-dev-lib/scripts # Change this to node_modules/xwp/wp-dev-lib/scripts if using npm.
+  - export DEV_LIB_PATH=tests/composer/vendor/xwp/wp-dev-lib/scripts
   - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
-  - find . -name "*.php" -print0 | xargs -0 -n1 -P8 php -l # Ensure valid PHP syntax
-  - shellcheck **/*.sh || true # Run shellcheck but ignore the output
-  - shellcheck --format json **/*.sh | grep --quiet --invert-match '"level":"error"' # Fail only if shellcheck finds errors.
-  - composer test --working-dir="tests/composer"
+  - composer test # Run linters for the wp-dev-lib files.
+  - composer test --working-dir="tests/composer" # Run sample Composer project setup.
 
 after_script:
   - source "$DEV_LIB_PATH/travis.after_script.sh"
