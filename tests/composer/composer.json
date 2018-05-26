@@ -3,15 +3,18 @@
   "minimum-stability": "dev",
   "scripts": {
     "test": [
-      "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
-      "git checkout -b test && git add . && git commit -m 'Test files'",
       "DIFF_BASE=master DIFF_HEAD=HEAD vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
+    "setup-test": [
+      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib",
+      "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
+      "git checkout -b test && git add . && git commit -m 'Test commit'"
+    ],
     "post-install-cmd": [
-      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
+      "@setup-test"
     ],
     "post-update-cmd": [
-      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
+      "@setup-test"
     ]
   },
   "require-dev": {
