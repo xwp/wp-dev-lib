@@ -63,6 +63,12 @@ function set_environment_variables {
 			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
 		fi
 
+		# Make sure the remote branch is fetched.
+		if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$DIFF_BASE_BRANCH" > /dev/null; then
+			git fetch origin "$DIFF_BASE_BRANCH"
+			git branch "$DIFF_BASE_BRANCH" FETCH_HEAD
+		fi
+
 		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
 	elif [[ ! -z "${GITLAB_CI}" ]]; then
