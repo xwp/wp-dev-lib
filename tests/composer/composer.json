@@ -3,7 +3,9 @@
   "minimum-stability": "dev",
   "scripts": {
     "test": [
-      "vendor/xwp/wp-dev-lib/scripts/pre-commit"
+      "rm -rf git && git init .",
+      "git add .",
+      "CHECK_SCOPE=all vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "post-install-cmd": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
