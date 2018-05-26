@@ -1,6 +1,9 @@
 #!/bin/bash
 # WordPress pre-commit hook
 #
+# We assume this script was called from the root of the project because
+# otherwise we can't guess path to readme.txt, etc.
+#
 
 set -e
 shopt -s expand_aliases
