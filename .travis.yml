@@ -23,6 +23,7 @@ install:
 script:
   - composer test # Run linters for the wp-dev-lib files.
   - composer test --working-dir="tests/composer" # Run sample Composer project setup.
+  - source "$DEV_LIB_PATH/travis.script.sh" # Run wp-dev-lib built-in Travis script.
 
 after_script:
   - source "$DEV_LIB_PATH/travis.after_script.sh"
