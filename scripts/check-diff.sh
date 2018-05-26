@@ -37,6 +37,7 @@ function set_environment_variables {
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
 	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
+	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -54,19 +55,12 @@ function set_environment_variables {
 		echo "LIMIT_TRAVIS_PR_CHECK_SCOPE is obsolete; use CHECK_SCOPE env var instead" 1>&2
 		return 1
 	fi
-	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
 			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
 			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
-		fi
-
-		# Make sure the remote branch is fetched.
-		if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$DIFF_BASE_BRANCH" > /dev/null; then
-			git fetch origin "$DIFF_BASE_BRANCH"
-			git branch "$DIFF_BASE_BRANCH" FETCH_HEAD
 		fi
 
 		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
