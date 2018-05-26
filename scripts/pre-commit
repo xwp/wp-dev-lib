@@ -8,8 +8,15 @@
 set -e
 shopt -s expand_aliases
 
-# Set this directory as path to dev-lib.
-if [ -z "$DEV_LIB_PATH" ]; then
+if [ -L "$0" ]; then
+	# The currently running file is a symlink.
+	if readlink "$0" | grep -sqE '^\.\.*/'; then
+		DEV_LIB_PATH=$( dirname "$0" )/$( dirname $( readlink "$0" ) )
+	else
+		DEV_LIB_PATH=$( dirname $( readlink "$0" ) )
+	fi
+elif [ -f "$0" ]; then
+	# Set this directory as path to dev-lib.
 	DEV_LIB_PATH=$( dirname "$0" )
 fi
 
