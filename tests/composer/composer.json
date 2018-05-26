@@ -2,7 +2,7 @@
   "name": "xwp/wp-dev-lib-tests",
   "minimum-stability": "dev",
   "scripts": {
-    "pre-commit": [
+    "test": [
       "vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "post-install-cmd": [
