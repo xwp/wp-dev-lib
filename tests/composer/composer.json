@@ -5,7 +5,7 @@
     "test": [
       "rm -rf git && git init .",
       "git add .",
-      "vendor/xwp/wp-dev-lib/scripts/pre-commit"
+      "DIFF_BASE=HEAD vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "post-install-cmd": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
