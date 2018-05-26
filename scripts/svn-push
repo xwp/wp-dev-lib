@@ -7,8 +7,10 @@ set -e
 
 cd "$( dirname $0 )"
 dev_lib_dir=$(pwd)
-cd ..
 
+# Assume that project root is one level down.
+# TODO: This won't work with npm or Composer.
+cd ..
 
 if [ -e .dev-lib ]; then
 	source .dev-lib
