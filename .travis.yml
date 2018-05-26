@@ -12,4 +12,5 @@ script:
   - find . -name "*.php" -print0 | xargs -0 -n1 -P8 php -l # Ensure valid PHP syntax
   - shellcheck *.sh || true # Run shellcheck but ignore the output
   - shellcheck --format json *.sh | grep --quiet --invert-match '"level":"error"' # Fail only if shellcheck finds errors.
-  - composer install --working-dir="tests/composer" && composer test --working-dir="tests/composer"
+  - composer install --working-dir="tests/composer"
+  - composer test --working-dir="tests/composer"
