@@ -1,0 +1,14 @@
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="false"
+	convertWarningsToExceptions="false"
+	>
+	<testsuites>
+		<testsuite>
+			<directory prefix="test-" suffix=".php">./tests/phpunit</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

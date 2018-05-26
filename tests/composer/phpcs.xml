@@ -6,5 +6,6 @@
     <rule ref="WordPress-VIP" />
 
 	<exclude-pattern>/vendor</exclude-pattern>
+	<exclude-pattern>/tests</exclude-pattern>
 	<exclude-pattern>/node_modules</exclude-pattern>
 </ruleset>

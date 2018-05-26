@@ -5,4 +5,4 @@
  * @package wp-dev-lib
  */
 
-define( 'wp-dev-lib', true );
+define( 'WP_DEV_LIB', true );
