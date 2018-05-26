@@ -1,0 +1,12 @@
+{
+  "name": "xwp/wp-dev-lib-tests",
+  "minimum-stability": "dev",
+  "scripts": {
+    "post-install-cmd": [
+      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
+    ],
+    "post-update-cmd": [
+      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
+    ]
+  }
+}
