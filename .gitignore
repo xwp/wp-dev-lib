@@ -1,2 +1,3 @@
 codecept.phar
 /vendor
+/package-lock.json
