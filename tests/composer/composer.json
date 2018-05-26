@@ -5,7 +5,7 @@
     "test": [
       "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
       "git checkout -b test && git add . && git commit -m 'Test files'",
-      "DIFF_BASE=master vendor/xwp/wp-dev-lib/scripts/pre-commit"
+      "DIFF_BASE=master DIFF_HEAD=HEAD vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "post-install-cmd": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib"
