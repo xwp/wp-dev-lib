@@ -3,18 +3,23 @@
   "minimum-stability": "dev",
   "scripts": {
     "test": [
-      "DIFF_BASE=master DIFF_HEAD=HEAD vendor/xwp/wp-dev-lib/scripts/pre-commit"
+      "DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
-    "setup-test": [
+    "test:travis": [
+      "./vendor/xwp/wp-dev-lib/scripts/travis.install.sh",
+      "./vendor/xwp/wp-dev-lib/scripts/travis.script.sh",
+      "./vendor/xwp/wp-dev-lib/scripts/travis.after_script.sh"
+    ],
+    "test:setup": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s ../../../../ vendor/xwp/wp-dev-lib",
       "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
       "git checkout -b test && git add . && git commit -m 'Test commit'"
     ],
     "post-install-cmd": [
-      "@setup-test"
+      "@test:setup"
     ],
     "post-update-cmd": [
-      "@setup-test"
+      "@test:setup"
     ]
   },
   "require-dev": {

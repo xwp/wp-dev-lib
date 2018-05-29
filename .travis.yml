@@ -15,15 +15,8 @@ addons:
 notifications:
   email: false
 
-install:
-  - composer install --working-dir="tests/composer"
-  - export DEV_LIB_PATH=tests/composer/vendor/xwp/wp-dev-lib/scripts
-  - source "$DEV_LIB_PATH/travis.install.sh"
-
 script:
   - composer test # Run linters for the wp-dev-lib files.
-  - composer test --working-dir="tests/composer" # Run sample Composer project setup.
-  - PROJECT_TYPE=plugin source "$DEV_LIB_PATH/travis.script.sh" # Run wp-dev-lib built-in Travis script.
-
-after_script:
-  - source "$DEV_LIB_PATH/travis.after_script.sh"
+  - composer install --working-dir="tests/composer" # Test Composer integration setup.
+  - composer test --working-dir="tests/composer" # Test Composer integration pre-commit hook.
+  - composer test:travis --working-dir="tests/composer" # Test the default Travis CI scripts.
