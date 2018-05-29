@@ -4,7 +4,7 @@
 
 ## Installation
 
-Add it as a developer dependancy to your project using [Composer](https://getcomposer.org):
+### Using [Composer](https://getcomposer.org)
 
 ```bash
 composer require --dev xwp/wp-dev-lib
@@ -12,13 +12,27 @@ composer require --dev xwp/wp-dev-lib
 
 which will place it under `vendor/xwp/wp-dev-lib`.
 
-Or using [npm](https://www.npmjs.com):
+### Using [npm](https://www.npmjs.com)
 
 ```bash
 npm install --save-dev xwp/wp-dev-lib
 ```
 
 which will place it under `node_modules/xwp/wp-dev-lib`.
+
+### As [Git Submodule](https://git-scm.com/docs/git-submodule):
+
+```bash
+git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib
+```
+
+To update the library with the latest changes:
+
+```bash
+git submodule update --remote dev-lib
+git add dev-lib
+git commit -m "Update dev-lib"
+```
 
 
 ## Configure the Git Pre-commit Hook
@@ -46,6 +60,15 @@ With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with t
   },
 }
 ```
+
+Alternatively, create a symlink at `.git/hooks/pre-commit` pointing to [`pre-commit`](scripts/pre-cmmit) using the bundled script:
+
+```bash
+./dev-lib/scripts/install-pre-commit-hook.sh
+```
+
+To ensure that everyone on your team has the `pre-commit` hook added automatically, we recommend using the Composer or npm scripts as described above as the package managers will set up the `pre-commit` hook during the install phase.
+
 
 ## Pre-commit Tips
 
