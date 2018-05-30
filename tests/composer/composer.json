@@ -9,7 +9,7 @@
       "export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts && source $DEV_LIB_PATH/travis.install.sh && source $DEV_LIB_PATH/travis.script.sh && source $DEV_LIB_PATH/travis.after_script.sh"
     ],
     "test:setup": [
-      "rm -rf vendor/xwp/wp-dev-lib && ln -s ../.. vendor/xwp/wp-dev-lib",
+      "rm -rf vendor/xwp/wp-dev-lib && ln -s $PWD/../.. vendor/xwp/wp-dev-lib",
       "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
       "git checkout -b test && git add . && git commit -m 'Test commit'"
     ],
