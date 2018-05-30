@@ -183,11 +183,11 @@ function set_environment_variables {
 	# Load any environment variable overrides from config files
 	ENV_FILE=$( upsearch .ci-env.sh )
 	if [ ! -z "$ENV_FILE" ]; then
-		source "$ENV_FILE"
+		. "$ENV_FILE"
 	fi
 	ENV_FILE=$( upsearch .dev-lib )
 	if [ ! -z "$ENV_FILE" ]; then
-		source "$ENV_FILE"
+		. "$ENV_FILE"
 	fi
 
 	if [ ! -e "$PROJECT_DIR/.git" ]; then

@@ -36,7 +36,7 @@ if [ ! -e "$DEV_LIB_PATH/check-diff.sh" ]; then
 	fi
 fi
 
-source "$DEV_LIB_PATH/check-diff.sh"
+. "$DEV_LIB_PATH/check-diff.sh"
 set_environment_variables --diff-base ${DIFF_BASE:-HEAD} --diff-head ${DIFF_HEAD:-STAGE}
 install_tools
 
