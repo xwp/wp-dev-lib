@@ -6,6 +6,7 @@
       "DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "test:travis": [
+      "ls -l `which bash`",
       "export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts && source ./vendor/xwp/wp-dev-lib/scripts/travis.install.sh && source ./vendor/xwp/wp-dev-lib/scripts/travis.script.sh && source ./vendor/xwp/wp-dev-lib/scripts/travis.after_script.sh"
     ],
     "test:setup": [
