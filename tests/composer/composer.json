@@ -5,9 +5,6 @@
     "test": [
       "DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
-    "test:travis": [
-      "export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts && ./vendor/xwp/wp-dev-lib/scripts/travis.install.sh && ./vendor/xwp/wp-dev-lib/scripts/travis.script.sh && ./vendor/xwp/wp-dev-lib/scripts/travis.after_script.sh"
-    ],
     "test:setup": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s $PWD/../.. vendor/xwp/wp-dev-lib",
       "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
