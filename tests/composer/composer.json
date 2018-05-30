@@ -10,9 +10,6 @@
       "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
       "git checkout -b test && git add . && git commit -m 'Test commit'"
     ],
-    "test:travis": [
-      "DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts . vendor/xwp/wp-dev-lib/scripts/travis.install.sh && . $DEV_LIB_PATH/travis.script.sh && . $DEV_LIB_PATH/travis.after_script.sh"
-    ],
     "post-install-cmd": [
       "@test:setup"
     ],
