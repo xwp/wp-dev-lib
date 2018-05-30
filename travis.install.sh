@@ -6,10 +6,12 @@ source "$DEV_LIB_PATH/check-diff.sh"
 
 # The following should be temporary. See <https://core.trac.wordpress.org/ticket/40086>, <https://core.trac.wordpress.org/ticket/39822>.
 if check_should_execute 'phpunit'; then
-  if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then
-    PHPUNIT_VERSION='5.7'
-  elif [[ ${TRAVIS_PHP_VERSION:0:3} != "5.2" ]]; then
-    PHPUNIT_VERSION='4.8'
+  if [[ -z "$PHPUNIT_VERSION" ]]; then
+    if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then
+      PHPUNIT_VERSION='5.7'
+    elif [[ ${TRAVIS_PHP_VERSION:0:3} != "5.2" ]]; then
+      PHPUNIT_VERSION='4.8'
+    fi
   fi
   if [[ ! -z "$PHPUNIT_VERSION" ]]; then
     mkdir -p $HOME/phpunit-bin/$PHPUNIT_VERSION
