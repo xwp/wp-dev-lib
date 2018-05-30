@@ -3,7 +3,7 @@
   "minimum-stability": "dev",
   "scripts": {
     "test": [
-      "DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit"
+      "vendor/xwp/wp-dev-lib/scripts/pre-commit"
     ],
     "test:setup": [
       "rm -rf vendor/xwp/wp-dev-lib && ln -s $PWD/../.. vendor/xwp/wp-dev-lib",
