@@ -13,9 +13,9 @@ dev_lib_dir=$(pwd)
 cd ..
 
 if [ -e .dev-lib ]; then
-	. .dev-lib
+	source .dev-lib
 elif [ -e .ci-env.sh ]; then
-	. .ci-env.sh
+	source .ci-env.sh
 fi
 if [ -e svn-url ]; then
 	SVN_URL=$(cat svn-url)
