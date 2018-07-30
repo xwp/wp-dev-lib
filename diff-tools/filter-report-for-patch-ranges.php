@@ -44,6 +44,13 @@ while ( $line = fgets( STDIN ) ) {
 		continue;
 	}
 	$file_path = realpath( $matches['file_path'] );
+	if ( ! $file_path ) {
+		$file_path = realpath( '/' . $matches['file_path'] );
+	}
+	if ( ! $file_path ) {
+		fwrite( STDERR, sprintf( "Unable to find realpath for: %s", $matches['file_path'] ) );
+		exit( 3 );
+	}
 	if ( ! array_key_exists( $file_path, $parsed_diff_ranges ) ) {
 		continue;
 	}
