@@ -51,7 +51,7 @@ echo 'node_modules' >> .gitignore
 composer init # if you don't have a composer.json already
 composer require php '>=5.2' # increase this if you need
 composer require --dev "wp-coding-standards/wpcs=*"
-composer require --dev "wimg/php-compatibility=*"
+composer require --dev "phpcompatibility/phpcompatibility-wp=*"
 composer require --dev dealerdirect/phpcodesniffer-composer-installer
 echo 'vendor' >> .gitignore
 
