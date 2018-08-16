@@ -555,6 +555,11 @@ function install_wp {
 	svn export -q "$SVN_URL" "$WP_CORE_DIR"
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
+
+	mkdir -p /tmp/wp-cli
+	download https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /tmp/wp-cli/wp
+	chmod +x /tmp/wp-cli/wp
+	export PATH="/tmp/wp-cli:$PATH"
 }
 
 function install_test_suite {
