@@ -925,7 +925,7 @@ function lint_php_files {
 				if [ ! -s "$TEMP_DIRECTORY/phpcs-report" ]; then
 					return 1
 				elif [ "$CHECK_SCOPE" == 'patches' ]; then
-					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
+					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 1 )-
 					phpcs_status="${PIPESTATUS[1]}"
 					if [[ $phpcs_status != 0 ]]; then
 						return $phpcs_status
