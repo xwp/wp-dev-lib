@@ -133,7 +133,7 @@ DIFF_BASE=master DIFF_HEAD=HEAD .git/hooks/pre-commit
 
 ## Configure Code Linters
 
-This tool comes with sample configuration files fow the following linters:
+This tool comes with sample configuration files for the following linters:
 
 - [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for [PHPUnit](https://phpunit.de)
 - [`phpcs.xml`](sample-config/phpcs.xml) for [phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
