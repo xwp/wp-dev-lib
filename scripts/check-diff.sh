@@ -682,9 +682,9 @@ function run_phpunit_local {
 }
 
 function run_phpunit_travisci {
-	#if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-	#	return
-	#fi
+	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
+		return
+	fi
 
 	if ! command -v phpunit >/dev/null 2>&1; then
 		echo "Skipping PHPUnit because phpunit tool not installed"
