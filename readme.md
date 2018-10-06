@@ -144,23 +144,22 @@ This tool comes with sample configuration files fow the following linters:
 
 Copy the files you need to the root directory of your project.
 
-It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version. To install packages locally, for example:
+It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version.
+
+
+### Suggested Composer Packages
+
+Add these as development dependencies to your project:
 
 ```bash
-npm init # if you don't have a package.json already
-npm install --save-dev eslint jshint jscs grunt-cli
-git add package.json
-echo 'node_modules' >> .gitignore
-
-composer init # if you don't have a composer.json already
-composer require php '>=5.2' # increase this if you need
-composer require --dev "wp-coding-standards/wpcs=*"
-composer require --dev "wimg/php-compatibility=*"
-composer require --dev dealerdirect/phpcodesniffer-composer-installer
-echo 'vendor' >> .gitignore
-
-git add .gitignore
+composer require --dev package/name
 ```
+
+- [`wp-coding-standards/wpcs`](https://packagist.org/packages/wp-coding-standards/wpcs) for adding [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) checks. Use together with the sample [`phpcs.xml`](sample-config/phpcs.xml) configuration.
+
+- [`phpcompatibility/phpcompatibility-wp`](https://packagist.org/packages/phpcompatibility/phpcompatibility-wp) for checking PHP compatibility. Uses the [PHP version required](https://getcomposer.org/doc/04-schema.md#package-links) in the `composer.json` file. For example `composer require php '>=5.2'`.
+
+- [`dealerdirect/phpcodesniffer-composer-installer`](https://packagist.org/packages/dealerdirect/phpcodesniffer-composer-installer) for automatically configuring the [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) coding sniffers.
 
 
 ## Travis CI
