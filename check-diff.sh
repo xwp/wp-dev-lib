@@ -546,7 +546,7 @@ function install_wp {
 	elif [ "$WP_VERSION" == 'latest' ]; then
 		local TAG=$( svn ls https://develop.svn.wordpress.org/tags | tail -n 1 | sed 's:/$::' )
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$TAG/"
-	elif [[ "$WP_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+	elif [[ "$WP_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
 		local SVN_URL="https://develop.svn.wordpress.org/branches/$WP_VERSION/"
 	else
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$WP_VERSION/"
