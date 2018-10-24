@@ -556,6 +556,10 @@ function install_wp {
 
 	svn export -q "$SVN_URL" "$WP_CORE_DIR"
 
+	# Add workaround for running PHPUnit tests from source by touching built files.
+	mkdir -p $WP_CORE_DIR/src/wp-includes/css/dist/block-library/
+	touch $WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css
+
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
 
