@@ -547,6 +547,7 @@ function install_wp {
 		local TAG=$( svn ls https://develop.svn.wordpress.org/tags | tail -n 1 | sed 's:/$::' )
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$TAG/"
 	elif [[ "$WP_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+		# Use the release branch if no patch version supplied. This is useful to keep testing the latest minor version.
 		local SVN_URL="https://develop.svn.wordpress.org/branches/$WP_VERSION/"
 	else
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$WP_VERSION/"
@@ -557,8 +558,8 @@ function install_wp {
 	svn export -q "$SVN_URL" "$WP_CORE_DIR"
 
 	# Add workaround for running PHPUnit tests from source by touching built files.
-	mkdir -p $WP_CORE_DIR/src/wp-includes/css/dist/block-library/
-	touch $WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css
+	mkdir -p "$WP_CORE_DIR/src/wp-includes/css/dist/block-library"
+	touch "$WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css"
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
