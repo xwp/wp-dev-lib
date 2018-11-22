@@ -752,6 +752,16 @@ function run_phpunit_travisci {
 		cd "$PROJECT_DIR"
 	fi
 
+	# Clone the plugin dependencies into the plugins directory
+	if [ ! -z "$GIT_PLUGIN_DEPENDENCIES" ]; then
+		IFS=',' read -r -a dependencies <<< "$GIT_PLUGIN_DEPENDENCIES"
+		for dep in "${dependencies[@]}"
+		do
+			filename=$(basename "$dep")
+			git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+		done
+	fi
+
 	if [ "$( type -t after_wp_install )" != '' ]; then
 		after_wp_install
 	fi
