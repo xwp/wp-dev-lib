@@ -75,6 +75,9 @@ try {
 				}
 			}
 
+			if ( isset( $env_vars['README_MD_TITLE'] ) ) {
+				$md_args['title'] = $env_vars['README_MD_TITLE'];
+			}
 			if ( isset( $env_vars['COVERALLS_BADGE'] ) ) {
 				$coveralls_badge = $env_vars['COVERALLS_BADGE'];
 			}
