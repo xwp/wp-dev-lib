@@ -1,6 +1,5 @@
 {
   "name": "xwp/wp-dev-lib-tests",
-  "minimum-stability": "dev",
   "scripts": {
     "test": [
       "vendor/xwp/wp-dev-lib/scripts/pre-commit"
@@ -20,6 +19,6 @@
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.0",
     "wp-coding-standards/wpcs": "^0.14",
-    "phpunit/phpunit": "^5"
+    "phpunit/phpunit": "^6"
   }
 }
