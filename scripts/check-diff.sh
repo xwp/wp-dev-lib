@@ -546,6 +546,9 @@ function install_wp {
 	elif [ "$WP_VERSION" == 'latest' ]; then
 		local TAG=$( svn ls https://develop.svn.wordpress.org/tags | tail -n 1 | sed 's:/$::' )
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$TAG/"
+	elif [[ "$WP_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+		# Use the release branch if no patch version supplied. This is useful to keep testing the latest minor version.
+		local SVN_URL="https://develop.svn.wordpress.org/branches/$WP_VERSION/"
 	else
 		local SVN_URL="https://develop.svn.wordpress.org/tags/$WP_VERSION/"
 	fi
@@ -553,6 +556,10 @@ function install_wp {
 	echo "Installing WP from $SVN_URL to $WP_CORE_DIR"
 
 	svn export -q "$SVN_URL" "$WP_CORE_DIR"
+
+	# Add workaround for running PHPUnit tests from source by touching built files.
+	mkdir -p "$WP_CORE_DIR/src/wp-includes/css/dist/block-library"
+	touch "$WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css"
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
@@ -750,6 +757,16 @@ function run_phpunit_travisci {
 		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
 		cd "$PROJECT_DIR"
+	fi
+
+	# Clone the plugin dependencies into the plugins directory
+	if [ ! -z "$GIT_PLUGIN_DEPENDENCIES" ]; then
+		IFS=',' read -r -a dependencies <<< "$GIT_PLUGIN_DEPENDENCIES"
+		for dep in "${dependencies[@]}"
+		do
+			filename=$(basename "$dep")
+			git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+		done
 	fi
 
 	if [ "$( type -t after_wp_install )" != '' ]; then

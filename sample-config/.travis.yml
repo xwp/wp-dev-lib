@@ -6,8 +6,9 @@ notifications:
 
 cache:
   directories:
-    - node_modules
-    - vendor
+    - $HOME/.composer/cache
+    - $HOME/.npm
+    - $HOME/.nvm/.cache
     - $HOME/phpunit-bin
 
 language:
