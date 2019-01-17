@@ -1,6 +1,9 @@
 # ![wp-dev-lib](assets/logo.svg)
 
-**Common tools to facilitate the development and testing of WordPress themes and plugins**
+**Common tools to facilitate the development and testing of WordPress themes and plugins.**
+
+Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
+
 
 ## Installation
 
@@ -39,7 +42,13 @@ git commit -m "Update dev-lib"
 
 This tool comes with a [`pre-commit` hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_committing_workflow_hooks) which runs all linters, tests and checks before every commit to your project.
 
-To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks) and the following configuration added to `composer.json`:
+To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks):
+
+```bash
+composer require --dev brainmaestro/composer-git-hooks
+```
+
+with the following configuration added to `composer.json`:
 
 ```json
 {
@@ -51,13 +60,34 @@ To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks
 }
 ```
 
-With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with the following script added to your `package.json`:
+and two additional scripts that automatically setup the hooks during `composer install`:
+
+```json
+{
+  "scripts": {
+    "post-install-cmd": [
+      "vendor/bin/cghooks add --no-lock"
+    ],
+    "post-update-cmd": [
+      "vendor/bin/cghooks update"
+    ],
+  }
+}
+```
+
+With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky):
+
+```bash
+npm install husky --save-dev
+```
+
+with the following script added to your `package.json`:
 
 ```json
 {
   "scripts": {
     "precommit": "./node_modules/wp-dev-lib/pre-commit"
-  },
+  }
 }
 ```
 
