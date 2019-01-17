@@ -84,7 +84,7 @@ with the following script added to your `package.json`:
 {
   "scripts": {
     "precommit": "./node_modules/wp-dev-lib/pre-commit"
-  },
+  }
 }
 ```
 
