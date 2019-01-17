@@ -39,7 +39,13 @@ git commit -m "Update dev-lib"
 
 This tool comes with a [`pre-commit` hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_committing_workflow_hooks) which runs all linters, tests and checks before every commit to your project.
 
-To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks) and the following configuration added to `composer.json`:
+To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks):
+
+```bash
+composer require --dev brainmaestro/composer-git-hooks
+```
+
+with the following configuration added to `composer.json`:
 
 ```json
 {
@@ -66,7 +72,13 @@ and two additional scripts that automatically setup the hooks during `composer i
 }
 ```
 
-With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with the following script added to your `package.json`:
+With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky):
+
+```bash
+npm install husky --save-dev
+```
+
+with the following script added to your `package.json`:
 
 ```json
 {
