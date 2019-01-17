@@ -425,12 +425,12 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
+	if [ -e package.json ] && [ ! -e node_modules ]; then
 		npm install --loglevel error > /dev/null
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
+	if [ -e composer.json ] && check_should_execute 'composer' && [ ! -e vendor ]; then
 		if ! command -v composer >/dev/null 2>&1; then
 			(
 				cd "$TEMP_TOOL_PATH"
