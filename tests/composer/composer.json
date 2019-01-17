@@ -1,0 +1,24 @@
+{
+  "name": "xwp/wp-dev-lib-tests",
+  "scripts": {
+    "test": [
+      "vendor/xwp/wp-dev-lib/scripts/pre-commit"
+    ],
+    "test:setup": [
+      "rm -rf vendor/xwp/wp-dev-lib && ln -s $PWD/../.. vendor/xwp/wp-dev-lib",
+      "rm -rf .git && git init . && git add phpcs.xml && git commit -m 'First commit'",
+      "git checkout -b test && git add . && git commit -m 'Test commit'"
+    ],
+    "post-install-cmd": [
+      "@test:setup"
+    ],
+    "post-update-cmd": [
+      "@test:setup"
+    ]
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.0",
+    "wp-coding-standards/wpcs": "^0.14",
+    "phpunit/phpunit": "^6"
+  }
+}

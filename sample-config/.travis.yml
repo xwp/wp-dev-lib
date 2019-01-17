@@ -1,5 +1,3 @@
-sudo: false
-dist: precise
 
 notifications:
   email:
@@ -30,14 +28,12 @@ env:
   - WP_VERSION=trunk WP_MULTISITE=1
 
 install:
-  - nvm install 6 && nvm use 6
-  - export DEV_LIB_PATH=dev-lib
-  - if [ ! -e "$DEV_LIB_PATH" ] && [ -L .travis.yml ]; then export DEV_LIB_PATH=$( dirname $( readlink .travis.yml ) ); fi
-  - if [ ! -e "$DEV_LIB_PATH" ]; then git clone https://github.com/xwp/wp-dev-lib.git $DEV_LIB_PATH; fi
-  - source $DEV_LIB_PATH/travis.install.sh
+  - composer install # Change this to npm install if using npm.
+  - export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts # Change this to node_modules/xwp/wp-dev-lib/scripts if using npm.
+  - source "$DEV_LIB_PATH/travis.install.sh"
 
 script:
-  - source $DEV_LIB_PATH/travis.script.sh
+  - source "$DEV_LIB_PATH/travis.script.sh"
 
 after_script:
-  - source $DEV_LIB_PATH/travis.after_script.sh
+  - source "$DEV_LIB_PATH/travis.after_script.sh"

@@ -37,6 +37,7 @@ function set_environment_variables {
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
 	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
+	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -54,7 +55,6 @@ function set_environment_variables {
 		echo "LIMIT_TRAVIS_PR_CHECK_SCOPE is obsolete; use CHECK_SCOPE env var instead" 1>&2
 		return 1
 	fi
-	CHECK_SCOPE=${CHECK_SCOPE:-patches} # 'all', 'changed-files', 'patches'
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
@@ -425,12 +425,12 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
+	if [ -e package.json ] && [ ! -e node_modules ]; then
 		npm install --loglevel error > /dev/null
 	fi
 
 	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
+	if [ -e composer.json ] && check_should_execute 'composer' && [ ! -e vendor ]; then
 		if ! command -v composer >/dev/null 2>&1; then
 			(
 				cd "$TEMP_TOOL_PATH"

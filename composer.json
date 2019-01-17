@@ -22,5 +22,11 @@
     "issues": "https://github.com/xwp/wp-dev-lib/issues",
     "source": "https://github.com/xwp/wp-dev-lib"
   },
-  "require": {}
+  "scripts": {
+    "test": [
+      "find ./scripts -name *.php -print0 | xargs -0 -n1 -P8 php -l",
+      "shellcheck **/*.sh || true",
+      "shellcheck --format json **/*.sh | grep --quiet --invert-match '\"level\":\"error\"'"
+    ]
+  }
 }

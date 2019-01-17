@@ -2,6 +2,8 @@
 
 set -e
 shopt -s expand_aliases
+
+# TODO: We know that $DEV_LIB_PATH is _this_ directory, use that directly.
 source "$DEV_LIB_PATH/check-diff.sh"
 
 # The following should be temporary. See <https://core.trac.wordpress.org/ticket/40086>, <https://core.trac.wordpress.org/ticket/39822>.
