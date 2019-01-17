@@ -51,6 +51,21 @@ To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks
 }
 ```
 
+and two additional scripts that automatically setup the hooks during `composer install`:
+
+```json
+{
+  "scripts": {
+    "post-install-cmd": [
+      "vendor/bin/cghooks add --no-lock"
+    ],
+    "post-update-cmd": [
+      "vendor/bin/cghooks update"
+    ],
+  }
+}
+```
+
 With `npm` we suggest to use [husky](https://www.npmjs.com/package/husky) with the following script added to your `package.json`:
 
 ```json
