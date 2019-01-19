@@ -54,7 +54,7 @@ with the following configuration added to `composer.json`:
 {
   "extra": {
     "hooks": {
-      "pre-commit": "./vendor/xwp/wp-dev-lib/pre-commit"
+      "pre-commit": "./vendor/xwp/wp-dev-lib/scripts/pre-commit"
     }
   }
 }
@@ -86,15 +86,15 @@ with the following script added to your `package.json`:
 ```json
 {
   "scripts": {
-    "precommit": "./node_modules/wp-dev-lib/pre-commit"
+    "precommit": "./node_modules/wp-dev-lib/scripts/pre-commit"
   }
 }
 ```
 
-Alternatively, create a symlink at `.git/hooks/pre-commit` pointing to [`pre-commit`](scripts/pre-cmmit) using the bundled script:
+Alternatively, create a symlink at `.git/hooks/pre-commit` pointing to [`pre-commit`](scripts/pre-commit) using the bundled script:
 
 ```bash
-./dev-lib/scripts/install-pre-commit-hook.sh
+./vendor/xwp/wp-dev-lib/scripts/install-pre-commit-hook.sh
 ```
 
 To ensure that everyone on your team has the `pre-commit` hook added automatically, we recommend using the Composer or npm scripts as described above as the package managers will set up the `pre-commit` hook during the install phase.
@@ -102,7 +102,7 @@ To ensure that everyone on your team has the `pre-commit` hook added automatical
 
 ## Pre-commit Tips
 
-The default behavior for the linters is to only report errors on lines that are within actual staged changes being committed. So remember to selectively stage the files (via `git add ...`) or better the patches (via `git add -p ...`).
+The default behaviour for the linters is to only report errors on lines that are within actual staged changes being committed. So remember to selectively stage the files (via `git add ...`) or better the patches (via `git add -p ...`).
 
 ### Skipping Checks
 
@@ -151,13 +151,13 @@ DEV_LIB_ONLY=phpunit git commit
 Sometimes you may want to run the `pre-commit` checks manually to compare changes (`patches`) between branches much in the same way that Travis CI runs its checks. To compare the current staged changes against `master`, do:
 
 ```bash
-DIFF_BASE=master vendor/xwp/wp-dev-lib/scripts/pre-commit
+DIFF_BASE=master ./vendor/xwp/wp-dev-lib/scripts/pre-commit
 ```
 
 To compare the committed changes between `master` and the current branch:
 
 ```bash
-DIFF_BASE=master DIFF_HEAD=HEAD .git/hooks/pre-commit
+DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit
 ```
 
 
@@ -197,12 +197,10 @@ composer require --dev package/name
 Copy the [`sample-config/.travis.yml`](sample-config/.travis.yml) file into the root of your repo:
 
 ```bash
-cp dev-lib/sample-config/.travis.yml .
+cp ./vendor/xwp/wp-dev-lib/sample-config/.travis.yml .
 ```
 
 Note that the bulk of the logic in this config file is located in [`travis.install.sh`](scripts/travis.install.sh), [`travis.script.sh`](scripts/travis.script.sh), and [`travis.after_script.sh`](scripts/travis.after_script.sh).
-
-**Important Note:** The format of the `.travis.yml` changed in January 2016, so make sure that the file is updated to reflect [the changes](https://github.com/xwp/wp-dev-lib/pull/127/files#diff-354f30a63fb0907d4ad57269548329e3).
 
 Edit the `.travis.yml` to change the target PHP version(s) and WordPress version(s) you need to test for and also whether you need to test on multisite or not:
 
@@ -266,7 +264,7 @@ Set `DEFAULT_BASE_BRANCH` to be whatever your default branch is in GitHub; this 
 
 ## PHPUnit Code Coverage
 
-The plugin-tailored [`phpunit.xml`](phpunit-plugin.xml) has a `filter` in place to restrict PHPUnit's code coverage reporting to only look at the plugin's own PHP code, omitting the PHP from WordPress Core and other places that shouldn't be included. The `filter` greatly speeds up PHPUnit's execution. To get the code coverage report written out to a `code-coverage-report` directory:
+The plugin-tailored [`phpunit.xml`](sample-config/phpunit-plugin.xml) has a `filter` in place to restrict PHPUnit's code coverage reporting to only look at the plugin's own PHP code, omitting the PHP from WordPress Core and other places that shouldn't be included. The `filter` greatly speeds up PHPUnit's execution. To get the code coverage report written out to a `code-coverage-report` directory:
 
 ```bash
 phpunit --coverage-html code-coverage-report/
@@ -304,7 +302,7 @@ Create an empty `.gitter` file in the root of your repo and a [Gitter](https://g
 
 ## Plugin Helpers
 
-The library includes a WordPress README [parser](class-wordpress-readme-parser.php) and [converter](generate-markdown-readme) to Markdown, so you don't have to manually keep your `readme.txt` on WordPress.org in sync with the `readme.md` you have on GitHub. The converter will also automatically recognize the presence of projects with Travis CI and include the status image in the markdown. Screenshots and banner images for WordPress.org are also automatically incorporated into the `readme.md`.
+The library includes a WordPress README [parser](scripts/class-wordpress-readme-parser.php) and [converter](scripts/generate-markdown-readme) to Markdown, so you don't have to manually keep your `readme.txt` on WordPress.org in sync with the `readme.md` you have on GitHub. The converter will also automatically recognize the presence of projects with Travis CI and include the status image in the markdown. Screenshots and banner images for WordPress.org are also automatically incorporated into the `readme.md`.
 
 What is also included in this repo is an [`svn-push`](svn-push) to push commits from a GitHub repo to the WordPress.org SVN repo for the plugin. The `/assets/` directory in the root of the project will get automatically moved one directory above in the SVN repo (alongside `trunk`, `branches`, and `tags`). To use, include an `svn-url` file in the root of your repo and let this file contains he full root URL to the WordPress.org repo for plugin (don't include `trunk`).
 
