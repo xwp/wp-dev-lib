@@ -5,7 +5,7 @@
 Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
 
 
-## Installation
+## Install
 
 ### Using [Composer](https://getcomposer.org)
 
@@ -38,7 +38,7 @@ git commit -m "Update dev-lib"
 ```
 
 
-## Configure the Git Pre-commit Hook
+## Configure
 
 This tool comes with a [`pre-commit` hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_committing_workflow_hooks) which runs all linters, tests and checks before every commit to your project.
 
