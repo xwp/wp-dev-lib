@@ -1,4 +1,5 @@
-# See https://editorconfig.org
+# See sample-config/.editorconfig for a WordPress specific editor config file.
+
 root = true
 
 [*]
