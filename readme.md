@@ -4,6 +4,8 @@
 
 Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
 
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 ## Install
 

@@ -12,5 +12,11 @@
   ],
   "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
   "license": "MIT",
-  "homepage": "https://github.com/xwp/wp-dev-lib#readme"
+  "homepage": "https://github.com/xwp/wp-dev-lib#readme",
+  "devDependencies": {
+    "doctoc": "^1.4.0"
+  },
+  "scripts": {
+    "readme-toc": "doctoc readme.md"
+  }
 }
