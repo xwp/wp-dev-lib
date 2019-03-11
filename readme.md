@@ -40,6 +40,39 @@ git commit -m "Update dev-lib"
 
 ## Configure
 
+This tool comes with sample configuration files for the following linters:
+
+- [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for [PHPUnit](https://phpunit.de)
+- [`phpcs.xml`](sample-config/phpcs.xml) for [phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
+- [`.jshintrc`](sample-config/.jshintrc) and [`.jshintignore`](sample-config/.jshintignore) for [JSHint](http://jshint.com)
+- [`.jscsrc`](sample-config/.jscsrc) for [JSCS](http://jscs.info)
+- [`.eslintrc`](sample-config/.eslintrc) and [`.eslintignore`](sample-config/.eslintignore) for [ESLint](https://eslint.org)
+- [`.editorconfig`](sample-config/.editorconfig) for [EditorConfig](http://editorconfig.org/).
+
+Copy the files you need to the root directory of your project.
+
+It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version.
+
+
+### Suggested Composer Packages
+
+Add these as development dependencies to your project:
+
+```bash
+composer require --dev package/name
+```
+
+- [`wp-coding-standards/wpcs`](https://packagist.org/packages/wp-coding-standards/wpcs) for adding [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) checks. Use together with the sample [`phpcs.xml`](sample-config/phpcs.xml) configuration.
+
+- [`phpcompatibility/phpcompatibility-wp`](https://packagist.org/packages/phpcompatibility/phpcompatibility-wp) for checking PHP compatibility. Uses the [PHP version required](https://getcomposer.org/doc/04-schema.md#package-links) in the `composer.json` file. For example `composer require php '>=5.2'`.
+
+- [`dealerdirect/phpcodesniffer-composer-installer`](https://packagist.org/packages/dealerdirect/phpcodesniffer-composer-installer) for automatically configuring the [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) coding sniffers.
+
+
+## Automate
+
+### Locally with Git Hooks
+
 This tool comes with a [`pre-commit` hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_committing_workflow_hooks) which runs all linters, tests and checks before every commit to your project.
 
 To add the hook with Composer we suggest to use [brainmaestro/composer-git-hooks](https://github.com/BrainMaestro/composer-git-hooks):
@@ -98,6 +131,43 @@ Alternatively, create a symlink at `.git/hooks/pre-commit` pointing to [`pre-com
 ```
 
 To ensure that everyone on your team has the `pre-commit` hook added automatically, we recommend using the Composer or npm scripts as described above as the package managers will set up the `pre-commit` hook during the install phase.
+
+
+### Travis CI
+
+Copy the [`sample-config/.travis.yml`](sample-config/.travis.yml) file into the root of your repo:
+
+```bash
+cp ./vendor/xwp/wp-dev-lib/sample-config/.travis.yml .
+```
+
+Note that the bulk of the logic in this config file is located in [`travis.install.sh`](scripts/travis.install.sh), [`travis.script.sh`](scripts/travis.script.sh), and [`travis.after_script.sh`](scripts/travis.after_script.sh).
+
+Edit the `.travis.yml` to change the target PHP version(s) and WordPress version(s) you need to test for and also whether you need to test on multisite or not:
+
+```yml
+php:
+  - 5.3
+  - 7.0
+
+env:
+  - WP_VERSION=latest WP_MULTISITE=0
+  - WP_VERSION=latest WP_MULTISITE=1
+  - WP_VERSION=trunk WP_MULTISITE=0
+  - WP_VERSION=trunk WP_MULTISITE=1
+```
+
+Having more variations here is good for open source plugins, which are free for Travis CI. However, if you are using Travis CI with a private repo you probably want to limit the jobs necessary to complete a build. So if your production environment is running PHP 5.5, is on the latest stable version of WordPress, and is not multisite, then your `.travis.yml` could just be:
+
+```yml
+php:
+  - 5.5
+
+env:
+  - WP_VERSION=4.0 WP_MULTISITE=0
+```
+
+This will greatly speed up the time build time, giving you quicker feedback on your pull request status, and prevent your Travis build queue from getting too backlogged.
 
 
 ## Pre-commit Tips
@@ -159,75 +229,6 @@ To compare the committed changes between `master` and the current branch:
 ```bash
 DIFF_BASE=master DIFF_HEAD=HEAD ./vendor/xwp/wp-dev-lib/scripts/pre-commit
 ```
-
-
-## Configure Code Linters
-
-This tool comes with sample configuration files for the following linters:
-
-- [`phpunit-plugin.xml`](sample-config/phpunit-plugin.xml) for [PHPUnit](https://phpunit.de)
-- [`phpcs.xml`](sample-config/phpcs.xml) for [phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
-- [`.jshintrc`](sample-config/.jshintrc) and [`.jshintignore`](sample-config/.jshintignore) for [JSHint](http://jshint.com)
-- [`.jscsrc`](sample-config/.jscsrc) for [JSCS](http://jscs.info)
-- [`.eslintrc`](sample-config/.eslintrc) and [`.eslintignore`](sample-config/.eslintignore) for [ESLint](https://eslint.org)
-- [`.editorconfig`](sample-config/.editorconfig) for [EditorConfig](http://editorconfig.org/).
-
-Copy the files you need to the root directory of your project.
-
-It is a best practice to install the various tools as dependencies in the project itself, pegging them at specific versions as required. This will ensure that the the tools will be repeatably installed across environments. When a tool is installed locally, it will be used instead of any globally-installed version.
-
-
-### Suggested Composer Packages
-
-Add these as development dependencies to your project:
-
-```bash
-composer require --dev package/name
-```
-
-- [`wp-coding-standards/wpcs`](https://packagist.org/packages/wp-coding-standards/wpcs) for adding [WordPress Coding Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) checks. Use together with the sample [`phpcs.xml`](sample-config/phpcs.xml) configuration.
-
-- [`phpcompatibility/phpcompatibility-wp`](https://packagist.org/packages/phpcompatibility/phpcompatibility-wp) for checking PHP compatibility. Uses the [PHP version required](https://getcomposer.org/doc/04-schema.md#package-links) in the `composer.json` file. For example `composer require php '>=5.2'`.
-
-- [`dealerdirect/phpcodesniffer-composer-installer`](https://packagist.org/packages/dealerdirect/phpcodesniffer-composer-installer) for automatically configuring the [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) coding sniffers.
-
-
-## Travis CI
-
-Copy the [`sample-config/.travis.yml`](sample-config/.travis.yml) file into the root of your repo:
-
-```bash
-cp ./vendor/xwp/wp-dev-lib/sample-config/.travis.yml .
-```
-
-Note that the bulk of the logic in this config file is located in [`travis.install.sh`](scripts/travis.install.sh), [`travis.script.sh`](scripts/travis.script.sh), and [`travis.after_script.sh`](scripts/travis.after_script.sh).
-
-Edit the `.travis.yml` to change the target PHP version(s) and WordPress version(s) you need to test for and also whether you need to test on multisite or not:
-
-```yml
-php:
-  - 5.3
-  - 7.0
-
-env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=latest WP_MULTISITE=1
-  - WP_VERSION=trunk WP_MULTISITE=0
-  - WP_VERSION=trunk WP_MULTISITE=1
-```
-
-Having more variations here is good for open source plugins, which are free for Travis CI. However, if you are using Travis CI with a private repo you probably want to limit the jobs necessary to complete a build. So if your production environment is running PHP 5.5, is on the latest stable version of WordPress, and is not multisite, then your `.travis.yml` could just be:
-
-```yml
-php:
-  - 5.5
-
-env:
-  - WP_VERSION=4.0 WP_MULTISITE=0
-```
-
-This will greatly speed up the time build time, giving you quicker feedback on your pull request status, and prevent your Travis build queue from getting too backlogged.
-
 
 ### Limiting Scope of Checks
 
