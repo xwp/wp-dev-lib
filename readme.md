@@ -27,6 +27,8 @@ Great for adding coding standards, linting and automated testing even to legacy 
 - [Codeception](#codeception)
 - [Gitter](#gitter)
 - [Plugin Helpers](#plugin-helpers)
+- [Contribute](#contribute)
+- [Credits](#credits)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -329,5 +331,15 @@ Create an empty `.gitter` file in the root of your repo and a [Gitter](https://g
 The library includes a WordPress README [parser](scripts/class-wordpress-readme-parser.php) and [converter](scripts/generate-markdown-readme) to Markdown, so you don't have to manually keep your `readme.txt` on WordPress.org in sync with the `readme.md` you have on GitHub. The converter will also automatically recognize the presence of projects with Travis CI and include the status image in the markdown. Screenshots and banner images for WordPress.org are also automatically incorporated into the `readme.md`.
 
 What is also included in this repo is an [`svn-push`](svn-push) to push commits from a GitHub repo to the WordPress.org SVN repo for the plugin. The `/assets/` directory in the root of the project will get automatically moved one directory above in the SVN repo (alongside `trunk`, `branches`, and `tags`). To use, include an `svn-url` file in the root of your repo and let this file contains he full root URL to the WordPress.org repo for plugin (don't include `trunk`).
+
+
+## Contribute
+
+See the [contributor documentation](contributing.md).
+
+
+## Credits
+
+See [all contributors](https://github.com/xwp/wp-dev-lib/graphs/contributors).
 
 The utilities in this project were first developed to facilitate development of [XWP](https://xwp.co/)'s [plugins](https://profiles.wordpress.org/xwp/).
