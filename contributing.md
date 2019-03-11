@@ -4,7 +4,9 @@ All contributions, suggestions and ideas are welcome!
 
 ## Project Overview
 
-- All features and fixes are added by creating a pull request with the suggested changes (see the instructions below). This will also run [a few automated checks](https://github.com/xwp/wp-dev-lib/blob/master/.travis.yml) for the changeset [on Travis CI](https://travis-ci.org/xwp/wp-dev-lib).
+- All features and fixes are added by creating a pull request with the suggested changes (see the instructions below).
+
+- There are [automated checks](https://github.com/xwp/wp-dev-lib/blob/master/.travis.yml) for all pull requests running [on Travis CI](https://travis-ci.org/xwp/wp-dev-lib). Tests include [a full mock of a sample project](https://github.com/xwp/wp-dev-lib/tree/master/tests/composer) using this tool. Make sure to update the tests project as you add or remove features.
 
 - We use [semantic versioning](https://semver.org) and [Git tags](https://github.com/xwp/wp-dev-lib/releases) for creating releases. All code merged to `master` branch is included in the next release so ensure that minor bug fixes are not combined with breaking changes.
 
