@@ -13,7 +13,7 @@ Great for adding coding standards, linting and automated testing even to legacy 
 - [Install](#install)
   - [Using Composer](#using-composer)
   - [Using npm](#using-npm)
-  - [As Git Submodule:](#as-git-submodule)
+  - [As Git Submodule](#as-git-submodule)
 - [Configure](#configure)
   - [Suggested Composer Packages](#suggested-composer-packages)
 - [Automate](#automate)
@@ -53,7 +53,7 @@ npm install --save-dev xwp/wp-dev-lib
 
 which will place it under `node_modules/xwp/wp-dev-lib`. Lock it to a specific [release version number](https://github.com/xwp/wp-dev-lib/releases) by appending it to the package name `xwp/wp-dev-lib#1.2.3` where `1.2.3` is the version number.
 
-### As [Git Submodule](https://git-scm.com/docs/git-submodule):
+### As [Git Submodule](https://git-scm.com/docs/git-submodule)
 
 ```bash
 git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib
