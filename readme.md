@@ -324,9 +324,6 @@ php /tmp/codecept.phar generate:cept acceptance Welcome
 
 Create an empty `.gitter` file in the root of your repo and a [Gitter](https://gitter.im) chat badge will be added to your project's README.
 
-[![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](#)
-
-
 ## Plugin Helpers
 
 The library includes a WordPress README [parser](scripts/class-wordpress-readme-parser.php) and [converter](scripts/generate-markdown-readme) to Markdown, so you don't have to manually keep your `readme.txt` on WordPress.org in sync with the `readme.md` you have on GitHub. The converter will also automatically recognize the presence of projects with Travis CI and include the status image in the markdown. Screenshots and banner images for WordPress.org are also automatically incorporated into the `readme.md`.
