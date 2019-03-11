@@ -16,6 +16,10 @@ addons:
 notifications:
   email: false
 
+branches:
+  only:
+  - master
+
 script:
   - composer test # Run linters for the wp-dev-lib files.
   - composer install --working-dir="tests/composer" # Test Composer integration setup.
