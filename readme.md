@@ -21,7 +21,7 @@ which will place it under `vendor/xwp/wp-dev-lib`.
 npm install --save-dev xwp/wp-dev-lib
 ```
 
-which will place it under `node_modules/xwp/wp-dev-lib`.
+which will place it under `node_modules/xwp/wp-dev-lib`. Lock it to a specific [release version number](https://github.com/xwp/wp-dev-lib/releases) by appending it to the package name `xwp/wp-dev-lib#1.2.3` where `1.2.3` is the version number.
 
 ### As [Git Submodule](https://git-scm.com/docs/git-submodule):
 
