@@ -4,6 +4,8 @@
 
 Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
 
+[![Build Status](https://travis-ci.org/xwp/wp-dev-lib.svg?branch=master)](https://travis-ci.org/xwp/wp-dev-lib)
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
