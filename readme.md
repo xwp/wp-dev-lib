@@ -4,8 +4,32 @@
 
 Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
 
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Install](#install)
+  - [Using Composer](#using-composer)
+  - [Using npm](#using-npm)
+  - [As Git Submodule:](#as-git-submodule)
+- [Configure](#configure)
+  - [Suggested Composer Packages](#suggested-composer-packages)
+- [Automate](#automate)
+  - [Locally with Git Hooks](#locally-with-git-hooks)
+  - [Travis CI](#travis-ci)
+- [Pre-commit Tips](#pre-commit-tips)
+  - [Skipping Checks](#skipping-checks)
+  - [Running Specific Checks](#running-specific-checks)
+  - [Manually Invoking Pre-commit](#manually-invoking-pre-commit)
+  - [Limiting Scope of Checks](#limiting-scope-of-checks)
+- [Environment Variables](#environment-variables)
+- [PHPUnit Code Coverage](#phpunit-code-coverage)
+- [Codeception](#codeception)
+- [Gitter](#gitter)
+- [Plugin Helpers](#plugin-helpers)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## Install
 
