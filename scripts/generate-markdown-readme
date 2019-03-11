@@ -95,12 +95,14 @@ try {
 			}
 		}
 		if ( file_exists( $readme_root . '/.travis.yml' ) ) {
+			$branch = isset( $env_vars['DEFAULT_BASE_BRANCH'] ) ? $env_vars['DEFAULT_BASE_BRANCH'] : 'master';
 			if ( isset( $travis_ci_pro_badge ) ) {
 				$md_args['travis_ci_pro_url'] = "https://magnum.travis-ci.com/$github_account_repo";
-				$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$travis_ci_pro_badge&branch=master";
+				$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$travis_ci_pro_badge&branch=$branch";
 			}
 			if ( ! isset( $md_args['travis_ci_pro_url'] ) ) {
 				$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+				$md_args['travis_ci_badge_src'] = $md_args['travis_ci_url'] . ".svg?branch=$branch";
 			}
 		}
 		if ( file_exists( $readme_root . '/.coveralls.yml' ) ) {
