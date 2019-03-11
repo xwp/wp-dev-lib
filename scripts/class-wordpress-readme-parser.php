@@ -208,7 +208,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Build Status](%1$s)](%2$s) ', $params['travis_ci_pro_badge_src'], $url );
 				}
 				if ( 'travis_ci_url' === $badge ) {
-					$badge_md .= sprintf( '[![Build Status](%1$s.svg?branch=master)](%1$s) ', $url );
+					$badge_md .= sprintf( '[![Build Status](%1$s)](%2$s) ', $params['travis_ci_badge_src'], $url );
 				}
 				if ( 'coveralls_url' === $badge ) {
 					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['coveralls_badge_src'], $url );
