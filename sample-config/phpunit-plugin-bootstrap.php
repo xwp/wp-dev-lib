@@ -73,14 +73,6 @@ function xwp_filter_active_plugins_for_phpunit( $active_plugins ) {
 		$forced_active_plugins = preg_split( '/\s*,\s*/', WP_TEST_ACTIVATED_PLUGINS );
 	}
 
-	// Prevent loading feature plugins that have been merged.
-	if ( file_exists( ABSPATH . 'wp-includes/rest-api/endpoints/class-wp-rest-autosaves-controller.php' ) ) {
-		$forced_active_plugins = array_diff(
-			$forced_active_plugins,
-			array( 'gutenberg/gutenberg.php' )
-		);
-	}
-
 	if ( ! empty( $forced_active_plugins ) ) {
 		foreach ( $forced_active_plugins as $forced_active_plugin ) {
 			$active_plugins[] = $forced_active_plugin;
