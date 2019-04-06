@@ -214,7 +214,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['coveralls_badge_src'], $url );
 				}
 				if ( 'grunt_url' === $badge ) {
-					$badge_md .= sprintf( '[![Built with Grunt](https://cdn.%1$s/builtwith.svg)](http://%1$s) ', $url );
+					$badge_md .= sprintf( '[![Built with Grunt](https://%1$s/cdn/builtwith.svg)](http://%1$s) ', $url );
 				}
 				if ( 'david_url' === $badge ) {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $url );
