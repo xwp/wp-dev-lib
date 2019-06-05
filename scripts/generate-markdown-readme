@@ -113,6 +113,11 @@ try {
 				$md_args['coveralls_badge_src'] .= "&service=github&t=$coveralls_badge";
 			}
 		}
+		if ( file_exists( $readme_root . '/codecov.yml' ) || file_exists( $readme_root . '/.codecov.yml' ) ) {
+			$branch = isset( $env_vars['DEFAULT_BASE_BRANCH'] ) ? $env_vars['DEFAULT_BASE_BRANCH'] : 'master';
+			$md_args['codecov_url'] = "https://codecov.io/gh/$github_account_repo";
+			$md_args['codecov_badge_src'] = "https://img.shields.io/codecov/c/github/$github_account_repo/$branch.svg";
+		}
 		if ( file_exists( $readme_root . '/Gruntfile.js' ) ) {
 			$md_args['grunt_url'] = 'gruntjs.com';
 		}

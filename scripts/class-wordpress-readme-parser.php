@@ -190,6 +190,7 @@ class WordPress_Readme_Parser {
 			'travis_ci_pro_url',
 			'travis_ci_url',
 			'coveralls_url',
+			'codecov_url',
 			'grunt_url',
 			'david_url',
 			'david_dev_url',
@@ -212,6 +213,9 @@ class WordPress_Readme_Parser {
 				}
 				if ( 'coveralls_url' === $badge ) {
 					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['coveralls_badge_src'], $url );
+				}
+				if ( 'codecov_url' === $badge ) {
+					$badge_md .= sprintf( '[![Coverage Status](%s)](%s) ', $params['codecov_badge_src'], $url );
 				}
 				if ( 'grunt_url' === $badge ) {
 					$badge_md .= sprintf( '[![Built with Grunt](https://%1$s/cdn/builtwith.svg)](http://%1$s) ', $url );
