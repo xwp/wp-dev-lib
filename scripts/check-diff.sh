@@ -454,7 +454,7 @@ function install_tools {
 		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
 			PHPUNIT_VERSION=${PHPUNIT_VERSION:-5.7}
 			echo "Downloading PHPUnit $PHPUNIT_VERSION phar"
-			download https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar "$TEMP_TOOL_PATH/phpunit"
+			download "https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar" "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
 		fi
 
