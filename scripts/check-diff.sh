@@ -452,7 +452,17 @@ function install_tools {
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
-			PHPUNIT_VERSION=${PHPUNIT_VERSION:-5.7}
+			if [ -n "$PHPUNIT_VERSION" ]; then
+				PHPUNIT_VERSION="5.7"
+
+				# Or newer depending on the PHP version.
+				if min_php_version "7.1"; then
+					PHPUNIT_VERSION="7"
+				elif min_php_version "7.0"; then
+					PHPUNIT_VERSION="6"
+				fi
+			fi
+
 			echo "Downloading PHPUnit $PHPUNIT_VERSION phar"
 			download "https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar" "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
