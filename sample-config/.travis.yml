@@ -1,4 +1,7 @@
 
+# Define a known environment to account for Travis updates.
+dist: xenial
+
 notifications:
   email:
     on_success: never

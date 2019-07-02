@@ -3,6 +3,9 @@
 # See sample-config/.travis.yml for a sample config for a WordPress project.
 #
 
+# Define a known environment to account for Travis updates.
+dist: xenial
+
 language: php
 
 php:
