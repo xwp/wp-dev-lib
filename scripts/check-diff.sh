@@ -8,7 +8,7 @@ function realpath {
 
 # Return true (exit code 0) if the installed version of PHP is above the reference.
 function php_is_above () {
-	php -r 'if ( version_compare( phpversion(), $argv[1], "<" ) ) { exit( 1 ); }' "$1"
+	php -r 'if ( ! version_compare( phpversion(), $argv[1], ">" ) ) { exit( 1 ); }' "$1"
 }
 
 # Deprecated: same as php_is_above.
