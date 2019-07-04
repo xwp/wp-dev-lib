@@ -6,6 +6,11 @@ function realpath {
 	php -r 'echo realpath( $argv[1] );' "$1"
 }
 
+# Return true (exit code 0) if the installed version of PHP is at least the reference.
+function php_is_atleast () {
+	php -r 'if ( ! version_compare( phpversion(), $argv[1], ">=" ) ) { exit( 1 ); }' "$1"
+}
+
 # Return true (exit code 0) if the installed version of PHP is above the reference.
 function php_is_above () {
 	php -r 'if ( ! version_compare( phpversion(), $argv[1], ">" ) ) { exit( 1 ); }' "$1"
