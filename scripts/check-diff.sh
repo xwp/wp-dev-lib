@@ -451,7 +451,9 @@ function install_tools {
 
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
+		# Ensure a valid version of phpunit exists. Versions installed with Composer
+		# will be loaded first because of the directory order in $PATH defined above.
+		if check_should_execute 'phpunit'; then
 			if [ -z "$PHPUNIT_VERSION" ]; then
 				if ! min_php_version "7.1"; then
 					PHPUNIT_VERSION="7"
