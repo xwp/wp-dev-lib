@@ -466,14 +466,14 @@ function install_tools {
 		# will be loaded first because of the directory order in $PATH defined above.
 		if check_should_execute 'phpunit'; then
 			if [ -z "$PHPUNIT_VERSION" ]; then
-				if ! php_is_above "7.1"; then
+				PHPUNIT_VERSION="4"
+
+				if php_is_atleast "7.1"; then
 					PHPUNIT_VERSION="7"
-				elif ! php_is_above "7.0"; then
+				elif php_is_atleast "7.0"; then
 					PHPUNIT_VERSION="6"
-				elif ! php_is_above "5.6"; then
+				elif php_is_atleast "5.6"; then
 					PHPUNIT_VERSION="5"
-				else
-					PHPUNIT_VERSION="4"
 				fi
 			fi
 
