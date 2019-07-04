@@ -11,6 +11,11 @@ function php_is_above () {
 	php -r 'if ( version_compare( phpversion(), $argv[1], "<" ) ) { exit( 1 ); }' "$1"
 }
 
+# Deprecated: same as php_is_above.
+function min_php_version () {
+	php_is_above "$1"
+}
+
 function upsearch {
 	# via http://unix.stackexchange.com/a/13474
 	slashes=${PWD//[^\/]/}
