@@ -6,7 +6,8 @@ function realpath {
 	php -r 'echo realpath( $argv[1] );' "$1"
 }
 
-function min_php_version () {
+# Return true (exit code 0) if the installed version of PHP is above the reference.
+function php_is_above () {
 	php -r 'if ( version_compare( phpversion(), $argv[1], "<" ) ) { exit( 1 ); }' "$1"
 }
 
@@ -394,9 +395,9 @@ function download {
 
 function can_generate_coverage_clover {
 	if [ -e .coveralls.yml ] && [ -e composer.json ] && check_should_execute 'coverage'; then
-		if min_php_version "5.5.0" && cat composer.json | grep -Eq '"php-coveralls/php-coveralls"\s*:\s*"([(\^|~)]*(2|1.1)[0-9.]*|dev-master)"'; then
+		if php_is_above "5.5.0" && cat composer.json | grep -Eq '"php-coveralls/php-coveralls"\s*:\s*"([(\^|~)]*(2|1.1)[0-9.]*|dev-master)"'; then
 			return 0
-		elif min_php_version "5.3.3" && cat composer.json | grep -Eq '"php-coveralls/php-coveralls"\s*:\s*"[(\^|~)]*[0-9.]*"'; then
+		elif php_is_above "5.3.3" && cat composer.json | grep -Eq '"php-coveralls/php-coveralls"\s*:\s*"[(\^|~)]*[0-9.]*"'; then
 			return 0
 		fi
 	fi
@@ -414,13 +415,13 @@ function install_tools {
 	mkdir -p "$TEMP_TOOL_PATH"
 	PATH="$TEMP_TOOL_PATH:$PATH"
 
-	if ! min_php_version "5.3.0" && check_should_execute 'composer'; then
+	if ! php_is_above "5.3.0" && check_should_execute 'composer'; then
 		pecl install phar
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
 	# Skip installing Composer when the PHP version does not meet the php-coveralls package requirements.
-	if ! min_php_version "5.5.0" && [ -e composer.json ] && check_should_execute 'composer' && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
+	if ! php_is_above "5.5.0" && [ -e composer.json ] && check_should_execute 'composer' && cat composer.json | grep -Eq '"satooshi/php-coveralls"\s*:\s*"dev-master"'; then
 		DEV_LIB_SKIP="$DEV_LIB_SKIP,composer"
 	fi
 
@@ -455,11 +456,11 @@ function install_tools {
 		# will be loaded first because of the directory order in $PATH defined above.
 		if check_should_execute 'phpunit'; then
 			if [ -z "$PHPUNIT_VERSION" ]; then
-				if ! min_php_version "7.1"; then
+				if ! php_is_above "7.1"; then
 					PHPUNIT_VERSION="7"
-				elif ! min_php_version "7.0"; then
+				elif ! php_is_above "7.0"; then
 					PHPUNIT_VERSION="6"
-				elif ! min_php_version "5.6"; then
+				elif ! php_is_above "5.6"; then
 					PHPUNIT_VERSION="5"
 				else
 					PHPUNIT_VERSION="4"
