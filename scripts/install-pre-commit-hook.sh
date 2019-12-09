@@ -40,7 +40,7 @@ if [ -z "$RELPATH" ]; then
 fi
 
 echo "## Placing pre-commit file in $(pwd) from $RELPATH"
-ln -s "$RELPATH" .
+ln -sf "$RELPATH" .
 
 # Return back to the calling directory
 cd "$OLDPWD" &> /dev/null
