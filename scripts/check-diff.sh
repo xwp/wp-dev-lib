@@ -585,6 +585,10 @@ function install_wp {
 	mkdir -p "$WP_CORE_DIR/src/wp-includes/css/dist/block-library"
 	touch "$WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css"
 
+	# Download required asset dependency files
+	local SVN_CORE_URL=$(echo $SVN_URL | sed 's/develop/core/')
+	svn export -q "${SVN_CORE_URL}wp-includes/assets/dist" "$WP_CORE_DIR/src/wp-includes/assets/dist"
+
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
 
