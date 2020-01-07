@@ -581,9 +581,9 @@ function install_wp {
 
 	svn export -q "$SVN_URL" "$WP_CORE_DIR"
 
-	# Add workaround for running PHPUnit tests from source by touching built files.
-	mkdir -p "$WP_CORE_DIR/src/wp-includes/css/dist/block-library"
-	touch "$WP_CORE_DIR/src/wp-includes/css/dist/block-library/style.css"
+	# Download `wp-includes` folder from the WordPress Core SVN repo to include built internal dependencies.
+	local SVN_CORE_URL=${SVN_URL/develop/core}
+	svn export -q "${SVN_CORE_URL}wp-includes" "$WP_CORE_DIR/src/wp-includes"
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
