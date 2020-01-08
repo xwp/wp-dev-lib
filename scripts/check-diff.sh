@@ -583,7 +583,7 @@ function install_wp {
 
 	# Download `wp-includes` folder from the WordPress Core SVN repo to include built internal dependencies.
 	local SVN_CORE_URL=${SVN_URL/develop/core}
-	svn export -q "${SVN_CORE_URL}wp-includes" "$WP_CORE_DIR/src/wp-includes"
+	svn export -q --force "${SVN_CORE_URL}wp-includes" "$WP_CORE_DIR/src/wp-includes"
 
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php "$WP_CORE_DIR/src/wp-content/db.php"
 }
