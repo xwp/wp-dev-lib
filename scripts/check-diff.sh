@@ -311,7 +311,7 @@ function set_environment_variables {
 		#
 		# Eslint might depend on Prettier (https://github.com/prettier/eslint-plugin-prettier), so prettier config has to be copied into the linting directory
 		# Both Eslint and Prettier might be configured as keys in package.json, so this file needs to also be imported
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc .eslintrc.js .eslintrc.json .eslintrc.yaml .eslintrc.yml package.json .prettierrc .prettierrc.json .prettierrc.yml .prettierrc.yaml  .prettierrc.js  .prettierrc.config.js  .prettierrc.toml .phpcs.xml phpcs.xml .phpcs.xml.dist phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshint* .jscs* .eslint* package.json .prettier* .phpcs* phpcs.xml phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
