@@ -1,0 +1,9 @@
+#!/bin/bash
+
+function run_tests {
+	# Run your custom checks before the default linters, tests, etc.
+}
+
+function after_wp_install {
+	# Run any customs code before PHPUnit checks, see `check-diff.sh`.
+}

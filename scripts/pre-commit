@@ -43,14 +43,16 @@ install_tools
 echo "## Checking files, scope $CHECK_SCOPE:"
 cat "$TEMP_DIRECTORY/paths-scope"
 
+# Run any custom checks by defining a run_tests function in .dev-lib, for example.
+if [ "$( type -t run_tests )" != '' ]; then
+	run_tests
+fi
+
 check_execute_bit
 lint_js_files
 lint_php_files
 lint_xml_files
 run_qunit
-if [ "$( type -t run_tests )" != '' ]; then
-	run_tests
-fi
 run_phpunit_local
 run_codeception
 
