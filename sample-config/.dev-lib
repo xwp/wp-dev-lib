@@ -1,7 +1,11 @@
 #!/bin/bash
 
 function run_tests {
-	# Run your custom checks before the default linters, tests, etc.
+	# Run your custom tests before the default linters, tests, etc.
+}
+
+function run_after_tests {
+	# Run your custom tests after the default linters, tests, etc.
 }
 
 function after_wp_install {
