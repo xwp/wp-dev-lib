@@ -43,7 +43,7 @@ install_tools
 echo "## Checking files, scope $CHECK_SCOPE:"
 cat "$TEMP_DIRECTORY/paths-scope"
 
-# Run any custom checks by defining a run_tests function, see sample-scripts/.dev-lib
+# Run any custom tests by defining a run_tests function, see sample-scripts/.dev-lib
 if [ "$( type -t run_tests )" != '' ]; then
 	run_tests
 fi
@@ -55,6 +55,11 @@ lint_xml_files
 run_qunit
 run_phpunit_local
 run_codeception
+
+# Run any custom tests after all other tests by defining a run_after_tests function, see sample-scripts/.dev-lib
+if [ "$( type -t run_after_tests )" != '' ]; then
+	run_after_tests
+fi
 
 # Make sure the readme.md never gets out of sync with the readme.txt, if it is staged for commit.
 if [[ $SYNC_README_MD == 1 ]] && [ -e readme.txt ] && cat "$TEMP_DIRECTORY/paths-scope" | remove_diff_range | grep -sqE '^readme\.txt$'; then
