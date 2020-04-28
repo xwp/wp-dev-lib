@@ -5,18 +5,17 @@
   "homepage": "https://github.com/xwp/wp-dev-lib",
   "authors": [
     {
-      "name": "Weston Ruter",
-      "email": "weston@xwp.co",
-      "homepage": "https://weston.ruter.net"
-    },
-    {
       "name": "XWP",
-      "email": "engage@xwp.co",
+      "email": "technology@xwp.co",
       "homepage": "https://xwp.co"
     }
   ],
   "keywords": [
-    "WordPress"
+    "wordpress",
+    "plugins",
+    "themes",
+    "development",
+    "tools"
   ],
   "support": {
     "issues": "https://github.com/xwp/wp-dev-lib/issues",

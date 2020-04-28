@@ -1,6 +1,6 @@
 {
   "name": "wp-dev-lib",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Common code used during development of WordPress plugins and themes",
   "repository": "xwp/wp-dev-lib",
   "keywords": [
