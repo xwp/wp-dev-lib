@@ -1,6 +1,6 @@
 {
   "name": "wp-dev-lib",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Common code used during development of WordPress plugins and themes",
   "repository": "xwp/wp-dev-lib",
   "keywords": [
@@ -10,7 +10,7 @@
     "development",
     "tools"
   ],
-  "author": "Weston Ruter <weston@xwp.co> (https://xwp.co)",
+  "author": "XWP <technology@xwp.co> (https://xwp.co)",
   "license": "MIT",
   "homepage": "https://github.com/xwp/wp-dev-lib#readme",
   "devDependencies": {
