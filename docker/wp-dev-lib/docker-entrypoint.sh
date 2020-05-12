@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -ex
 
 export WP_CORE_DIR="${WP_CORE_DIR:-/tmp/wordpress}"
 export WP_TESTS_DIR="${WP_TESTS_DIR:-$WP_CORE_DIR/tests/phpunit}"
