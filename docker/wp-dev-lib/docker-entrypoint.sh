@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export WP_CORE_DIR="${WP_CORE_DIR:-/tmp/wordpress}"
 export WP_TESTS_DIR="${WP_TESTS_DIR:-$WP_CORE_DIR/tests/phpunit}"
 export WP_SVN_URL="${WP_SVN_URL:-https://develop.svn.wordpress.org/trunk/}"
