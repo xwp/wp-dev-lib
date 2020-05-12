@@ -32,8 +32,8 @@ script:
   - composer test # Run linters for the wp-dev-lib files.
   - composer install --working-dir="tests/composer" # Test Composer integration setup.
   - composer test --working-dir="tests/composer" # Test Composer integration pre-commit hook.
+  - docker-compose --file=docker/wp-dev-lib/docker-compose.test.yml run sut # Test the Docker image.
   - cd tests/composer && export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts # We need Bash shell which might not be available in Composer scripts.
   - source "$DEV_LIB_PATH/travis.install.sh"
   - source "$DEV_LIB_PATH/travis.script.sh"
   - source "$DEV_LIB_PATH/travis.after_script.sh"
-  - docker-compose --file=docker/wp-dev-lib/docker-compose.test.yml run sut # Test the Docker image.
