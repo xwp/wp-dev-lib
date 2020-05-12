@@ -4,8 +4,9 @@ services:
 
   test:
     build: ./wp-dev-lib
-    working_dir: /var/www/html
+    working_dir: /var/www/html/tests/composer
     volumes:
-      - ../tests/composer:/var/www/html
+      - ..:/var/www/html
+    command: composer install && composer test
     environment:
       CHECK_SCOPE: all
