@@ -31,4 +31,4 @@ if [ ! -f /tmp/wordpress/wp-tests-config.php ]; then
 fi
 
 # Run the command passed to this container.
-exec -c "$@"
+exec "$@"
