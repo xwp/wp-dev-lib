@@ -25,9 +25,9 @@ if [ ! -d /tmp/wordpress/tests ]; then
 	svn export --force "$WP_SVN_URL" /tmp/wordpress
 fi
 
-# Create a symlink to tests config if not found.
+# Ensure we have a config file to work with.
 if [ ! -f /tmp/wordpress/wp-tests-config.php ]; then
-	ln -s /tmp/wp-dev-lib/wp-tests-config.php /tmp/wordpress/wp-tests-config.php
+	cp /tmp/wp-dev-lib/wp-tests-config.php /tmp/wordpress/wp-tests-config.php
 fi
 
 # Run the command passed to this container.
