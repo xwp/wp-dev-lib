@@ -10,3 +10,4 @@ services:
     command: composer install && composer test
     environment:
       CHECK_SCOPE: all
+      EMAIL: test@example.com
