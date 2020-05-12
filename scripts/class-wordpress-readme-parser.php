@@ -187,6 +187,7 @@ class WordPress_Readme_Parser {
 
 		// All of the supported badges.
 		$badges = array(
+			'badge_fury_url',
 			'travis_ci_pro_url',
 			'travis_ci_url',
 			'coveralls_url',
@@ -205,6 +206,9 @@ class WordPress_Readme_Parser {
 			if ( isset( $params[ $badges[ $i ] ] ) ) {
 				$badge = $badges[ $i ];
 				$url = $params[ $badge ];
+				if ( 'badge_fury_url' === $badge ) {
+					$badge_md .= sprintf( '[![version](%1$s.svg)](%1$s) ', $url );
+				}
 				if ( 'travis_ci_pro_url' === $badge ) {
 					$badge_md .= sprintf( '[![Build Status](%1$s)](%2$s) ', $params['travis_ci_pro_badge_src'], $url );
 				}
