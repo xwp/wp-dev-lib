@@ -9,7 +9,7 @@ RUN apt-get update \
 		bash less subversion default-mysql-server default-mysql-client libxml2-utils rsync git zip unzip \
 		nodejs npm curl \
 	&& npm install --global npm@latest \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/
 
 # Setup xdebug.
 RUN	pecl install xdebug \
