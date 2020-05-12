@@ -6,6 +6,7 @@ services:
     build: ./wp-dev-lib
     working_dir: /var/www/html/tests/composer
     volumes:
+      - /tmp/wordpress
       - ..:/var/www/html
     command: bash -c "composer install && composer test"
     environment:
