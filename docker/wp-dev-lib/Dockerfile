@@ -28,3 +28,5 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 VOLUME /tmp/wordpress
 
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["php-fpm"]
