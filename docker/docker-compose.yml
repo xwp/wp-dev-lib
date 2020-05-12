@@ -2,10 +2,10 @@ version: '3.6'
 
 services:
 
-  wpdevlib:
+  test:
     build: ./wp-dev-lib
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
+      - ../tests/composer:/var/www/html
     environment:
       CHECK_SCOPE: all
