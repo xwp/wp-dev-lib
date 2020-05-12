@@ -1,13 +1,15 @@
+# Used by Travis and Docker Hub to test the image.
+# See https://docs.docker.com/docker-hub/builds/automated-testing/
+
 version: '3.6'
 
 services:
 
-  test:
-    build: ./wp-dev-lib
+  sut:
+    build: .
     working_dir: /var/www/html/tests/composer
     volumes:
-      - /tmp/wordpress
-      - ..:/var/www/html
+      - ../..:/var/www/html
     command: bash -c "composer install && composer test"
     environment:
       CHECK_SCOPE: all
