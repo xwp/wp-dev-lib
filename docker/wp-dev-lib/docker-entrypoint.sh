@@ -8,7 +8,8 @@ export WP_SVN_URL="${WP_SVN_URL:-https://develop.svn.wordpress.org/trunk/}"
 service mysql start
 
 # Ensure we have a password and a fresh database.
-# TODO: Figure out the ERROR 1045 (28000) error because of the password change.
+# TODO Figure out the ERROR 1045 (28000) error because of the password change.
+# TODO Allow custom test DB content.
 mysql --user=root --password=root << END
 	DROP DATABASE IF EXISTS wordpress_test;
 	CREATE DATABASE wordpress_test;
