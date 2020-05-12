@@ -21,7 +21,9 @@ mysql --user=root --password=root << END
 END
 
 # Ensure we have the WP core files.
-svn export --force "$WP_SVN_URL" /tmp/wordpress
+if [ ! -d /tmp/wordpress/tests ]; then
+	svn export --force "$WP_SVN_URL" /tmp/wordpress
+fi
 
 # Create a symlink to tests config if not found.
 if [ ! -f /tmp/wordpress/wp-tests-config.php ]; then
