@@ -260,7 +260,7 @@ function set_environment_variables {
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
 		git diff --diff-filter=AM $DIFF_ARGS --name-only -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	else
-		git ls-files -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
+		git ls-files --full-name -- $PATH_INCLUDES > "$TEMP_DIRECTORY/paths-scope"
 	fi
 
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
@@ -288,7 +288,7 @@ function set_environment_variables {
 			if [ -L "$path" ]; then
 				symlink_path=$(readlink "$path")
 				mkdir -p "$LINTING_DIRECTORY/$(dirname "$symlink_path")"
-				if git ls-files --error-unmatch -- "$symlink_path" > /dev/null 2>&1; then
+				if git ls-files --full-name --error-unmatch -- "$symlink_path" > /dev/null 2>&1; then
 					if [ "$DIFF_HEAD" == 'STAGE' ]; then
 						git show :"$symlink_path" > "$LINTING_DIRECTORY/$symlink_path"
 					else
@@ -312,7 +312,7 @@ function set_environment_variables {
 		# Eslint might depend on Prettier (https://github.com/prettier/eslint-plugin-prettier), so prettier config has to be copied into the linting directory.
 		# Both Eslint and Prettier might be configured as keys in package.json, so this file needs to also be imported.
 		for linter_file in .jshint* .jscs* .eslint* package.json .prettier* .phpcs* phpcs* ruleset.xml; do
-			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
+			if git ls-files --full-name --error-unmatch "$linter_file" > /dev/null 2>&1; then
 				if [ -L $linter_file ]; then
 					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
 				else
