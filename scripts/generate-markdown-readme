@@ -104,7 +104,8 @@ try {
 				$md_args['travis_ci_pro_badge_src'] = $md_args['travis_ci_pro_url'] . ".svg?token=$travis_ci_pro_badge&branch=$branch";
 			}
 			if ( ! isset( $md_args['travis_ci_pro_url'] ) ) {
-				$md_args['travis_ci_url'] = "https://travis-ci.org/$github_account_repo";
+				$tld = isset( $env_vars['TRAVIS_CI_COM_URL'] ) ? 'com' : 'org';
+				$md_args['travis_ci_url'] = "https://travis-ci.$tld/$github_account_repo";
 				$md_args['travis_ci_badge_src'] = $md_args['travis_ci_url'] . ".svg?branch=$branch";
 			}
 		}
