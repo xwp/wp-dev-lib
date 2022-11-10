@@ -1,5 +1,11 @@
 # ![wp-dev-lib](assets/logo.svg)
 
+**⚠️ This project is no longer maintained or supported!**
+
+This toolset was created before there were reliable ways of pulling in developer tools using Composer and npm. We now recommend adding linting and testing support by adding each tool as a developer dependency.
+
+---
+
 **Common tools to facilitate the development and testing of WordPress themes and plugins.**
 
 Great for adding coding standards, linting and automated testing even to legacy projects since checks are applied to new code only by default.
